@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kurtis Lam | My Portfolio</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          },
+          colors: {
+            monkeytype: '#e2b714',
+            github: '#2ea44f',
+            insta: '#e1306c',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ---------- Preloader & Initial Fade-In States ---------- */
+    #preloader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #07090e;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    body.is-loaded #preloader {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .page-content {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.35s ease-in, transform 0.35s ease-in;
+      pointer-events: none;
+    }
+
+    body.is-loaded .page-content {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ---------- Scroll Reveal Effect ---------- */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .fade-in.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #preloader { display: none !important; }
+      .page-content, .fade-in { 
+        transition: none !important; 
+        opacity: 1 !important; 
+        transform: none !important; 
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090a0f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3b82f6;
+    }
+
+    /* Custom Animated Gradient Text */
+    .animated-gradient-text {
+      background: linear-gradient(-45deg, #00f2fe, #4facfe, #00c6ff, #0072ff, #a855f7);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 6s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Glassmorphism Card Style */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Interactive Cursor */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #38bdf8;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+
+    .cursor-outline {
+      width: 36px;
+      height: 36px;
+      border: 2px solid rgba(56, 189, 248, 0.5);
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease-out;
+    }
+
+    /* Glow utility */
+    .glow-cyan:hover {
+      box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+      border-color: rgba(6, 182, 212, 0.6);
+    }
+    .glow-yellow:hover {
+      box-shadow: 0 0 25px rgba(226, 183, 20, 0.4);
+      border-color: rgba(226, 183, 20, 0.6);
+    }
+    .glow-pink:hover {
+      box-shadow: 0 0 25px rgba(225, 48, 108, 0.4);
+      border-color: rgba(225, 48, 108, 0.6);
+    }
+    .glow-emerald:hover {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+      border-color: rgba(16, 185, 129, 0.6);
+    }
+    .glow-purple:hover {
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+      border-color: rgba(168, 85, 247, 0.6);
+    }
+
+    /* Background Canvas */
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+
+  <!-- Preloader Overlay -->
+  <div id="preloader"></div>
+
+  <!-- Canvas Interactive Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Custom Glowing Cursor -->
+  <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
+  <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
+
+  <!-- Dynamic Bright Ambient Light Orbs -->
+  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+
+  <!-- Content Container -->
+  <div class="page-content relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center min-h-screen justify-between">
+
+    <!-- Top Badge -->
+    <header class="w-full text-center flex flex-col items-center fade-in">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-cyan-500/30 text-xs font-mono text-cyan-400 mb-6 tracking-wide uppercase shadow-lg hover:scale-105 transition-transform duration-300">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <span>Student &amp; Developer</span>
+      </div>
+
+      <!-- Main Profile Title -->
+      <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-2">
+        <span id="greeting-prefix" class="text-slate-200">Hey, I'm</span> <span class="animated-gradient-text">Kurtis</span>
+      </h1>
+
+      <!-- Animated Subtitle / Typewriter -->
+      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-400 text-lg md:text-xl">
+        <span class="text-cyan-400">&gt;&nbsp;</span>
+        <span id="typewriter"></span>
+        <span class="animate-pulse text-cyan-400">|</span>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="w-full my-8 space-y-12">
+      
+      <!-- Precise Live Age Counter Widget -->
+      <div class="glass-card fade-in rounded-2xl p-6 md:p-8 relative overflow-hidden group hover:border-cyan-500/50 transition-all">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+          <div class="text-center md:text-left">
+            <div class="flex items-center gap-2 text-slate-400 text-sm font-mono mb-1 justify-center md:justify-start">
+              <i class="fa-solid fa-cake-candles text-pink-400"></i>
+              <span>BIRTHDAY: OCT 22, 2010</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
+          </div>
+          <div class="bg-slate-900/80 border border-slate-800 px-6 py-3 rounded-xl text-center shadow-inner">
+            <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-400 tracking-wider">15.00000000</span>
+            <span class="text-xs text-slate-500 block font-mono">YEARS OLD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Links Grid (3D Social Cards) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- GitHub Card -->
+        <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" 
+           class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                <i class="fa-brands fa-github"></i>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">GitHub</h2>
+            <p class="text-sm font-mono text-slate-400">@Kurtis-Lam</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Code &amp; Repositories</span>
+          </div>
+        </a>
+
+        <!-- Monkeytype Card -->
+        <a href="https://monkeytype.com/profile/tiger_god" target="_blank" rel="noopener noreferrer" 
+           class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
+                <i class="fa-solid fa-keyboard"></i>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-monkeytype transition-colors"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-1 group-hover:text-monkeytype transition-colors">Monkeytype</h2>
+            <p class="text-sm font-mono text-slate-400">tiger_god</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <span class="w-2 h-2 rounded-full bg-monkeytype"></span>
+            <span>Speed Typing Leaderboards</span>
+          </div>
+        </a>
+
+        <!-- Instagram Card -->
+        <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
+           class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
+                <i class="fa-brands fa-instagram"></i>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-insta transition-colors"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Instagram</h2>
+            <p class="text-sm font-mono text-slate-400">@kurtis_1022</p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>Socials &amp; Highlights</span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Projects & Web Applications Section -->
+      <section class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3">
+            <i class="fa-solid fa-rocket text-cyan-400"></i>
+            <span>Projects &amp; Web Apps</span>
+          </h2>
+          <span class="text-xs font-mono text-slate-400">Deployed Applications</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Project: GTEYC Student Union -->
+          <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-purple rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300 text-[10px] font-mono border border-purple-500/30">SU WEB PAGE</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">GTEYC 2627 SU</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">Official Aurora Student Union portal developed for GTEYC 2627.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="text-purple-400">gtcsu-aurora.web.app</span>
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+          </a>
+
+          <!-- Project: SVT Match Game -->
+          <a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 text-[10px] font-mono border border-rose-500/30">FIRST GAME</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-rose-400 transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-rose-300 transition-colors">SVT Match Game</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">An interactive SEVENTEEN-themed card matching game created as my first game project.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="text-rose-400">svt-match.web.app</span>
+              <i class="fa-solid fa-gamepad"></i>
+            </div>
+          </a>
+
+          <!-- Project: Recyclist World -->
+          <a href="https://recyclist-world.web.app" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-emerald rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-mono border border-emerald-500/30">SEEKING FUNDS</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">Recyclist World</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">Eco-initiative platform encouraging green living and sustainability awareness.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="text-emerald-400">recyclist-world.web.app</span>
+              <i class="fa-solid fa-leaf"></i>
+            </div>
+          </a>
+
+          <!-- Project: DropSpot -->
+          <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-mono border border-cyan-500/30">UTILITY</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">DropSpot</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">Fast, light-weight web-based data &amp; file transfer application.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="text-cyan-400">dropspot-0.web.app</span>
+              <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            </div>
+          </a>
+
+          <!-- Project: K-Town 45 -->
+          <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-mono border border-amber-500/30">PRODUCTIVITY</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-amber-400 transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">K-Town 45</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">Study application crafted for focus, tracking, and learning workflows.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="text-amber-400">ktown-45.web.app</span>
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+          </a>
+
+          <!-- Project: Colordle Solver (Archived) -->
+          <div class="glass-card fade-in rounded-2xl p-6 flex flex-col justify-between opacity-60 hover:opacity-80 transition-opacity">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-400 text-[10px] font-mono border border-rose-500/30">DELETED / ARCHIVED</span>
+                <i class="fa-solid fa-trash-can text-xs text-slate-500"></i>
+              </div>
+              <h3 class="text-xl font-bold text-slate-300 mb-2">Colordle Solver</h3>
+              <p class="text-xs text-slate-400 line-clamp-2">Automated puzzle solver application designed for Colordle.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-500">
+              <span>colordle-solver.web.app</span>
+              <i class="fa-solid fa-ban"></i>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Mini Feature Cards & Contact Info -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Tech Focus / Tags -->
+        <div class="glass-card fade-in rounded-2xl p-6">
+          <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-code text-cyan-400"></i>
+            <span>Interests &amp; Focus</span>
+          </h3>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-xs font-mono text-slate-300">Coding</span>
+            <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-xs font-mono text-slate-300">Swimming</span>
+            <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-xs font-mono text-slate-300">Piano Playing</span>
+            <span class="px-3 py-1 rounded-lg bg-slate-800/80 border border-slate-700/50 text-xs font-mono text-slate-300">Table Tennis</span>
+          </div>
+        </div>
+
+        <!-- Contact Box -->
+        <div class="glass-card fade-in rounded-2xl p-6 flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold mb-3 flex items-center gap-2">
+              <i class="fa-solid fa-envelope text-pink-400"></i>
+              <span>Get In Touch</span>
+            </h3>
+            <div class="space-y-2 font-mono text-xs">
+              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-2 text-slate-300 hover:text-cyan-400 transition-colors">
+                <i class="fa-regular fa-paper-plane text-cyan-400"></i>
+                <span>kurtislam100@gmail.com</span>
+              </a>
+              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-2 text-slate-300 hover:text-cyan-400 transition-colors">
+                <i class="fa-regular fa-paper-plane text-cyan-400"></i>
+                <span>kurtislam200@gmail.com</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-mono gap-4 fade-in">
+      <div>
+        © <span id="year"></span> Kurtis Lam. Built with Tailwind &amp; Canvas.
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/Kurtis-Lam" target="_blank" class="hover:text-slate-300 transition-colors">GH</a>
+        <a href="https://monkeytype.com/profile/tiger_god" target="_blank" class="hover:text-slate-300 transition-colors">MT</a>
+        <a href="https://www.instagram.com/kurtis_1022/" target="_blank" class="hover:text-slate-300 transition-colors">IG</a>
+        <a href="mailto:kurtislam100@gmail.com" class="hover:text-slate-300 transition-colors">MAIL</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // --- Page Initialization & Fade-In Reveal ---
+    document.addEventListener('DOMContentLoaded', () => {
+      let pageRevealed = false;
+
+      const observerOptions = {
+        root: null,
+        rootMargin: '200px 0px 200px 0px',
+        threshold: 0.01
+      };
+
+      const fadeObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      function revealPage() {
+        if (pageRevealed) return;
+        pageRevealed = true;
+        document.body.classList.add('is-loaded');
+        document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+      }
+
+      const fontsLoaded = document.fonts ? document.fonts.ready : Promise.resolve();
+      const fallbackTimer = new Promise(resolve => setTimeout(resolve, 1500));
+
+      Promise.race([fontsLoaded, fallbackTimer]).then(revealPage);
+    });
+
+    // Set Current Year
+    document.getElementById('year').innerText = new Date().getFullYear();
+
+    // --- Dynamic Bright Random Light Orbs Generator ---
+    function generateBrightVibrantColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsla(${hue}, 95%, 60%, 0.45)`;
+    }
+
+    const orbLeft = document.getElementById('orb-left');
+    const orbRight = document.getElementById('orb-right');
+    if (orbLeft && orbRight) {
+      orbLeft.style.backgroundColor = generateBrightVibrantColor();
+      orbRight.style.backgroundColor = generateBrightVibrantColor();
+    }
+
+    // --- Dynamic Greetings on Reload ---
+    const greetings = [
+      "Hey, I'm",
+      "Yo! I'm",
+      "Welcome, I'm",
+      "What's up, I'm",
+      "Hello world, I'm",
+      "Greetings, I'm",
+      "Howdy, I'm",
+      "Nice to meet you, I'm",
+      "Glad you're here, I'm"
+    ];
+    const greetingElement = document.getElementById('greeting-prefix');
+    if (greetingElement) {
+      greetingElement.innerText = greetings[Math.floor(Math.random() * greetings.length)];
+    }
+
+    // --- Dynamic Typewriter Effect ---
+    const typewriterElement = document.getElementById('typewriter');
+    const words = [
+      'Speed Typer',
+      'Webapp/Webpage Developer',
+      'Discord Bot Developer',
+      'Vulnerabilities Tester',
+      'Piano Player'
+    ];
+    let wordIndex = Math.floor(Math.random() * words.length);
+    let charIndex = 0;
+    let isDeleting = false;
+
+    function typeEffect() {
+      const currentWord = words[wordIndex];
+      if (isDeleting) {
+        typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      let typeSpeed = isDeleting ? 40 : 90;
+
+      if (!isDeleting && charIndex === currentWord.length) {
+        typeSpeed = 2200;
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        wordIndex = (wordIndex + 1) % words.length;
+        typeSpeed = 400;
+      }
+
+      setTimeout(typeEffect, typeSpeed);
+    }
+    typeEffect();
+
+    // --- Precise Real-Time Live Age Counter ---
+    const birthDate = new Date('2010-10-22T00:00:00');
+    function updateLiveAge() {
+      const now = new Date();
+      const diffInMs = now - birthDate;
+      const ageInYears = (diffInMs / (1000 * 60 * 60 * 24 * 365.2425)).toFixed(8);
+      document.getElementById('live-age').innerText = ageInYears;
+    }
+    setInterval(updateLiveAge, 50);
+    updateLiveAge();
+
+    // --- Interactive Custom Cursor ---
+    const cursorDot = document.getElementById('cursor-dot');
+    const cursorOutline = document.getElementById('cursor-outline');
+
+    window.addEventListener('mousemove', (e) => {
+      const posX = e.clientX;
+      const posY = e.clientY;
+
+      cursorDot.style.left = `${posX}px`;
+      cursorDot.style.top = `${posY}px`;
+
+      cursorOutline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+      }, { duration: 500, fill: "forwards" });
+    });
+
+    // --- 3D Interactive Card Tilt Effect ---
+    const cards = document.querySelectorAll('.card-tilt');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+      });
+    });
+
+    // --- Canvas Particle Animation ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let particles = [];
+    const mouse = { x: null, y: null, radius: 150 };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+      }
+
+      draw() {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < mouse.radius) {
+          const angle = Math.atan2(dy, dx);
+          const force = (mouse.radius - distance) / mouse.radius;
+          const moveX = Math.cos(angle) * force * 3;
+          const moveY = Math.sin(angle) * force * 3;
+
+          this.x -= moveX;
+          this.y -= moveY;
+        }
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((width * height) / 12000);
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    function connectParticles() {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          let dx = particles[a].x - particles[b].x;
+          let dy = particles[a].y - particles[b].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 120) {
+            let opacity = 1 - distance / 120;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity * 0.15})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      connectParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
