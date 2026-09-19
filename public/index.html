@@ -312,8 +312,8 @@
   <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
 
   <!-- Dynamic Bright Ambient Light Orbs -->
-  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
-  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-transform ease-out"></div>
+  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-transform ease-out"></div>
 
   <!-- Content Container -->
   <div class="page-content relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center min-h-screen justify-between">
@@ -743,39 +743,82 @@
       });
     });
 
-    // --- Canvas Particle Animation ---
+    // --- Canvas Interactive Particle & Light Orbs System ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
 
     let width, height;
     let particles = [];
-    const mouse = { x: null, y: null, radius: 150 };
+    const mouse = { x: null, y: null, radius: 140 };
 
     window.addEventListener('mousemove', (e) => {
-      mouse.x = e.x;
-      mouse.y = e.y;
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.x = null;
+      mouse.y = null;
     });
 
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
+      initParticles();
     }
     window.addEventListener('resize', resize);
-    resize();
+
+    // Get pixel coordinates spelling "KL"
+    function getKLPoints() {
+      const offCanvas = document.createElement('canvas');
+      const offCtx = offCanvas.getContext('2d');
+      offCanvas.width = width;
+      offCanvas.height = height;
+
+      const fontSize = Math.min(width * 0.45, height * 0.45);
+      offCtx.fillStyle = 'white';
+      offCtx.font = `bold ${fontSize}px "Space Grotesk", sans-serif`;
+      offCtx.textAlign = 'center';
+      offCtx.textBaseline = 'middle';
+      offCtx.fillText('KL', width / 2, height / 2.3);
+
+      const imgData = offCtx.getImageData(0, 0, width, height).data;
+      const points = [];
+      const step = Math.max(3, Math.floor(Math.sqrt((width * height) / 12000)));
+
+      for (let y = 0; y < height; y += step) {
+        for (let x = 0; x < width; x += step) {
+          const alpha = imgData[(y * width + x) * 4 + 3];
+          if (alpha > 128) {
+            points.push({ x, y });
+          }
+        }
+      }
+      
+      // Shuffle points so distribution is seamless
+      for (let i = points.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [points[i], points[j]] = [points[j], points[i]];
+      }
+
+      return points;
+    }
 
     class Particle {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
+      constructor(baseX, baseY) {
+        this.baseX = baseX;
+        this.baseY = baseY;
+        this.x = baseX + (Math.random() - 0.5) * 80;
+        this.y = baseY + (Math.random() - 0.5) * 80;
         this.size = Math.random() * 2 + 1;
-        this.baseX = this.x;
-        this.baseY = this.y;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
+        this.vx = 0;
+        this.vy = 0;
+        this.friction = 0.88; // Friction for smooth deceleration
+        this.ease = 0.025;   // Slow, elegant return speed
       }
 
       draw() {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.75)';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.closePath();
@@ -783,47 +826,61 @@
       }
 
       update() {
+        // Disruption from mouse cursor
+        if (mouse.x !== null && mouse.y !== null) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < mouse.radius) {
+            const angle = Math.atan2(dy, dx);
+            const force = (mouse.radius - distance) / mouse.radius;
+            const pushX = Math.cos(angle) * force * 10;
+            const pushY = Math.sin(angle) * force * 10;
+
+            this.vx -= pushX;
+            this.vy -= pushY;
+          }
+        }
+
+        // Slow & gentle return back to "KL" base position
+        let homeDx = this.baseX - this.x;
+        let homeDy = this.baseY - this.y;
+
+        this.vx += homeDx * this.ease;
+        this.vy += homeDy * this.ease;
+
+        this.vx *= this.friction;
+        this.vy *= this.friction;
+
         this.x += this.vx;
         this.y += this.vy;
-
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < mouse.radius) {
-          const angle = Math.atan2(dy, dx);
-          const force = (mouse.radius - distance) / mouse.radius;
-          const moveX = Math.cos(angle) * force * 3;
-          const moveY = Math.sin(angle) * force * 3;
-
-          this.x -= moveX;
-          this.y -= moveY;
-        }
       }
     }
 
     function initParticles() {
       particles = [];
-      const count = Math.floor((width * height) / 12000);
+      const klPoints = getKLPoints();
+      if (klPoints.length === 0) return;
+
+      const count = Math.min(klPoints.length, Math.floor((width * height) / 2200));
       for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
+        const pt = klPoints[i % klPoints.length];
+        particles.push(new Particle(pt.x, pt.y));
       }
     }
-    initParticles();
 
     function connectParticles() {
+      const maxDistance = 45;
       for (let a = 0; a < particles.length; a++) {
-        for (let b = a; b < particles.length; b++) {
+        for (let b = a + 1; b < particles.length; b++) {
           let dx = particles[a].x - particles[b].x;
           let dy = particles[a].y - particles[b].y;
           let distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 120) {
-            let opacity = 1 - distance / 120;
-            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity * 0.15})`;
+          if (distance < maxDistance) {
+            let opacity = (1 - distance / maxDistance) * 0.25;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(particles[a].x, particles[a].y);
@@ -834,6 +891,50 @@
       }
     }
 
+    // Interactive Displacement & Slow Return for Ambient Light Orbs
+    let orbLeftDisplace = { x: 0, y: 0 };
+    let orbRightDisplace = { x: 0, y: 0 };
+
+    function updateLightOrbs() {
+      if (!orbLeft || !orbRight) return;
+
+      const orbs = [
+        { elem: orbLeft, current: orbLeftDisplace },
+        { elem: orbRight, current: orbRightDisplace }
+      ];
+
+      orbs.forEach(orb => {
+        let targetX = 0;
+        let targetY = 0;
+
+        if (mouse.x !== null && mouse.y !== null) {
+          const rect = orb.elem.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          let dx = mouse.x - centerX;
+          let dy = mouse.y - centerY;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+          let triggerDist = 380; // Disruption sensitivity range
+
+          if (dist < triggerDist) {
+            let force = (triggerDist - dist) / triggerDist;
+            let angle = Math.atan2(dy, dx);
+            targetX = -Math.cos(angle) * force * 140;
+            targetY = -Math.sin(angle) * force * 140;
+          }
+        }
+
+        // Smoothly ease displacement towards target (slow return when mouse leaves/stops)
+        orb.current.x += (targetX - orb.current.x) * 0.04;
+        orb.current.y += (targetY - orb.current.y) * 0.04;
+
+        orb.elem.style.transform = `translate(${orb.current.x}px, ${orb.current.y}px)`;
+      });
+    }
+
+    // Animation Loop
+    resize();
     function animate() {
       ctx.clearRect(0, 0, width, height);
       particles.forEach(p => {
@@ -841,6 +942,7 @@
         p.draw();
       });
       connectParticles();
+      updateLightOrbs();
       requestAnimationFrame(animate);
     }
     animate();
