@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en" class="dark scroll-smooth">
 <head>
@@ -124,13 +123,12 @@
       100% { background-position: -200% center; }
     }
 
-    /* Expanded Keyframes for Solver (spread out rainbow) */
     @keyframes shiftGradSpread {
       0% { background-position: 0% center; }
       100% { background-position: -500% center; }
     }
 
-    /* 1. SVT Match (Pink #F7CAC9 to Blue #92A8D1) */
+    /* 1. SVT Match */
     .moving-grad-svt-text {
       background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
       background-size: 200% auto;
@@ -144,7 +142,7 @@
       animation: shiftGrad 4s linear infinite;
     }
 
-    /* 2. kTown (Lighter Soft Neon: #70e7f6 to #c084fc to #fbcfe8) */
+    /* 2. kTown */
     .moving-grad-ktown-text {
       background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
       background-size: 200% auto;
@@ -158,7 +156,7 @@
       animation: shiftGrad 4s linear infinite;
     }
 
-    /* 3. DropSpot (#92b8f6 to #fff7d7) */
+    /* 3. DropSpot */
     .moving-grad-dropspot-text {
       background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
       background-size: 200% auto;
@@ -172,7 +170,7 @@
       animation: shiftGrad 4s linear infinite;
     }
 
-    /* 4. GTEYC SU (#95f4ee to #eafffb) */
+    /* 4. GTEYC SU */
     .moving-grad-gteyc-text {
       background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
       background-size: 200% auto;
@@ -186,7 +184,7 @@
       animation: shiftGrad 4s linear infinite;
     }
 
-    /* 5. Solver (Spread Out Soft Pastel Rainbow) */
+    /* 5. Solver */
     .moving-grad-solver-text {
       background-image: linear-gradient(
         to right,
@@ -220,10 +218,10 @@
 
     /* Glassmorphism Card Style */
     .glass-card {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -257,7 +255,7 @@
       transition: all 0.15s ease-out;
     }
 
-    /* Glow utility (Borders and Shadows only, no background gradients) */
+    /* Glow utility */
     .glow-cyan:hover {
       box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
       border-color: rgba(6, 182, 212, 0.6);
@@ -312,8 +310,8 @@
   <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
 
   <!-- Dynamic Bright Ambient Light Orbs -->
-  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-transform ease-out"></div>
-  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-transform ease-out"></div>
+  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
 
   <!-- Content Container -->
   <div class="page-content relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center min-h-screen justify-between">
@@ -352,7 +350,7 @@
             </div>
             <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
           </div>
-          <div class="bg-slate-900/80 border border-slate-800 px-6 py-3 rounded-xl text-center shadow-inner">
+          <div class="bg-slate-900/40 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner backdrop-blur-sm">
             <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-400 tracking-wider">15.00000000</span>
             <span class="text-xs text-slate-500 block font-mono">YEARS OLD</span>
           </div>
@@ -376,7 +374,7 @@
              class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
                   <i class="fa-brands fa-instagram"></i>
                 </div>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-insta transition-colors"></i>
@@ -395,7 +393,7 @@
              class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
                   <i class="fa-brands fa-github"></i>
                 </div>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
@@ -414,7 +412,7 @@
              class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
                   <i class="fa-solid fa-keyboard"></i>
                 </div>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-monkeytype transition-colors"></i>
@@ -555,11 +553,11 @@
               <span>Get In Touch</span>
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
-              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group">
+              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group backdrop-blur-sm cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam100@gmail.com</span>
               </a>
-              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group">
+              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group backdrop-blur-sm cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam200@gmail.com</span>
               </a>
@@ -575,11 +573,9 @@
       <div>
         Made with 💖 by Kurtis Lam
       </div>
-      <div class="flex items-center gap-4">
-        <a href="https://www.instagram.com/kurtis_1022/" target="_blank" class="hover:text-slate-300 transition-colors">IG</a>
-        <a href="https://github.com/Kurtis-Lam" target="_blank" class="hover:text-slate-300 transition-colors">GH</a>
-        <a href="https://monkeytype.com/profile/kurtislam" target="_blank" class="hover:text-slate-300 transition-colors">MT</a>
-        <a href="mailto:kurtislam100@gmail.com" class="hover:text-slate-300 transition-colors">MAIL</a>
+      <div class="flex items-center gap-2">
+        <i class="fa-regular fa-copyright text-slate-400"></i>
+        <span>Kurtis Lam 2026</span>
       </div>
     </footer>
 
@@ -588,7 +584,17 @@
   <!-- JavaScript Logic -->
   <script>
     // --- Page Initialization & Fade-In Reveal ---
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
+    // Reset window scroll position to the top immediately
+    window.scrollTo(0, 0);
+
     document.addEventListener('DOMContentLoaded', () => {
+      window.scrollTo(0, 0);
+      
+      // --- Your existing JavaScript logic below ---
       let pageRevealed = false;
 
       const observerOptions = {
@@ -743,209 +749,343 @@
       });
     });
 
-    // --- Canvas Interactive Particle & Light Orbs System ---
+    // --- Canvas Star Animation: ambient stars + "KL" star formation ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
 
+    const KL = {
+      heightRatio: 0.6,     // KL height as a fraction of the viewport height
+      centerX: 0.5,         // KL center as a fraction of viewport width
+      centerY: 0.5,         // KL center as a fraction of viewport height
+      spacing: 11,          // rough px between stars inside the letters
+      minStars: 350,
+      maxStars: 2200,       // safety cap
+      assembleOnLoad: true  
+    };
+
+    const TAU = Math.PI * 2;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     let width, height;
-    let particles = [];
-    const mouse = { x: null, y: null, radius: 140 };
+    let ambientStars = [];
+    let letterStars = [];
+    let letterLinkDist = 18;
+    const mouse = { x: -9999, y: -9999, radius: 90 };
 
     window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+      mouse.x = e.x;
+      mouse.y = e.y;
     });
-
-    window.addEventListener('mouseleave', () => {
-      mouse.x = null;
-      mouse.y = null;
+    document.documentElement.addEventListener('mouseleave', () => {
+      mouse.x = mouse.y = -9999;
     });
 
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
-      initParticles();
     }
-    window.addEventListener('resize', resize);
+    resize();
 
-    // Get pixel coordinates spelling "KL"
-    function getKLPoints() {
-      const offCanvas = document.createElement('canvas');
-      const offCtx = offCanvas.getContext('2d');
-      offCanvas.width = width;
-      offCanvas.height = height;
+    let lastW = width, lastH = height, resizeTimer;
+    window.addEventListener('resize', () => {
+      resize();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (width !== lastW || Math.abs(height - lastH) > 100) {
+          lastW = width;
+          lastH = height;
+          initParticles(false);
+        }
+      }, 200);
+    });
 
-      const fontSize = Math.min(width * 0.45, height * 0.45);
-      offCtx.fillStyle = 'white';
-      offCtx.font = `bold ${fontSize}px "Space Grotesk", sans-serif`;
-      offCtx.textAlign = 'center';
-      offCtx.textBaseline = 'middle';
-      offCtx.fillText('KL', width / 2, height / 2.3);
+    // ---- Build the KL shape ----
+    function buildKLPoints() {
+      const H = Math.min(height * KL.heightRatio, (width * 0.9) / 1.24);
+      const S = H * 0.17;
+      const T = S * 1.15;
+      const Wk = H * 0.62;
+      const Wl = H * 0.5;
+      const gap = H * 0.12;
+      const totalW = Wk + gap + Wl;
+      const pad = 4;
+      const cw = Math.ceil(totalW) + pad * 2;
+      const ch = Math.ceil(H) + pad * 2;
 
-      const imgData = offCtx.getImageData(0, 0, width, height).data;
-      const points = [];
-      const step = Math.max(3, Math.floor(Math.sqrt((width * height) / 12000)));
+      const off = document.createElement('canvas');
+      off.width = cw;
+      off.height = ch;
+      const c = off.getContext('2d');
+      c.fillStyle = '#fff';
+      c.translate(pad, pad);
 
-      for (let y = 0; y < height; y += step) {
-        for (let x = 0; x < width; x += step) {
-          const alpha = imgData[(y * width + x) * 4 + 3];
-          if (alpha > 128) {
-            points.push({ x, y });
-          }
+      c.fillRect(0, 0, S, H);
+      const x2 = S * 0.35, mid = H / 2;
+      c.beginPath();
+      c.moveTo(Wk - T, 0); c.lineTo(Wk, 0); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
+      c.closePath();
+      c.fill();
+      c.beginPath();
+      c.moveTo(Wk - T, H); c.lineTo(Wk, H); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
+      c.closePath();
+      c.fill();
+
+      const lx = Wk + gap;
+      c.fillRect(lx, 0, S, H);
+      c.fillRect(lx, H - S * 0.9, Wl, S * 0.9);
+
+      const data = c.getImageData(0, 0, cw, ch).data;
+      const filled = [];
+      for (let y = 0; y < ch; y++) {
+        for (let x = 0; x < cw; x++) {
+          if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
         }
       }
-      
-      // Shuffle points so distribution is seamless
-      for (let i = points.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [points[i], points[j]] = [points[j], points[i]];
+      const area = filled.length / 2;
+
+      let target = Math.round(area / (KL.spacing * KL.spacing));
+      target = Math.max(KL.minStars, Math.min(KL.maxStars, target));
+      const avgSpacing = Math.sqrt(area / target);
+
+      const minDist = avgSpacing * 0.55;
+      const minDist2 = minDist * minDist;
+      const cell = minDist / Math.SQRT2;
+      const gw = Math.ceil(cw / cell) + 1;
+      const gh = Math.ceil(ch / cell) + 1;
+      const grid = new Int32Array(gw * gh).fill(-1);
+      const picked = [];
+      const originX = width * KL.centerX - totalW / 2 - pad;
+      const originY = height * KL.centerY - H / 2 - pad;
+
+      let attempts = 0;
+      while (picked.length / 2 < target && attempts < target * 40) {
+        attempts++;
+        const i = (Math.random() * area) | 0;
+        const px = filled[i * 2] + Math.random();
+        const py = filled[i * 2 + 1] + Math.random();
+        const gx = (px / cell) | 0;
+        const gy = (py / cell) | 0;
+
+        let ok = true;
+        for (let yy = Math.max(0, gy - 2); yy <= Math.min(gh - 1, gy + 2) && ok; yy++) {
+          for (let xx = Math.max(0, gx - 2); xx <= Math.min(gw - 1, gx + 2); xx++) {
+            const j = grid[yy * gw + xx];
+            if (j !== -1) {
+              const dx = picked[j * 2] - px;
+              const dy = picked[j * 2 + 1] - py;
+              if (dx * dx + dy * dy < minDist2) { ok = false; break; }
+            }
+          }
+        }
+        if (ok) {
+          grid[gy * gw + gx] = picked.length / 2;
+          picked.push(px, py);
+        }
       }
 
-      return points;
+      const points = [];
+      for (let k = 0; k < picked.length; k += 2) {
+        points.push(picked[k] + originX, picked[k + 1] + originY);
+      }
+      return { points, avgSpacing };
     }
 
-    class Particle {
-      constructor(baseX, baseY) {
-        this.baseX = baseX;
-        this.baseY = baseY;
-        this.x = baseX + (Math.random() - 0.5) * 80;
-        this.y = baseY + (Math.random() - 0.5) * 80;
+    // ---- Stars ----
+    class AmbientStar {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
         this.size = Math.random() * 2 + 1;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+      }
+
+      update(dt) {
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        const dx = mouse.x - this.x;
+        const dy = mouse.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < mouse.radius) {
+          const angle = Math.atan2(dy, dx);
+          const force = (mouse.radius - distance) / mouse.radius;
+          this.x -= Math.cos(angle) * force * 1.2 * dt;
+          this.y -= Math.sin(angle) * force * 1.2 * dt;
+        }
+      }
+    }
+
+    // Stars that form KL: uses exponential monotonic decay to rapidly form 'KL'
+    // with zero overshoot/oscillation, then slowly floats in place.
+    class LetterStar {
+      constructor(hx, hy, scatter) {
+        this.hx = hx;
+        this.hy = hy;
+
+        // Initialize scattered positions across the full viewport on load
+        this.x = scatter ? Math.random() * width : hx;
+        this.y = scatter ? Math.random() * height : hy;
+
         this.vx = 0;
         this.vy = 0;
-        this.friction = 0.88; // Friction for smooth deceleration
-        this.ease = 0.025;   // Slow, elegant return speed
+        this.size = Math.random() * 0.9 + 0.8;
+
+        // Micro slow floating phase parameters
+        this.floatPhaseX = Math.random() * TAU;
+        this.floatPhaseY = Math.random() * TAU;
+        this.floatSpeedX = 0.008 + Math.random() * 0.012;
+        this.floatSpeedY = 0.006 + Math.random() * 0.010;
+        this.floatRadius = 1.2 + Math.random() * 1.8;
       }
 
-      draw() {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.75)';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.fill();
-      }
+      update(dt) {
+        // 1. Slow, subtle floating offset around home coordinate
+        this.floatPhaseX += this.floatSpeedX * dt;
+        this.floatPhaseY += this.floatSpeedY * dt;
+        const targetX = this.hx + Math.sin(this.floatPhaseX) * this.floatRadius;
+        const targetY = this.hy + Math.cos(this.floatPhaseY) * this.floatRadius;
 
-      update() {
-        // Disruption from mouse cursor
-        if (mouse.x !== null && mouse.y !== null) {
-          let dx = mouse.x - this.x;
-          let dy = mouse.y - this.y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+        // 2. Mouse push dynamics (smooth impulse displacement)
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < mouse.radius) {
-            const angle = Math.atan2(dy, dx);
-            const force = (mouse.radius - distance) / mouse.radius;
-            const pushX = Math.cos(angle) * force * 10;
-            const pushY = Math.sin(angle) * force * 10;
-
-            this.vx -= pushX;
-            this.vy -= pushY;
-          }
+        if (dist < mouse.radius && dist > 0.001) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          const push = force * force * 0.35 * dt;
+          this.vx += (dx / dist) * push;
+          this.vy += (dy / dist) * push;
         }
 
-        // Slow & gentle return back to "KL" base position
-        let homeDx = this.baseX - this.x;
-        let homeDy = this.baseY - this.y;
+        // Apply friction damping for mouse impulse
+        const damping = Math.pow(0.88, dt);
+        this.vx *= damping;
+        this.vy *= damping;
 
-        this.vx += homeDx * this.ease;
-        this.vy += homeDy * this.ease;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
 
-        this.vx *= this.friction;
-        this.vy *= this.friction;
-
-        this.x += this.vx;
-        this.y += this.vy;
+        // 3. Monotonic Exponential Assembly Decay:
+        // Guaranteed strictly non-oscillatory approach toward (targetX, targetY).
+        // Rapid initial convergence rate (~0.085/step) ensures fast KL formation without overshoot.
+        const pullFactor = 1 - Math.pow(1 - 0.085, dt);
+        this.x += (targetX - this.x) * pullFactor;
+        this.y += (targetY - this.y) * pullFactor;
       }
     }
 
-    function initParticles() {
-      particles = [];
-      const klPoints = getKLPoints();
-      if (klPoints.length === 0) return;
-
-      const count = Math.min(klPoints.length, Math.floor((width * height) / 2200));
+    function initParticles(assemble) {
+      ambientStars = [];
+      const count = Math.floor((width * height) / 12000);
       for (let i = 0; i < count; i++) {
-        const pt = klPoints[i % klPoints.length];
-        particles.push(new Particle(pt.x, pt.y));
+        ambientStars.push(new AmbientStar());
+      }
+
+      const { points, avgSpacing } = buildKLPoints();
+      letterLinkDist = avgSpacing * 1.35;
+      letterStars = [];
+      for (let i = 0; i < points.length; i += 2) {
+        letterStars.push(new LetterStar(points[i], points[i + 1], assemble));
       }
     }
+    initParticles(KL.assembleOnLoad && !prefersReducedMotion);
 
-    function connectParticles() {
-      const maxDistance = 45;
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a + 1; b < particles.length; b++) {
-          let dx = particles[a].x - particles[b].x;
-          let dy = particles[a].y - particles[b].y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
+    // ---- Drawing ----
+    function drawStars(list, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        ctx.moveTo(p.x + p.size, p.y);
+        ctx.arc(p.x, p.y, p.size, 0, TAU);
+      }
+      ctx.fill();
+    }
 
-          if (distance < maxDistance) {
-            let opacity = (1 - distance / maxDistance) * 0.25;
-            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
+    const LINK_BUCKETS = 4;
+    function connectGroup(list, maxDist, maxAlpha) {
+      const n = list.length;
+      if (n < 2) return;
+
+      const gw = Math.ceil(width / maxDist) + 3;
+      const gh = Math.ceil(height / maxDist) + 3;
+      const head = new Int32Array(gw * gh).fill(-1);
+      const next = new Int32Array(n);
+      const cellX = new Int32Array(n);
+      const cellY = new Int32Array(n);
+
+      for (let i = 0; i < n; i++) {
+        const p = list[i];
+        const gx = Math.min(gw - 1, Math.max(0, ((p.x / maxDist) | 0) + 1));
+        const gy = Math.min(gh - 1, Math.max(0, ((p.y / maxDist) | 0) + 1));
+        cellX[i] = gx;
+        cellY[i] = gy;
+        next[i] = head[gy * gw + gx];
+        head[gy * gw + gx] = i;
+      }
+
+      const max2 = maxDist * maxDist;
+      const segs = [];
+      for (let b = 0; b < LINK_BUCKETS; b++) segs.push([]);
+
+      for (let i = 0; i < n; i++) {
+        const a = list[i];
+        for (let yy = Math.max(0, cellY[i] - 1); yy <= Math.min(gh - 1, cellY[i] + 1); yy++) {
+          for (let xx = Math.max(0, cellX[i] - 1); xx <= Math.min(gw - 1, cellX[i] + 1); xx++) {
+            for (let j = head[yy * gw + xx]; j !== -1; j = next[j]) {
+              if (j <= i) continue;
+              const b = list[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const d2 = dx * dx + dy * dy;
+              if (d2 < max2) {
+                const t = 1 - Math.sqrt(d2) / maxDist;
+                const bucket = Math.min(LINK_BUCKETS - 1, (t * LINK_BUCKETS) | 0);
+                segs[bucket].push(a.x, a.y, b.x, b.y);
+              }
+            }
           }
         }
       }
-    }
 
-    // Interactive Displacement & Slow Return for Ambient Light Orbs
-    let orbLeftDisplace = { x: 0, y: 0 };
-    let orbRightDisplace = { x: 0, y: 0 };
-
-    function updateLightOrbs() {
-      if (!orbLeft || !orbRight) return;
-
-      const orbs = [
-        { elem: orbLeft, current: orbLeftDisplace },
-        { elem: orbRight, current: orbRightDisplace }
-      ];
-
-      orbs.forEach(orb => {
-        let targetX = 0;
-        let targetY = 0;
-
-        if (mouse.x !== null && mouse.y !== null) {
-          const rect = orb.elem.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-
-          let dx = mouse.x - centerX;
-          let dy = mouse.y - centerY;
-          let dist = Math.sqrt(dx * dx + dy * dy);
-          let triggerDist = 380; // Disruption sensitivity range
-
-          if (dist < triggerDist) {
-            let force = (triggerDist - dist) / triggerDist;
-            let angle = Math.atan2(dy, dx);
-            targetX = -Math.cos(angle) * force * 140;
-            targetY = -Math.sin(angle) * force * 140;
-          }
+      ctx.lineWidth = 1;
+      for (let b = 0; b < LINK_BUCKETS; b++) {
+        const s = segs[b];
+        if (!s.length) continue;
+        ctx.strokeStyle = `rgba(56, 189, 248, ${maxAlpha * (b + 0.5) / LINK_BUCKETS})`;
+        ctx.beginPath();
+        for (let k = 0; k < s.length; k += 4) {
+          ctx.moveTo(s[k], s[k + 1]);
+          ctx.lineTo(s[k + 2], s[k + 3]);
         }
-
-        // Smoothly ease displacement towards target (slow return when mouse leaves/stops)
-        orb.current.x += (targetX - orb.current.x) * 0.04;
-        orb.current.y += (targetY - orb.current.y) * 0.04;
-
-        orb.elem.style.transform = `translate(${orb.current.x}px, ${orb.current.y}px)`;
-      });
+        ctx.stroke();
+      }
     }
 
-    // Animation Loop
-    resize();
-    function animate() {
+    let lastTime = performance.now();
+    function animate(now) {
+      const dt = Math.max(0, Math.min(((now || lastTime) - lastTime) / 16.667, 3));
+      lastTime = now || lastTime;
+
       ctx.clearRect(0, 0, width, height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      connectParticles();
-      updateLightOrbs();
+
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt);
+
+      drawStars(ambientStars, 'rgba(56, 189, 248, 0.4)');
+      drawStars(letterStars, 'rgba(56, 189, 248, 0.65)');
+
+      connectGroup(ambientStars, 120, 0.15);
+      connectGroup(letterStars, letterLinkDist, 0.22);
+
       requestAnimationFrame(animate);
     }
-    animate();
+    requestAnimationFrame(animate);
   </script>
 </body>
 </html>
