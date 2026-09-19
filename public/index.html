@@ -103,7 +103,7 @@
       background: #3b82f6;
     }
 
-    /* Custom Animated Gradient Text */
+    /* Custom Animated Gradient Text for Header */
     .animated-gradient-text {
       background: linear-gradient(-45deg, #00f2fe, #4facfe, #00c6ff, #0072ff, #a855f7);
       background-size: 300% 300%;
@@ -116,6 +116,106 @@
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
+    }
+
+    /* ---------- Moving Gradient Animations for Cards & Badges ---------- */
+    @keyframes shiftGrad {
+      0% { background-position: 0% center; }
+      100% { background-position: -200% center; }
+    }
+
+    /* Expanded Keyframes for Solver (spread out rainbow) */
+    @keyframes shiftGradSpread {
+      0% { background-position: 0% center; }
+      100% { background-position: -500% center; }
+    }
+
+    /* 1. SVT Match (Pink #F7CAC9 to Blue #92A8D1) */
+    .moving-grad-svt-text {
+      background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s linear infinite;
+    }
+    .moving-grad-svt-bg {
+      background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
+      background-size: 200% auto;
+      animation: shiftGrad 4s linear infinite;
+    }
+
+    /* 2. kTown (Lighter Soft Neon: #70e7f6 to #c084fc to #fbcfe8) */
+    .moving-grad-ktown-text {
+      background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s linear infinite;
+    }
+    .moving-grad-ktown-bg {
+      background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
+      background-size: 200% auto;
+      animation: shiftGrad 4s linear infinite;
+    }
+
+    /* 3. DropSpot (#92b8f6 to #fff7d7) */
+    .moving-grad-dropspot-text {
+      background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s linear infinite;
+    }
+    .moving-grad-dropspot-bg {
+      background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
+      background-size: 200% auto;
+      animation: shiftGrad 4s linear infinite;
+    }
+
+    /* 4. GTEYC SU (#95f4ee to #eafffb) */
+    .moving-grad-gteyc-text {
+      background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s linear infinite;
+    }
+    .moving-grad-gteyc-bg {
+      background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
+      background-size: 200% auto;
+      animation: shiftGrad 4s linear infinite;
+    }
+
+    /* 5. Solver (Spread Out Soft Pastel Rainbow) */
+    .moving-grad-solver-text {
+      background-image: linear-gradient(
+        to right,
+        #ff9999 0%,
+        #ffc078 16%,
+        #fef08a 33%,
+        #86efac 50%,
+        #93c5fd 66%,
+        #d8b4fe 83%,
+        #ff9999 100%
+      );
+      background-size: 500% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGradSpread 10s linear infinite;
+    }
+    .moving-grad-solver-bg {
+      background-image: linear-gradient(
+        to right,
+        #ff9999 0%,
+        #ffc078 16%,
+        #fef08a 33%,
+        #86efac 50%,
+        #93c5fd 66%,
+        #d8b4fe 83%,
+        #ff9999 100%
+      );
+      background-size: 500% auto;
+      animation: shiftGradSpread 10s linear infinite;
     }
 
     /* Glassmorphism Card Style */
@@ -157,7 +257,7 @@
       transition: all 0.15s ease-out;
     }
 
-    /* Glow utility */
+    /* Glow utility (Borders and Shadows only, no background gradients) */
     .glow-cyan:hover {
       box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
       border-color: rgba(6, 182, 212, 0.6);
@@ -170,25 +270,21 @@
       box-shadow: 0 0 25px rgba(225, 48, 108, 0.4);
       border-color: rgba(225, 48, 108, 0.6);
     }
-    .glow-emerald:hover {
-      box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
-      border-color: rgba(16, 185, 129, 0.6);
-    }
-    .glow-purple:hover {
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
-      border-color: rgba(168, 85, 247, 0.6);
-    }
     .glow-gteyc:hover {
-      box-shadow: 0 0 25px rgba(147, 242, 236, 0.4);
-      border-color: rgba(147, 242, 236, 0.6);
+      box-shadow: 0 0 25px rgba(149, 244, 238, 0.4);
+      border-color: rgba(149, 244, 238, 0.6);
     }
     .glow-ktown:hover {
-      box-shadow: 0 0 25px rgba(141, 63, 235, 0.4);
-      border-color: rgba(246, 96, 196, 0.6);
+      box-shadow: 0 0 25px rgba(192, 132, 252, 0.4);
+      border-color: rgba(112, 231, 246, 0.6);
     }
     .glow-svt:hover {
       box-shadow: 0 0 25px rgba(247, 202, 201, 0.4);
-      border-color: rgba(146, 168, 209, 0.6);
+      border-color: rgba(247, 202, 201, 0.6);
+    }
+    .glow-dropspot:hover {
+      box-shadow: 0 0 25px rgba(146, 184, 246, 0.4);
+      border-color: rgba(146, 184, 246, 0.6);
     }
 
     /* Background Canvas */
@@ -340,7 +436,7 @@
         <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
           <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3">
             <i class="fa-solid fa-rocket text-cyan-400"></i>
-            <span>My Currently active projects</span>
+            <span>My Currently Active Projects</span>
           </h2>
           <span class="text-xs font-mono text-slate-400">Deployed Applications</span>
         </div>
@@ -352,14 +448,14 @@
              class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono border font-semibold" style="background-color: rgba(147, 242, 236, 0.15); color: #93f2ec; border-color: rgba(147, 242, 236, 0.3);">SU WEBPAGE</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#93f2ec] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#95f4ee] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#93f2ec] transition-colors">GTEYC 2627 SU</h3>
+              <h3 class="text-xl font-bold mb-2 moving-grad-gteyc-text">GTEYC 2627 SU</h3>
               <p class="text-xs text-slate-400 line-clamp-2">Official Aurora Student Union portal developed for GTEYC 2627.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-              <span style="color: #93f2ec;" class="font-semibold">gtcsu-aurora.web.app</span>
+              <span class="moving-grad-gteyc-text font-semibold">gtcsu-aurora.web.app</span>
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
           </a>
@@ -369,14 +465,14 @@
              class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-900 shadow-sm" style="background: linear-gradient(135deg, #F7CAC9 0%, #92A8D1 100%);">FIRST GAME</span>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#92A8D1] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#F7CAC9] transition-colors">SVT Match</h3>
+              <h3 class="text-xl font-bold mb-2 moving-grad-svt-text">SVT Match</h3>
               <p class="text-xs text-slate-400 line-clamp-2">An interactive SEVENTEEN-themed card matching game created as my first game project.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-              <span class="font-semibold" style="background: linear-gradient(135deg, #F7CAC9 0%, #92A8D1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">svt-match.web.app</span>
+              <span class="moving-grad-svt-text font-semibold">svt-match.web.app</span>
               <i class="fa-solid fa-gamepad"></i>
             </div>
           </a>
@@ -386,31 +482,31 @@
              class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm" style="background: linear-gradient(90deg, #31deef, #8d3feb, #f660c4);">PRODUCTIVITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#f660c4] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#fbcfe8] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#31deef] transition-colors">kTown</h3>
+              <h3 class="text-xl font-bold mb-2 moving-grad-ktown-text">kTown</h3>
               <p class="text-xs text-slate-400 line-clamp-2">Study application crafted for focus, tracking, and learning workflows.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-              <span class="font-semibold" style="background: linear-gradient(90deg, #31deef, #8d3feb, #f660c4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">ktown-45.web.app</span>
+              <span class="moving-grad-ktown-text font-semibold">ktown-45.web.app</span>
               <i class="fa-solid fa-book-open"></i>
             </div>
           </a>
 
-          <!-- Project 4: dropspot (Reversed Gradient: Blue -> Yellow) -->
+          <!-- Project 4: dropspot -->
           <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm" style="background: linear-gradient(90deg, #92b8f6, #fff7d7);">UTILITY</span>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#fff7d7] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-[#92b8f6] transition-colors">DropSpot</h3>
+              <h3 class="text-xl font-bold mb-2 moving-grad-dropspot-text">DropSpot</h3>
               <p class="text-xs text-slate-400 line-clamp-2">Fast, light-weight web-based data &amp; file transfer application.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-              <span class="font-semibold" style="background: linear-gradient(90deg, #92b8f6, #fff7d7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">dropspot-0.web.app</span>
+              <span class="moving-grad-dropspot-text font-semibold">dropspot-0.web.app</span>
               <i class="fa-solid fa-arrow-right-arrow-left"></i>
             </div>
           </a>
@@ -435,14 +531,14 @@
              class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-mono border border-cyan-500/30">SOLVER</span>
+                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">Colordle Solver</h3>
+              <h3 class="text-xl font-bold mb-2 moving-grad-solver-text">Colordle Solver</h3>
               <p class="text-xs text-slate-400 line-clamp-2">Automated puzzle solver application designed for Colordle.</p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
-              <span class="text-cyan-400">kurtis-lam.web.app/colordle-solver</span>
+              <span class="moving-grad-solver-text font-semibold">kurtis-lam.web.app/colordle-solver</span>
               <i class="fa-solid fa-palette"></i>
             </div>
           </a>
