@@ -98,19 +98,27 @@
       background: #3b82f6;
     }
 
-    /* Animated Gradient Text */
+    /* Animated Rainbow Gradient Text (Red -> Orange -> Yellow -> Green -> Blue -> Purple -> Red) */
     .animated-gradient-text {
-      background: linear-gradient(-45deg, #00f2fe, #4facfe, #00c6ff, #0072ff, #a855f7);
-      background-size: 300% 300%;
+      background: linear-gradient(
+        to right,
+        #ff0000,
+        #ff7f00,
+        #ffff00,
+        #00ff00,
+        #0000ff,
+        #8b00ff,
+        #ff0000
+      );
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: gradientShift 6s ease infinite;
+      animation: gradientShift 5s linear infinite;
     }
 
     @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% { background-position: 0% center; }
+      100% { background-position: -200% center; }
     }
 
     /* Glassmorphism Card Style */
@@ -736,36 +744,11 @@
       );
     }
 
-    // Formula B used to assume plain Euclidean distance in sRGB space, but
-    // solving colordle.com's actual scoring data (5 known hex/percent pairs,
-    // residual ~0.00001%) confirms the real formula is:
-    //   closeness% = 100 - deltaE00(target, guess)
-    // i.e. the SAME CIEDE2000 metric as Formula A, just solved for with a
-    // continuous nonlinear least-squares fit directly in Lab space instead
-    // of a quantized RGB grid search. That makes Formula B a precise,
-    // high-resolution solve of the confirmed-correct formula, while Formula A
-    // remains a fast, integer-RGB-quantized approximation of the same thing.
-
-    // Inverse of labF() used by srgbToLab: turns a CIE Lab f(t) value back
-    // into the linear ratio t = (X/Xr), (Y/Yr), or (Z/Zr).
     function labFInverse(t) {
       const t3 = t * t * t;
       return t3 > 0.008856 ? t3 : (t - 16 / 116) / 7.787;
     }
 
-    // How far a raw Lab point falls outside the physically displayable sRGB
-    // gamut (and outside L in [0,100]), as a smooth squared-error penalty.
-    //
-    // This exists because CIEDE2000 is not a true metric outside the valid
-    // Lab->sRGB gamut: with only 3 constraints (red/green/blue closeness),
-    // the 3-equation/3-unknown system can have an "exact" root sitting at an
-    // impossible Lab point (e.g. L > 100), which is not a real color at all.
-    // Without this penalty, Formula B's solver could wander into that
-    // impossible region, converge there with near-zero residual, and get
-    // preferred over the genuine in-gamut answer - then get silently clamped
-    // to something nonsensical like solid white when converted back to RGB.
-    // Adding this penalty to the objective keeps every candidate point
-    // tethered to colors that can actually exist and be pasted into Colordle.
     function gamutPenalty(L, a, b) {
       const fy = (L + 16) / 116;
       const fx = fy + a / 500;
@@ -791,8 +774,6 @@
       if (L < 0) penalty += L * L;
       else if (L > 100) penalty += (L - 100) * (L - 100);
 
-      // Scaled up so any real gamut violation dominates the (typically
-      // single-digit) deltaE residual terms it's added to.
       return penalty * 5000;
     }
 
@@ -803,10 +784,6 @@
         : 1.055 * Math.pow(clamped, 1 / 2.4) - 0.055;
     }
 
-    // CIE Lab -> XYZ (D65) -> linear sRGB -> gamma-encoded sRGB, clamped and
-    // rounded to the nearest displayable 8-bit color. This is the inverse of
-    // srgbToLab() above and is what lets the continuous Lab-space solve below
-    // turn back into an actual hex code.
     function labToSrgb(L, a, b) {
       const fy = (L + 16) / 116;
       const fx = fy + a / 500;
@@ -831,10 +808,6 @@
       return [clamp(r, 0, 255), clamp(g, 0, 255), clamp(bOut, 0, 255)];
     }
 
-    // Generic Nelder-Mead simplex minimizer (derivative-free), used to solve
-    // for the Lab point that satisfies 100 - deltaE00(L,a,b; base_i) = pct_i
-    // for every base primary simultaneously, since CIEDE2000 has no closed-
-    // form inverse.
     function nelderMead(f, x0, options = {}) {
       const n = x0.length;
       const alpha = 1;
@@ -924,10 +897,6 @@
       return Array.from(values).sort((a, b) => a - b);
     }
 
-    // Generic coarse-to-fine grid search over integer RGB space that finds
-    // the color whose distances (in some arbitrary "distance space") to the
-    // base primaries best match a target set of distances. Used by Formula A
-    // below (CIEDE2000 in Lab space, quantized to displayable 8-bit RGB).
     function locateColorGeneric(targetDeltas, baseValues, toSpaceValue, distanceFn) {
       const steps = [64, 16, 4, 1];
       let bestRgb = [0, 0, 0];
@@ -974,28 +943,10 @@
       return { rgb: bestRgb, deltaMap: bestDeltaMap, rmse, lab: bestLab };
     }
 
-    // Formula A: CIEDE2000 distance in CIE Lab space (closeness% = 100 - dE00)
     function locateColorLab(targetDeltas, baseLabs) {
       return locateColorGeneric(targetDeltas, baseLabs, srgbToLab, ciede2000);
     }
 
-    // Formula B: the confirmed real formula (closeness% = 100 - deltaE00),
-    // solved precisely with continuous least-squares in Lab space rather than
-    // a quantized RGB grid search. CIEDE2000's hue/chroma terms make the
-    // error surface non-convex with several local minima, so a bare
-    // Nelder-Mead run from a handful of fixed starting points can get stuck
-    // (e.g. converging on white). To reliably land in the true global basin,
-    // this first does a coarse grid search over Lab space itself (cheap,
-    // since each evaluation is just a few ciede2000 calls), then polishes
-    // that best coarse point with progressively finer Nelder-Mead simplex
-    // runs for high-precision convergence.
-    // `seedLab`, when provided, is Formula A's own solved Lab value. With
-    // only 3 knowns (red/green/blue), the 3-equation/3-unknown CIEDE2000
-    // system can have more than one exact root - two genuinely different
-    // colors can both satisfy all three closeness percentages almost
-    // perfectly. Anchoring the polish near Formula A's answer keeps Formula B
-    // a precise *refinement* of the same real, displayable color instead of
-    // occasionally converging on a different-but-equally-valid alternate root.
     function locateColorLabPrecise(targetDeltas, baseLabs, seedLab) {
       const objective = (point) => {
         let sum = 0;
@@ -1003,9 +954,6 @@
           const diff = ciede2000(point, baseLabs[name]) - targetDeltas[name];
           sum += diff * diff;
         }
-        // Penalize points outside the real, displayable color gamut so the
-        // optimizer can't "cheat" its way to a fake exact root that isn't an
-        // actual color (see gamutPenalty's comment above).
         return sum + gamutPenalty(point[0], point[1], point[2]);
       };
 
@@ -1023,7 +971,6 @@
         return { point, val };
       };
 
-      // Coarse grid over the full Lab gamut to find a good basin from scratch.
       let gridBestPoint = [50, 0, 0];
       let gridBestVal = objective(gridBestPoint);
       for (let L = 0; L <= 100; L += 5) {
@@ -1041,23 +988,12 @@
       let chosen = polish(gridBestPoint);
       if (seedLab) {
         const seedResult = polish(seedLab);
-        // Only defer to the seed-anchored result if it's genuinely at least
-        // as good a fit as the grid-search result. Previously this treated
-        // "both near zero residual" as automatic grounds to prefer the seed,
-        // which let an out-of-gamut fake root (large residual once
-        // gamut-penalized, but ~0 in raw deltaE terms) hijack the answer.
-        // Now that gamutPenalty is baked into both objectives, a non-real
-        // color can no longer masquerade as "near exact", so a plain
-        // lower-value comparison is sufficient and safe.
         if (seedResult.val < chosen.val) {
           chosen = seedResult;
         }
       }
 
       const rgb = labToSrgb(chosen.point[0], chosen.point[1], chosen.point[2]);
-      // Recompute delta/rmse against the *actual* Lab of the rounded, displayable
-      // RGB (rather than the pre-rounding continuous solution) so the numbers
-      // shown match the hex code shown.
       const actualLab = srgbToLab(rgb[0], rgb[1], rgb[2]);
 
       const deltaMap = {};
@@ -1128,8 +1064,6 @@
 
     const BASE_LABS = buildBaseLabs(BASE_COLORS);
 
-    // Grabs the DOM elements for one results panel by ID suffix ("" for
-    // Formula A, "-b" for Formula B) so updateResults can drive either panel.
     function getResultElements(suffix) {
       return {
         colorCircle: document.getElementById(`color-circle${suffix}`),
@@ -1144,9 +1078,6 @@
       };
     }
 
-    // Renders one formula's result into whichever panel `els` points at.
-    // `deltaUnitLabel` and `nearestUnitLabel` let each formula show its own
-    // distance-metric name in the table headers/nearest-match line.
     function updateResults(els, { hex, rgb, lab, rmse, deltaMap, nearest, deltaUnitLabel, similarityColorClass }) {
       els.resultHex.textContent = hex;
       els.resultRgb.textContent = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
@@ -1235,7 +1166,6 @@
           blue: Math.max(0, 100 - blue)
         };
 
-        // --- Formula A: CIEDE2000 in Lab space ---
         const resultA = locateColorLab(targetDeltas, BASE_LABS);
         const hexA = rgbToHex(resultA.rgb[0], resultA.rgb[1], resultA.rgb[2]);
         const nearestA =
@@ -1254,8 +1184,6 @@
           similarityColorClass: "text-cyan-400"
         });
 
-        // --- Formula B: CIEDE2000 in Lab space, solved with continuous
-        // nonlinear least-squares instead of an integer RGB grid search ---
         const resultB = locateColorLabPrecise(targetDeltas, BASE_LABS, resultA.lab);
         const hexB = rgbToHex(resultB.rgb[0], resultB.rgb[1], resultB.rgb[2]);
         const nearestB =
