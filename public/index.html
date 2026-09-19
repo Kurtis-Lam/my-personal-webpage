@@ -594,7 +594,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo(0, 0);
       
-      // --- Your existing JavaScript logic below ---
       let pageRevealed = false;
 
       const observerOptions = {
@@ -770,7 +769,9 @@
     let ambientStars = [];
     let letterStars = [];
     let letterLinkDist = 18;
-    const mouse = { x: -9999, y: -9999, radius: 90 };
+    
+    // Increased interaction radius for broader Astra-style spatial warping
+    const mouse = { x: -9999, y: -9999, radius: 130 };
 
     window.addEventListener('mousemove', (e) => {
       mouse.x = e.x;
@@ -914,14 +915,13 @@
         if (distance < mouse.radius) {
           const angle = Math.atan2(dy, dx);
           const force = (mouse.radius - distance) / mouse.radius;
-          this.x -= Math.cos(angle) * force * 1.2 * dt;
-          this.y -= Math.sin(angle) * force * 1.2 * dt;
+          this.x -= Math.cos(angle) * force * 1.5 * dt;
+          this.y -= Math.sin(angle) * force * 1.5 * dt;
         }
       }
     }
 
-    // Stars that form KL: uses exponential monotonic decay to rapidly form 'KL'
-    // with zero overshoot/oscillation, then slowly floats in place.
+    // Stars that form KL: enhanced with dynamic organic spatial distortion waves + multi-pass bright core rendering
     class LetterStar {
       constructor(hx, hy, scatter) {
         this.hx = hx;
@@ -933,7 +933,9 @@
 
         this.vx = 0;
         this.vy = 0;
-        this.size = Math.random() * 0.9 + 0.8;
+        
+        // Increased base star size for enhanced visibility
+        this.size = Math.random() * 1.3 + 1.2;
 
         // Micro slow floating phase parameters
         this.floatPhaseX = Math.random() * TAU;
@@ -943,36 +945,39 @@
         this.floatRadius = 1.2 + Math.random() * 1.8;
       }
 
-      update(dt) {
-        // 1. Slow, subtle floating offset around home coordinate
+      update(dt, time) {
+        // 1. Organic spatial wave distortion (Astra style continuous fluid ripple)
+        const rippleX = Math.sin(this.hy * 0.018 + time * 0.0022) * 6.5;
+        const rippleY = Math.cos(this.hx * 0.018 + time * 0.0022) * 6.5;
+
+        // Slow floating offset around target coordinate
         this.floatPhaseX += this.floatSpeedX * dt;
         this.floatPhaseY += this.floatSpeedY * dt;
-        const targetX = this.hx + Math.sin(this.floatPhaseX) * this.floatRadius;
-        const targetY = this.hy + Math.cos(this.floatPhaseY) * this.floatRadius;
+        
+        const targetX = this.hx + Math.sin(this.floatPhaseX) * this.floatRadius + rippleX;
+        const targetY = this.hy + Math.cos(this.floatPhaseY) * this.floatRadius + rippleY;
 
-        // 2. Mouse push dynamics (smooth impulse displacement)
+        // 2. Enhanced mouse displacement distortion
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < mouse.radius && dist > 0.001) {
           const force = (mouse.radius - dist) / mouse.radius;
-          const push = force * force * 0.35 * dt;
+          const push = force * force * 0.65 * dt; // Stronger distortion warp
           this.vx += (dx / dist) * push;
           this.vy += (dy / dist) * push;
         }
 
         // Apply friction damping for mouse impulse
-        const damping = Math.pow(0.88, dt);
+        const damping = Math.pow(0.86, dt);
         this.vx *= damping;
         this.vy *= damping;
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
 
-        // 3. Monotonic Exponential Assembly Decay:
-        // Guaranteed strictly non-oscillatory approach toward (targetX, targetY).
-        // Rapid initial convergence rate (~0.085/step) ensures fast KL formation without overshoot.
+        // 3. Smooth Assembly Decay
         const pullFactor = 1 - Math.pow(1 - 0.085, dt);
         this.x += (targetX - this.x) * pullFactor;
         this.y += (targetY - this.y) * pullFactor;
@@ -995,7 +1000,7 @@
     }
     initParticles(KL.assembleOnLoad && !prefersReducedMotion);
 
-    // ---- Drawing ----
+    // ---- Ambient Stars Drawing ----
     function drawStars(list, color) {
       ctx.fillStyle = color;
       ctx.beginPath();
@@ -1005,6 +1010,36 @@
         ctx.arc(p.x, p.y, p.size, 0, TAU);
       }
       ctx.fill();
+    }
+
+    // ---- Bright Glowing KL Letter Stars Drawing ----
+    function drawLetterStars(list) {
+      ctx.save();
+      
+      // Pass 1: Outer Luminous Neon Glow
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = '#38bdf8';
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.95)';
+      ctx.beginPath();
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        ctx.moveTo(p.x + p.size * 1.1, p.y);
+        ctx.arc(p.x, p.y, p.size * 1.1, 0, TAU);
+      }
+      ctx.fill();
+
+      // Pass 2: Ultra Bright Pure White Core
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        ctx.moveTo(p.x + p.size * 0.6, p.y);
+        ctx.arc(p.x, p.y, p.size * 0.6, 0, TAU);
+      }
+      ctx.fill();
+      
+      ctx.restore();
     }
 
     const LINK_BUCKETS = 4;
@@ -1069,19 +1104,22 @@
 
     let lastTime = performance.now();
     function animate(now) {
-      const dt = Math.max(0, Math.min(((now || lastTime) - lastTime) / 16.667, 3));
-      lastTime = now || lastTime;
+      const currentTime = now || performance.now();
+      const dt = Math.max(0, Math.min((currentTime - lastTime) / 16.667, 3));
+      lastTime = currentTime;
 
       ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt);
-      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, currentTime);
 
+      // Draw ambient stars
       drawStars(ambientStars, 'rgba(56, 189, 248, 0.4)');
-      drawStars(letterStars, 'rgba(56, 189, 248, 0.65)');
-
       connectGroup(ambientStars, 120, 0.15);
-      connectGroup(letterStars, letterLinkDist, 0.22);
+
+      // Draw bright glowing KL stars & constellation links
+      drawLetterStars(letterStars);
+      connectGroup(letterStars, letterLinkDist, 0.42); // Brighter luminous connecting mesh
 
       requestAnimationFrame(animate);
     }
