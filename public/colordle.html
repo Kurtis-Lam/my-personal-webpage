@@ -593,14 +593,14 @@
 
     async function loadColorCatalog() {
       try {
-        const response = await fetch("colors.json");
+        const response = await fetch("data/colors.json");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const rawCatalog = await response.json();
         PREPARED_COLOR_CATALOG = prepareNamedLabs(rawCatalog);
       } catch (error) {
-        console.error("Failed to load colors.json:", error);
+        console.error("Failed to load data/colors.json:", error);
       }
     }
 
@@ -1186,7 +1186,7 @@
       } else {
         els.nearestSwatch.style.background = "slate-800";
         els.nearestName.textContent = "No named colors available yet.";
-        els.nearestDelta.textContent = "Add entries to colors.json to enable catalog matching.";
+        els.nearestDelta.textContent = "Add entries to data/colors.json to enable catalog matching.";
       }
     }
 
@@ -1279,9 +1279,9 @@
       });
 
       if (PREPARED_COLOR_CATALOG.length === 0) {
-        elsA.nearestName.textContent = "Could not load or parse colors.json.";
+        elsA.nearestName.textContent = "Could not load or parse data/colors.json.";
         elsA.nearestDelta.textContent = "";
-        elsB.nearestName.textContent = "Could not load or parse colors.json.";
+        elsB.nearestName.textContent = "Could not load or parse data/colors.json.";
         elsB.nearestDelta.textContent = "";
       }
     });
