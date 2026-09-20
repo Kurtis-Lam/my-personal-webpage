@@ -53,7 +53,6 @@
       transform: translateY(0);
       pointer-events: auto;
       transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -194,16 +193,32 @@
       animation: shiftGradSpread 10s linear infinite;
     }
 
-    /* Glassmorphism Card Style - GPU Accelerated Layer */
+    /* Glassmorphism Card Style
+       PERF: no backdrop-filter here on purpose. The canvas behind the cards redraws
+       every frame, so a backdrop blur forces the GPU to re-blur every card on every
+       frame (and again on every scroll frame). A slightly denser translucent fill
+       gives the same look at a fraction of the cost. */
     .glass-card {
-      background: rgba(15, 23, 42, 0.45);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
+      background: rgba(15, 23, 42, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-      will-change: transform;
-      transform: translateZ(0);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* ---------- Scroll-time performance helpers ---------- */
+    /* Decorative gradient animations animate background-position, which can't run on
+       the GPU compositor (it repaints every frame). Pause them while scrolling and
+       whenever they're off-screen (class toggled by the IntersectionObserver below). */
+    html.is-scrolling .animated-gradient-text,
+    html.is-scrolling [class*="moving-grad-"],
+    .anim-paused {
+      animation-play-state: paused !important;
+    }
+    /* Stops hover/glow/tilt repaints as cards slide under a stationary cursor. */
+    html.is-scrolling .page-content {
+      pointer-events: none;
     }
 
     /* Interactive Cursor */
@@ -272,14 +287,14 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
-      will-change: transform;
-      transform: translateZ(0);
+      contain: strict;
     }
 
-    /* GPU Acceleration for Orbs */
+    /* Ambient orbs: soft radial gradients (colour set from JS) instead of a
+       100px CSS blur filter, which is very expensive to composite on big layers. */
     #orb-left, #orb-right {
-      will-change: transform;
-      transform: translateZ(0);
+      background-repeat: no-repeat;
+      contain: strict;
     }
   </style>
 </head>
@@ -293,8 +308,9 @@
   <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
 
   <!-- Dynamic Bright Ambient Light Orbs -->
-  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
-  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+  <!-- (60rem box + shifted offsets keeps the same centre as the old 30rem blurred orb) -->
+  <div id="orb-left" class="fixed top-1/4 -mt-[15rem] -left-[25rem] w-[60rem] h-[60rem] pointer-events-none"></div>
+  <div id="orb-right" class="fixed bottom-1/4 -mb-[15rem] -right-[25rem] w-[60rem] h-[60rem] pointer-events-none"></div>
 
   <!-- Content Container -->
   <div class="page-content relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center min-h-screen justify-between">
@@ -308,7 +324,7 @@
 
       <!-- Main Profile Title -->
       <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-2">
-        <span id="greeting-prefix" class="text-slate-200">Hey, I'm</span> <span class="animated-gradient-text">Kurtis</span>
+        <span id="greeting-prefix" class="text-slate-200">Hey, I'm</span> <span class="animated-gradient-text cursive">Kurtis</span>
       </h1>
 
       <!-- Animated Subtitle / Typewriter -->
@@ -333,7 +349,7 @@
             </div>
             <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
           </div>
-          <div class="bg-slate-900/40 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner backdrop-blur-sm">
+          <div class="bg-slate-900/40 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner">
             <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-400 tracking-wider">15.00000000</span>
             <span class="text-xs text-slate-500 block font-mono">YEARS OLD</span>
           </div>
@@ -354,7 +370,7 @@
           
           <!-- Instagram Card -->
           <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
@@ -373,7 +389,7 @@
 
           <!-- GitHub Card -->
           <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
@@ -392,7 +408,7 @@
 
           <!-- Monkeytype Card -->
           <a href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
@@ -426,7 +442,7 @@
 
           <!-- Project 1: gtcsu -->
           <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
@@ -443,7 +459,7 @@
 
           <!-- Project 2: svt match -->
           <a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
@@ -460,7 +476,7 @@
 
           <!-- Project 3: ktown -->
           <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
@@ -477,7 +493,7 @@
 
           <!-- Project 4: dropspot -->
           <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
@@ -509,7 +525,7 @@
 
           <!-- Project: colordle solver -->
           <a href="https://kurtis-lam.web.app/colordle-solver" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
@@ -536,11 +552,11 @@
               <span>Get In Touch</span>
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
-              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group backdrop-blur-sm cursor-pointer">
+              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam100@gmail.com</span>
               </a>
-              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group backdrop-blur-sm cursor-pointer">
+              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam200@gmail.com</span>
               </a>
@@ -571,22 +587,19 @@
       history.scrollRestoration = 'manual';
     }
 
+    // PERF: the scroll handler only stores a timestamp. The end of scrolling is detected
+    // inside the animation loop, so we don't create/clear a timer on every scroll event.
+    const rootEl = document.documentElement;
+    const SCROLL_IDLE_MS = 150;
     let isScrolling = false;
-    let scrollTimeout;
-    const cards = document.querySelectorAll('.card-tilt');
-
-    function resetCardTransforms() {
-      cards.forEach(card => {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-      });
-    }
-
+    let lastScrollTime = 0;
     window.addEventListener('scroll', () => {
-      isScrolling = true;
-      if (ptr) { ptr.dx = 0; ptr.dy = 0; ptr.speed = 0; } // Neutralize scroll velocity on star physics
-      resetCardTransforms(); // Prevent card glitching while scrolling under cursor
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => { isScrolling = false; }, 120);
+      lastScrollTime = performance.now();
+      if (!isScrolling) {
+        isScrolling = true;
+        rootEl.classList.add('is-scrolling');
+      }
+      if (ptr) { ptr.dx = 0; ptr.dy = 0; } // Neutralize scroll velocity on star physics
     }, { passive: true });
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -600,16 +613,18 @@
     }
 
     // --- Dynamic Bright Random Light Orbs Generator ---
-    function generateBrightVibrantColor() {
+    // PERF: a multi-stop radial gradient fakes the soft blurred-orb falloff with no filter.
+    function generateOrbGradient() {
       const hue = Math.floor(Math.random() * 360);
-      return `hsla(${hue}, 95%, 60%, 0.45)`;
+      const c = (a) => `hsla(${hue}, 95%, 60%, ${a})`;
+      return `radial-gradient(closest-side, ${c(0.45)} 0%, ${c(0.38)} 25%, ${c(0.2)} 50%, ${c(0.07)} 75%, ${c(0)} 100%)`;
     }
 
     const orbLeft = document.getElementById('orb-left');
     const orbRight = document.getElementById('orb-right');
     if (orbLeft && orbRight) {
-      orbLeft.style.backgroundColor = generateBrightVibrantColor();
-      orbRight.style.backgroundColor = generateBrightVibrantColor();
+      orbLeft.style.backgroundImage = generateOrbGradient();
+      orbRight.style.backgroundImage = generateOrbGradient();
     }
 
     // --- Dynamic Greetings on Reload ---
@@ -661,14 +676,21 @@
     typeEffect();
 
     // --- Precise Real-Time Live Age Counter ---
-    const birthDate = new Date('2010-10-22T00:00:00');
+    // PERF: 8 decimals of a year = ~0.32s per tick of the last digit, so polling every
+    // 50ms just repainted the card 20x/sec for nothing. Poll at 10Hz and only touch the
+    // DOM when the text actually changes.
+    const birthTime = new Date('2010-10-22T00:00:00').getTime();
+    const MS_PER_YEAR = 1000 * 60 * 60 * 24 * 365.2425;
+    const liveAgeEl = document.getElementById('live-age');
+    let lastAgeText = '';
     function updateLiveAge() {
-      const now = new Date();
-      const diffInMs = now - birthDate;
-      const ageInYears = (diffInMs / (1000 * 60 * 60 * 24 * 365.2425)).toFixed(8);
-      document.getElementById('live-age').innerText = ageInYears;
+      const text = ((Date.now() - birthTime) / MS_PER_YEAR).toFixed(8);
+      if (text !== lastAgeText) {
+        lastAgeText = text;
+        liveAgeEl.textContent = text;
+      }
     }
-    setInterval(updateLiveAge, 50);
+    setInterval(updateLiveAge, 100);
     updateLiveAge();
 
     // --- Optimized Interactive Custom Cursor ---
@@ -682,36 +704,60 @@
       mouseY = e.clientY;
     }, { passive: true });
 
+    // PERF: only touch the DOM when something actually moved (the outline used to be
+    // rewritten every frame forever, even once it had caught up with the dot).
+    let dotDrawnX = NaN, dotDrawnY = NaN, outlineDrawnX = NaN, outlineDrawnY = NaN;
     function renderCursor() {
-      if (mouseX > -90) {
+      if (mouseX <= -90) return;
+      if (mouseX !== dotDrawnX || mouseY !== dotDrawnY) {
+        dotDrawnX = mouseX; dotDrawnY = mouseY;
         cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-        outlineX += (mouseX - outlineX) * 0.25;
-        outlineY += (mouseY - outlineY) * 0.25;
+      }
+      outlineX += (mouseX - outlineX) * 0.25;
+      outlineY += (mouseY - outlineY) * 0.25;
+      if (Math.abs(outlineX - outlineDrawnX) > 0.05 || Math.abs(outlineY - outlineDrawnY) > 0.05 ||
+          isNaN(outlineDrawnX)) {
+        outlineDrawnX = outlineX; outlineDrawnY = outlineY;
         cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
       }
     }
 
-    // --- 3D Interactive Card Tilt Effect (Optimized for Scroll) ---
+    // --- 3D Interactive Card Tilt Effect ---
+    // PERF: mousemove can fire several times per frame; measure + write once per frame.
+    const cards = document.querySelectorAll('.card-tilt');
     cards.forEach(card => {
+      let raf = 0, mx = 0, my = 0;
       card.addEventListener('mousemove', (e) => {
-        if (isScrolling) return; // Ignore movement while scrolling to avoid jitter
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = ((y - centerY) / centerY) * -6;
-        const rotateY = ((x - centerX) / centerX) * 6;
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        mx = e.clientX;
+        my = e.clientY;
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const rect = card.getBoundingClientRect();
+          const x = mx - rect.left;
+          const y = my - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -6;
+          const rotateY = ((x - centerX) / centerX) * 6;
+          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        });
       }, { passive: true });
-
       card.addEventListener('mouseleave', () => {
+        if (raf) { cancelAnimationFrame(raf); raf = 0; }
         card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
       });
     });
 
-    // --- Canvas Star Field ---
+    // PERF: pause the CSS gradient animations for anything scrolled off-screen.
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) e.target.classList.toggle('anim-paused', !e.isIntersecting);
+      }, { rootMargin: '80px' });
+      document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
+    }
+
+    // --- Canvas Star Field: realistic glowing stars + loose "KL" star formation ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -721,26 +767,27 @@
       heightRatio: 0.55,
       centerX: 0.5,
       centerY: 0.5,
-      density: 0.005,        // Optimized star density for max FPS
-      minStars: 250,
-      maxStars: 600,
+      density: 0.009,        // Balanced star density for optimal FPS
+      minStars: 400,
+      maxStars: 1200,
       assembleOnLoad: true
     };
 
+    // Cursor interaction physics: increased returnSpeed for quick, smooth reform
     const MOTION = {
-      radius: 120,
-      drag: 0.02,
-      part: 0.035,
-      maxSpeed: 8,
-      returnSpeed: 0.045
+      radius: 120,           // cursor influence radius (px)
+      drag: 0.02,            // sweep drag force
+      part: 0.035,           // cursor parting force
+      maxSpeed: 8,           // cap on star speed (px/frame)
+      returnSpeed: 0.045     // Fast, smooth spring reform frequency (~1s recovery)
     };
 
     const PALETTE = [
-      { rgb: [178, 214, 255], w: 34 },
-      { rgb: [255, 255, 255], w: 24 },
-      { rgb: [120, 176, 255], w: 14 },
-      { rgb: [255, 176, 112], w: 18 },
-      { rgb: [255, 216, 178], w: 10 }
+      { rgb: [178, 214, 255], w: 34 },  // ice blue
+      { rgb: [255, 255, 255], w: 24 },  // white
+      { rgb: [120, 176, 255], w: 14 },  // deeper blue
+      { rgb: [255, 176, 112], w: 18 },  // amber
+      { rgb: [255, 216, 178], w: 10 }   // peach
     ];
     const PALETTE_TOTAL = PALETTE.reduce((s, p) => s + p.w, 0);
     function pickColor() {
@@ -821,9 +868,11 @@
     let ambientStars = [];
     let letterStars = [];
 
+    // PERF: soft glows don't need retina-2x pixels; 1.5x looks identical and fills
+    // ~44% fewer canvas pixels every frame on 2x displays.
+    const MAX_DPR = 1.5;
     function resize() {
-      // Cap DPR to 1.5 max for high FPS fill-rate during scrolling
-      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       width = window.innerWidth;
       height = window.innerHeight;
       canvas.width = Math.round(width * dpr);
@@ -832,22 +881,27 @@
     }
     resize();
 
-    let lastW = width, lastH = height, resizeTimer;
+    // PERF: assigning canvas.width/height reallocates + clears the whole canvas. On phones
+    // the browser fires `resize` whenever the URL bar collapses/expands *while scrolling*,
+    // which used to rebuild the canvas mid-scroll (visible hitch). Now it's debounced and
+    // ignores small height-only changes.
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      resize();
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
-        if (width !== lastW || Math.abs(height - lastH) > 100) {
-          lastW = width;
-          lastH = height;
+        const w = window.innerWidth, h = window.innerHeight;
+        if (w !== width || Math.abs(h - height) > 150) {
+          resize();
           initParticles(false);
         }
       }, 200);
     });
 
+    // Pointer tracking (Ignores scrolling displacement)
     const ptr = { x: -9999, y: -9999, lastX: -9999, lastY: -9999, dx: 0, dy: 0, speed: 0, active: false };
+    let pushing = false; // set once per frame in animate(): is the cursor currently shoving stars?
     window.addEventListener('pointermove', (e) => {
-      if (isScrolling) return;
+      if (isScrolling) return; // Prevent star displacement while scrolling
       if (ptr.lastX > -9000) {
         ptr.dx += e.clientX - ptr.lastX;
         ptr.dy += e.clientY - ptr.lastY;
@@ -999,6 +1053,7 @@
           this.hazeA = 0.05 + Math.random() * 0.06;
         }
 
+        // Variable twinkle speeds & phase offsets so stars un-glow (turn off) and glow dynamically
         this.tws = 0.0012 + Math.random() * 0.0035;
         this.twp = Math.random() * 6.283;
 
@@ -1007,6 +1062,7 @@
         this.w = MOTION.returnSpeed * (0.85 + Math.random() * 0.35);
         this.resp = (0.6 + Math.random() * 0.7) / (1 + mag * 0.8);
 
+        // Increased movement speed & wiggle range for more dynamic star motion
         this.idleFx = 0.0007 + Math.random() * 0.0011;
         this.idleFy = 0.0007 + Math.random() * 0.0011;
         this.idleSx = Math.random() * 1000;
@@ -1058,7 +1114,9 @@
 
         let vx = this.vx, vy = this.vy;
 
-        if (ptr.active && ptr.speed > 0.05 && !isScrolling && !prefersReducedMotion) {
+        // Apply cursor push force only when moving active mouse (not scrolling).
+        // `pushing` is computed once per frame in animate().
+        if (pushing) {
           const dx = this.x - ptr.x, dy = this.y - ptr.y;
           const d2 = dx * dx + dy * dy, R = MOTION.radius;
           if (d2 < R * R) {
@@ -1070,22 +1128,30 @@
           }
         }
 
-        vx -= this.ox * w * w * dt;
-        vy -= this.oy * w * w * dt;
-        const damp = Math.exp(-2 * 0.88 * w * dt);
-        vx *= damp;
-        vy *= damp;
+        // PERF: a star that has settled back home (offset + velocity < ~0.01px) skips the
+        // spring/damping/clamp maths entirely. Only its idle wiggle below still runs.
+        const atRest = this.ox * this.ox + this.oy * this.oy < 1e-4 && vx * vx + vy * vy < 1e-6;
+        if (atRest) {
+          this.ox = this.oy = this.vx = this.vy = 0;
+        } else {
+          // Responsive spring restoration force
+          vx -= this.ox * w * w * dt;
+          vy -= this.oy * w * w * dt;
+          const damp = Math.exp(-2 * 0.88 * w * dt);
+          vx *= damp;
+          vy *= damp;
 
-        const s2 = vx * vx + vy * vy;
-        if (s2 > MOTION.maxSpeed * MOTION.maxSpeed) {
-          const k = MOTION.maxSpeed / Math.sqrt(s2);
-          vx *= k;
-          vy *= k;
+          const s2 = vx * vx + vy * vy;
+          if (s2 > MOTION.maxSpeed * MOTION.maxSpeed) {
+            const k = MOTION.maxSpeed / Math.sqrt(s2);
+            vx *= k;
+            vy *= k;
+          }
+          this.vx = vx;
+          this.vy = vy;
+          this.ox += vx * dt;
+          this.oy += vy * dt;
         }
-        this.vx = vx;
-        this.vy = vy;
-        this.ox += vx * dt;
-        this.oy += vy * dt;
 
         const idleX = prefersReducedMotion ? 0 : Math.sin(t * this.idleFx + this.idleSx) * this.idleAx;
         const idleY = prefersReducedMotion ? 0 : Math.cos(t * this.idleFy + this.idleSy) * this.idleAy;
@@ -1096,7 +1162,7 @@
 
     function initParticles(assemble) {
       ambientStars = [];
-      const count = Math.min(180, Math.round((width * height) / 9000));
+      const count = Math.min(350, Math.round((width * height) / 5000));
       for (let i = 0; i < count; i++) {
         ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
       }
@@ -1111,14 +1177,12 @@
         const p = list[i];
         if (p.alpha <= 0.01) continue;
 
-        // Viewport frustum culling
-        if (p.x < -30 || p.x > width + 30 || p.y < -30 || p.y > height + 30) continue;
-
+        // Oscillate twinkle wave so stars completely lose glow (fade to 0) and glow back up
         const sineWave = Math.sin(t * p.tws + p.twp);
         const tw = Math.max(0, (sineWave + 0.15) * 1.35);
         const a = p.alpha * p.bright * tw;
 
-        if (a <= 0.02) continue; // Early exit for near-invisible stars
+        if (a <= 0.001) continue;
 
         if (p.hazeR) {
           ctx.globalAlpha = Math.min(1, p.alpha * p.hazeA * tw);
@@ -1138,7 +1202,10 @@
       }
     }
 
-    // Additive subtle sky grain
+    // Subtle sky grain
+    // PERF: this used to be a fixed, full-screen div at opacity .04 sitting on top of the
+    // canvas, i.e. one more full-screen layer to blend every frame. The 4% opacity is now
+    // baked into the tile's alpha and the tile is simply the page background (no layer).
     (function addGrain() {
       const n = 160;
       const c = document.createElement('canvas');
@@ -1147,20 +1214,37 @@
       const img = g.createImageData(n, n);
       for (let i = 0; i < img.data.length; i += 4) {
         img.data[i] = img.data[i + 1] = img.data[i + 2] = 255;
-        img.data[i + 3] = Math.random() * 255;
+        img.data[i + 3] = Math.random() * 255 * 0.04;
       }
       g.putImageData(img, 0, 0);
-      const el = document.createElement('div');
-      el.setAttribute('aria-hidden', 'true');
-      el.style.cssText =
-        'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.04;' +
-        `background-image:url(${c.toDataURL()});background-size:${n}px ${n}px;`;
-      document.body.appendChild(el);
+      document.body.style.backgroundImage = `url(${c.toDataURL()})`;
+      document.body.style.backgroundSize = `${n}px ${n}px`;
     })();
 
     let lastTime = performance.now();
+    let skipFrame = false;
     function animate(now) {
       const t = now || performance.now();
+
+      // Scroll finished? (see scroll listener at the top of the script)
+      if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
+        isScrolling = false;
+        rootEl.classList.remove('is-scrolling');
+      }
+
+      // The custom cursor always runs at full frame rate...
+      renderCursor();
+
+      // PERF: ...but while the page is scrolling, the browser is already busy scrolling and
+      // re-compositing, so the star field only renders every other frame (30fps). The stars
+      // drift slowly, so this is imperceptible, and dt below keeps the physics time-correct.
+      if (isScrolling) {
+        skipFrame = !skipFrame;
+        if (skipFrame) { requestAnimationFrame(animate); return; }
+      } else {
+        skipFrame = false;
+      }
+
       const dt = Math.max(0.1, Math.min((t - lastTime) / 16.667, 2.0));
       lastTime = t;
       const elapsed = t - pageStartTime;
@@ -1172,8 +1256,7 @@
         rawSpeed = 60;
       }
       ptr.speed = rawSpeed;
-
-      renderCursor();
+      pushing = ptr.active && ptr.speed > 0.05 && !isScrolling && !prefersReducedMotion;
 
       ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, width, height);
