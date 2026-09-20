@@ -38,44 +38,22 @@
   <style>
     /* ---------- Preloader & Initial Fade-In States ---------- */
     #preloader {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #07090e;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
-    }
-
-    body.is-loaded #preloader {
-      opacity: 0;
-      visibility: hidden;
+      display: none !important;
     }
 
     .page-content {
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.35s ease-in, transform 0.35s ease-in;
-      pointer-events: none;
-    }
-
-    body.is-loaded .page-content {
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
-      transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     /* ---------- Scroll Reveal Effect ---------- */
     .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      will-change: opacity, transform;
-    }
-
-    .fade-in.is-visible {
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -298,9 +276,6 @@
   </style>
 </head>
 <body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
-
-  <!-- Preloader Overlay -->
-  <div id="preloader"></div>
 
   <!-- Canvas Interactive Background -->
   <canvas id="bg-canvas"></canvas>
@@ -583,45 +558,16 @@
 
   <!-- JavaScript Logic -->
   <script>
-    // --- Page Initialization & Fade-In Reveal ---
+    // --- Page Initialization & Scroll State ---
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
 
-    // Reset window scroll position to the top immediately
     window.scrollTo(0, 0);
 
     document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo(0, 0);
-      
-      let pageRevealed = false;
-
-      const observerOptions = {
-        root: null,
-        rootMargin: '200px 0px 200px 0px',
-        threshold: 0.01
-      };
-
-      const fadeObserver = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
-            obs.unobserve(entry.target);
-          }
-        });
-      }, observerOptions);
-
-      function revealPage() {
-        if (pageRevealed) return;
-        pageRevealed = true;
-        document.body.classList.add('is-loaded');
-        document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
-      }
-
-      const fontsLoaded = document.fonts ? document.fonts.ready : Promise.resolve();
-      const fallbackTimer = new Promise(resolve => setTimeout(resolve, 1500));
-
-      Promise.race([fontsLoaded, fallbackTimer]).then(revealPage);
+      document.body.classList.add('is-loaded');
     });
 
     // Set Current Year (if element present)
@@ -770,7 +716,6 @@
     let letterStars = [];
     let letterLinkDist = 18;
     
-    // Increased interaction radius for broader Astra-style spatial warping
     const mouse = { x: -9999, y: -9999, radius: 130 };
 
     window.addEventListener('mousemove', (e) => {
@@ -921,63 +866,62 @@
       }
     }
 
-    // Stars that form KL: enhanced with dynamic organic spatial distortion waves + multi-pass bright core rendering
+    // Stars that form KL: updated with individual random drifting and independent wander forces
     class LetterStar {
       constructor(hx, hy, scatter) {
         this.hx = hx;
         this.hy = hy;
 
-        // Initialize scattered positions across the full viewport on load
         this.x = scatter ? Math.random() * width : hx;
         this.y = scatter ? Math.random() * height : hy;
 
         this.vx = 0;
         this.vy = 0;
         
-        // Increased base star size for enhanced visibility
         this.size = Math.random() * 1.3 + 1.2;
 
-        // Micro slow floating phase parameters
-        this.floatPhaseX = Math.random() * TAU;
-        this.floatPhaseY = Math.random() * TAU;
-        this.floatSpeedX = 0.008 + Math.random() * 0.012;
-        this.floatSpeedY = 0.006 + Math.random() * 0.010;
-        this.floatRadius = 1.2 + Math.random() * 1.8;
+        // Individual unique random seeds, frequencies, and ranges for random movement
+        this.seedX = Math.random() * 1000;
+        this.seedY = Math.random() * 1000;
+        this.freqX = 0.001 + Math.random() * 0.003;
+        this.freqY = 0.001 + Math.random() * 0.003;
+        this.rangeX = 4 + Math.random() * 8;
+        this.rangeY = 4 + Math.random() * 8;
       }
 
       update(dt, time) {
-        // 1. Organic spatial wave distortion (Astra style continuous fluid ripple)
-        const rippleX = Math.sin(this.hy * 0.018 + time * 0.0022) * 6.5;
-        const rippleY = Math.cos(this.hx * 0.018 + time * 0.0022) * 6.5;
+        // 1. Completely random walk velocity perturbation
+        this.vx += (Math.random() - 0.5) * 0.2 * dt;
+        this.vy += (Math.random() - 0.5) * 0.2 * dt;
 
-        // Slow floating offset around target coordinate
-        this.floatPhaseX += this.floatSpeedX * dt;
-        this.floatPhaseY += this.floatSpeedY * dt;
-        
-        const targetX = this.hx + Math.sin(this.floatPhaseX) * this.floatRadius + rippleX;
-        const targetY = this.hy + Math.cos(this.floatPhaseY) * this.floatRadius + rippleY;
+        // 2. Individualized un-synchronized random wandering position around origin target
+        const randomX = Math.sin(time * this.freqX + this.seedX) * this.rangeX;
+        const randomY = Math.cos(time * this.freqY + this.seedY) * this.rangeY;
 
-        // 2. Enhanced mouse displacement distortion
+        const targetX = this.hx + randomX;
+        const targetY = this.hy + randomY;
+
+        // 3. Mouse displacement force
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < mouse.radius && dist > 0.001) {
           const force = (mouse.radius - dist) / mouse.radius;
-          const push = force * force * 0.65 * dt; // Stronger distortion warp
+          const push = force * force * 0.65 * dt;
           this.vx += (dx / dist) * push;
           this.vy += (dy / dist) * push;
         }
 
-        // Apply friction damping for mouse impulse
-        const damping = Math.pow(0.86, dt);
+        // Apply friction damping
+        const damping = Math.pow(0.85, dt);
         this.vx *= damping;
         this.vy *= damping;
 
         this.x += this.vx * dt;
         this.y += this.vy * dt;
 
-        // 3. Smooth Assembly Decay
+        // Smooth assembly pull towards random wander target position
         const pullFactor = 1 - Math.pow(1 - 0.085, dt);
         this.x += (targetX - this.x) * pullFactor;
         this.y += (targetY - this.y) * pullFactor;
@@ -1119,7 +1063,7 @@
 
       // Draw bright glowing KL stars & constellation links
       drawLetterStars(letterStars);
-      connectGroup(letterStars, letterLinkDist, 0.42); // Brighter luminous connecting mesh
+      connectGroup(letterStars, letterLinkDist, 0.42);
 
       requestAnimationFrame(animate);
     }
