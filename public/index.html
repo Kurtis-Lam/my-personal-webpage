@@ -194,14 +194,16 @@
       animation: shiftGradSpread 10s linear infinite;
     }
 
-    /* Glassmorphism Card Style */
+    /* Glassmorphism Card Style - GPU Accelerated Layer */
     .glass-card {
-      background: rgba(15, 23, 42, 0.35);
+      background: rgba(15, 23, 42, 0.45);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.12);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     /* Interactive Cursor */
@@ -215,8 +217,7 @@
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s, height 0.2s;
+      will-change: transform;
     }
 
     .cursor-outline {
@@ -229,8 +230,7 @@
       border-radius: 50%;
       pointer-events: none;
       z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: all 0.15s ease-out;
+      will-change: transform;
     }
 
     /* Glow utility */
@@ -272,6 +272,14 @@
       height: 100vh;
       z-index: 0;
       pointer-events: none;
+      will-change: transform;
+      transform: translateZ(0);
+    }
+
+    /* GPU Acceleration for Orbs */
+    #orb-left, #orb-right {
+      will-change: transform;
+      transform: translateZ(0);
     }
   </style>
 </head>
@@ -346,7 +354,7 @@
           
           <!-- Instagram Card -->
           <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
@@ -365,7 +373,7 @@
 
           <!-- GitHub Card -->
           <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
@@ -384,7 +392,7 @@
 
           <!-- Monkeytype Card -->
           <a href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
@@ -418,7 +426,7 @@
 
           <!-- Project 1: gtcsu -->
           <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
@@ -435,7 +443,7 @@
 
           <!-- Project 2: svt match -->
           <a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
@@ -452,7 +460,7 @@
 
           <!-- Project 3: ktown -->
           <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
@@ -469,7 +477,7 @@
 
           <!-- Project 4: dropspot -->
           <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
@@ -501,7 +509,7 @@
 
           <!-- Project: colordle solver -->
           <a href="https://kurtis-lam.web.app/colordle-solver" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
@@ -550,7 +558,7 @@
       </div>
       <div class="flex items-center gap-2">
         <i class="fa-regular fa-copyright text-slate-400"></i>
-        <span>Kurtis Lam 2026</span>
+        <span>Kurtis Lam <span id="year">2026</span></span>
       </div>
     </footer>
 
@@ -558,14 +566,27 @@
 
   <!-- JavaScript Logic -->
   <script>
-    // --- Page Initialization & Scroll Tracking (For Optimizations) ---
+    // --- Page Initialization & Scroll Tracking ---
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
 
-    let globalScrollY = 0;
+    let isScrolling = false;
+    let scrollTimeout;
+    const cards = document.querySelectorAll('.card-tilt');
+
+    function resetCardTransforms() {
+      cards.forEach(card => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      });
+    }
+
     window.addEventListener('scroll', () => {
-      globalScrollY = window.scrollY;
+      isScrolling = true;
+      if (ptr) { ptr.dx = 0; ptr.dy = 0; ptr.speed = 0; } // Neutralize scroll velocity on star physics
+      resetCardTransforms(); // Prevent card glitching while scrolling under cursor
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => { isScrolling = false; }, 120);
     }, { passive: true });
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -650,78 +671,164 @@
     setInterval(updateLiveAge, 50);
     updateLiveAge();
 
-    // --- Interactive Custom Cursor ---
+    // --- Optimized Interactive Custom Cursor ---
     const cursorDot = document.getElementById('cursor-dot');
     const cursorOutline = document.getElementById('cursor-outline');
+    let mouseX = -100, mouseY = -100;
+    let outlineX = -100, outlineY = -100;
 
     window.addEventListener('mousemove', (e) => {
-      const posX = e.clientX;
-      const posY = e.clientY;
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    }, { passive: true });
 
-      cursorDot.style.left = `${posX}px`;
-      cursorDot.style.top = `${posY}px`;
+    function renderCursor() {
+      if (mouseX > -90) {
+        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+        outlineX += (mouseX - outlineX) * 0.25;
+        outlineY += (mouseY - outlineY) * 0.25;
+        cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
+      }
+    }
 
-      cursorOutline.animate({
-        left: `${posX}px`,
-        top: `${posY}px`
-      }, { duration: 500, fill: "forwards" });
-    });
-
-    // --- 3D Interactive Card Tilt Effect ---
-    const cards = document.querySelectorAll('.card-tilt');
+    // --- 3D Interactive Card Tilt Effect (Optimized for Scroll) ---
     cards.forEach(card => {
       card.addEventListener('mousemove', (e) => {
+        if (isScrolling) return; // Ignore movement while scrolling to avoid jitter
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
-        const rotateX = (y - centerY) / 10;
-        const rotateY = (centerX - x) / 10;
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-      });
+        const rotateX = ((y - centerY) / centerY) * -6;
+        const rotateY = ((x - centerX) / centerX) * 6;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+      }, { passive: true });
+
       card.addEventListener('mouseleave', () => {
         card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
       });
     });
 
-    // --- Canvas Star Animation: ambient stars + "KL" star formation ---
+    // --- Canvas Star Field ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pageStartTime = performance.now();
 
     const KL = {
-      heightRatio: 0.6,
+      heightRatio: 0.55,
       centerX: 0.5,
       centerY: 0.5,
-      spacing: 4.5,
-      minStars: 640,      // Reduced threshold by 20%
-      maxStars: 2000,     // Reduced cap by 20%
-      assembleOnLoad: true  
+      density: 0.005,        // Optimized star density for max FPS
+      minStars: 250,
+      maxStars: 600,
+      assembleOnLoad: true
     };
 
-    const pageStartTime = performance.now();
-    const TAU = Math.PI * 2;
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const MOTION = {
+      radius: 120,
+      drag: 0.02,
+      part: 0.035,
+      maxSpeed: 8,
+      returnSpeed: 0.045
+    };
 
-    let width, height;
+    const PALETTE = [
+      { rgb: [178, 214, 255], w: 34 },
+      { rgb: [255, 255, 255], w: 24 },
+      { rgb: [120, 176, 255], w: 14 },
+      { rgb: [255, 176, 112], w: 18 },
+      { rgb: [255, 216, 178], w: 10 }
+    ];
+    const PALETTE_TOTAL = PALETTE.reduce((s, p) => s + p.w, 0);
+    function pickColor() {
+      let r = Math.random() * PALETTE_TOTAL;
+      for (let i = 0; i < PALETTE.length; i++) {
+        r -= PALETTE[i].w;
+        if (r <= 0) return i;
+      }
+      return 0;
+    }
+
+    // Pre-rendered star sprites
+    const GLOW_LEVELS = [16, 32, 64, 128];
+    const GLOW_CORE = 0.12;
+    const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    const mixWhite = (c, k) => c.map(v => Math.round(v + (255 - v) * k));
+    function spriteCanvas(size) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      return c;
+    }
+
+    function makeGlow(rgb, size) {
+      const c = spriteCanvas(size), g = c.getContext('2d'), h = size / 2;
+      const core = mixWhite(rgb, 0.8);
+      const grad = g.createRadialGradient(h, h, 0, h, h, h);
+      grad.addColorStop(0, rgba([255, 255, 255], 1));
+      grad.addColorStop(GLOW_CORE * 0.6, rgba(core, 1));
+      grad.addColorStop(GLOW_CORE, rgba(core, 0.9));
+      grad.addColorStop(0.2, rgba(rgb, 0.5));
+      grad.addColorStop(0.38, rgba(rgb, 0.16));
+      grad.addColorStop(0.65, rgba(rgb, 0.045));
+      grad.addColorStop(1, rgba(rgb, 0));
+      g.fillStyle = grad;
+      g.fillRect(0, 0, size, size);
+      return c;
+    }
+
+    function makeSpike(rgb) {
+      const S = 128, h = 64;
+      const c = spriteCanvas(S), g = c.getContext('2d');
+      const tint = mixWhite(rgb, 0.5);
+      g.globalCompositeOperation = 'lighter';
+      for (const vertical of [false, true]) {
+        const grad = vertical ? g.createLinearGradient(h, 0, h, S) : g.createLinearGradient(0, h, S, h);
+        grad.addColorStop(0, rgba(tint, 0));
+        grad.addColorStop(0.32, rgba(tint, 0.12));
+        grad.addColorStop(0.5, 'rgba(255,255,255,0.95)');
+        grad.addColorStop(0.68, rgba(tint, 0.12));
+        grad.addColorStop(1, rgba(tint, 0));
+        g.fillStyle = grad;
+        if (vertical) g.fillRect(h - 1, 0, 2, S); else g.fillRect(0, h - 1, S, 2);
+      }
+      return c;
+    }
+
+    function makeHaze(rgb) {
+      const S = 64, h = 32;
+      const c = spriteCanvas(S), g = c.getContext('2d');
+      const grad = g.createRadialGradient(h, h, 0, h, h, h);
+      grad.addColorStop(0, rgba(rgb, 0.5));
+      grad.addColorStop(0.45, rgba(rgb, 0.14));
+      grad.addColorStop(1, rgba(rgb, 0));
+      g.fillStyle = grad;
+      g.fillRect(0, 0, S, S);
+      return c;
+    }
+
+    const glowSprites = PALETTE.map(p => GLOW_LEVELS.map(s => makeGlow(p.rgb, s)));
+    const spikeSprites = PALETTE.map(p => makeSpike(p.rgb));
+    const hazeSprites = PALETTE.map(p => makeHaze(p.rgb));
+    function pickGlowLevel(diameter) {
+      for (let i = 0; i < GLOW_LEVELS.length; i++) if (GLOW_LEVELS[i] >= diameter) return i;
+      return GLOW_LEVELS.length - 1;
+    }
+
+    let width, height, dpr = 1;
     let ambientStars = [];
     let letterStars = [];
-    let letterLinkDist = 18;
-    
-    const mouse = { x: -9999, y: -9999, radius: 130 };
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-    document.documentElement.addEventListener('mouseleave', () => {
-      mouse.x = mouse.y = -9999;
-    });
 
     function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      // Cap DPR to 1.5 max for high FPS fill-rate during scrolling
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
 
@@ -738,10 +845,41 @@
       }, 200);
     });
 
-    // ---- Build the KL shape ----
+    const ptr = { x: -9999, y: -9999, lastX: -9999, lastY: -9999, dx: 0, dy: 0, speed: 0, active: false };
+    window.addEventListener('pointermove', (e) => {
+      if (isScrolling) return;
+      if (ptr.lastX > -9000) {
+        ptr.dx += e.clientX - ptr.lastX;
+        ptr.dy += e.clientY - ptr.lastY;
+      }
+      ptr.x = ptr.lastX = e.clientX;
+      ptr.y = ptr.lastY = e.clientY;
+      ptr.active = true;
+    }, { passive: true });
+
+    document.documentElement.addEventListener('mouseleave', () => {
+      ptr.active = false;
+      ptr.x = ptr.y = ptr.lastX = ptr.lastY = -9999;
+      ptr.dx = ptr.dy = 0;
+    });
+
+    function hash2(x, y) {
+      let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    }
+    function valueNoise(x, y) {
+      const ix = Math.floor(x), iy = Math.floor(y);
+      const fx = x - ix, fy = y - iy;
+      const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+      const a = hash2(ix, iy), b = hash2(ix + 1, iy), c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+      return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+    }
+    const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
+
     function buildKLPoints() {
       const H = Math.min(height * KL.heightRatio, (width * 0.9) / 1.24);
-      const S = H * 0.17;
+      const S = H * 0.15;
       const T = S * 1.15;
       const Wk = H * 0.62;
       const Wl = H * 0.5;
@@ -775,341 +913,280 @@
 
       const data = c.getImageData(0, 0, cw, ch).data;
       const filled = [];
-
-      // Stride scan by 2 for higher resolution sampling
       for (let y = 0; y < ch; y += 2) {
         for (let x = 0; x < cw; x += 2) {
           if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
         }
       }
-      const area = filled.length / 2;
+      const samples = filled.length / 2;
+      const areaPx = samples * 4;
+      const target = Math.max(KL.minStars, Math.min(KL.maxStars, Math.round(areaPx * KL.density)));
 
-      // Target count reduced by 20%
-      let target = Math.round((area / (KL.spacing * KL.spacing)) * 0.8);
-      target = Math.max(KL.minStars, Math.min(KL.maxStars, target));
-      const avgSpacing = Math.sqrt(area / target);
-
-      const minDist = avgSpacing * 0.55;
-      const minDist2 = minDist * minDist;
-      const cell = minDist / Math.SQRT2;
-      const gw = Math.ceil(cw / cell) + 1;
-      const gh = Math.ceil(ch / cell) + 1;
-      const grid = new Int32Array(gw * gh).fill(-1);
-      const picked = [];
       const originX = width * KL.centerX - totalW / 2 - pad;
       const originY = height * KL.centerY - H / 2 - pad;
 
-      let attempts = 0;
-      const maxAttempts = target * 12;
-      while (picked.length / 2 < target && attempts < maxAttempts) {
-        attempts++;
-        const i = (Math.random() * area) | 0;
-        const px = filled[i * 2];
-        const py = filled[i * 2 + 1];
-        const gx = (px / cell) | 0;
-        const gy = (py / cell) | 0;
+      const seed = (Math.random() * 1000) | 0;
+      const density = (x, y) => {
+        const n = valueNoise(x / 46 + seed, y / 46 + seed * 0.37);
+        return 0.55 + 0.45 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
+      };
+      const pickSample = () => {
+        const i = (Math.random() * samples) | 0;
+        return [filled[i * 2], filled[i * 2 + 1]];
+      };
 
-        let ok = true;
-        for (let yy = Math.max(0, gy - 2); yy <= Math.min(gh - 1, gy + 2) && ok; yy++) {
-          for (let xx = Math.max(0, gx - 2); xx <= Math.min(gw - 1, gx + 2); xx++) {
-            const j = grid[yy * gw + xx];
-            if (j !== -1) {
-              const dx = picked[j * 2] - px;
-              const dy = picked[j * 2 + 1] - py;
-              if (dx * dx + dy * dy < minDist2) { ok = false; break; }
-            }
-          }
-        }
-        if (ok) {
-          grid[gy * gw + gx] = picked.length / 2;
-          picked.push(px, py);
-        }
+      const out = [];
+      const nField = Math.round(target * 0.62);
+      const nClump = Math.round(target * 0.30);
+      const nStray = Math.round(target * 0.04);
+
+      let guard = 0;
+      while (out.length < nField && guard++ < nField * 20) {
+        const [x, y] = pickSample();
+        if (Math.random() > density(x, y)) continue;
+        out.push({ x: x + gauss() * 1.3, y: y + gauss() * 1.3, kind: 'field' });
       }
 
-      const points = [];
-      for (let k = 0; k < picked.length; k += 2) {
-        points.push(picked[k] + originX, picked[k + 1] + originY);
+      let made = 0;
+      guard = 0;
+      while (made < nClump && guard++ < nClump * 10) {
+        const [x, y] = pickSample();
+        if (Math.random() > density(x, y)) continue;
+        const members = 4 + ((Math.random() * 7) | 0);
+        const sigma = 2 + Math.random() * 2.5;
+        out.push({ x, y, kind: 'lead' });
+        for (let m = 1; m < members; m++) {
+          out.push({ x: x + gauss() * sigma, y: y + gauss() * sigma, kind: 'field' });
+        }
+        made += members;
       }
-      return { points, avgSpacing };
+
+      for (let s = 0; s < nStray; s++) {
+        const [x, y] = pickSample();
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 10 + Math.random() * 34;
+        out.push({ x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist, kind: 'stray' });
+      }
+
+      for (const p of out) {
+        p.x += originX;
+        p.y += originY;
+      }
+      return out;
     }
 
-    // ---- Stars ----
-    class AmbientStar {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.size = Math.random() * 2 + 1;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
-        this.fadeStart = Math.random() * 1000;
-        this.fadeDuration = 600 + Math.random() * 400;
-        this.alpha = 0;
-      }
-
-      update(dt, elapsedTime) {
-        if (elapsedTime < this.fadeStart) {
-          this.alpha = 0;
-        } else {
-          this.alpha = Math.min(1, (elapsedTime - this.fadeStart) / this.fadeDuration);
-        }
-
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
-
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
-
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-
-        if (distance < mouse.radius && this.alpha > 0) {
-          const angle = Math.atan2(dy, dx);
-          const force = (mouse.radius - distance) / mouse.radius;
-          this.x -= Math.cos(angle) * force * 1.5 * dt;
-          this.y -= Math.sin(angle) * force * 1.5 * dt;
-        }
-      }
-    }
-
-    class LetterStar {
-      constructor(hx, hy, scatter) {
+    class Star {
+      constructor(hx, hy, o) {
+        const ambient = o.layer === 'ambient';
         this.hx = hx;
         this.hy = hy;
-        this.scatter = scatter;
 
-        this.x = scatter ? Math.random() * width : hx;
-        this.y = scatter ? Math.random() * height : hy;
-        this.vx = 0;
-        this.vy = 0;
+        let mag = Math.pow(Math.random(), 3.2);
+        if (o.kind === 'lead') mag = Math.max(mag, 0.35 + Math.random() * 0.5);
+        if (o.kind === 'stray') mag *= 0.35;
 
-        this.size = Math.random() * 1.3 + 1.2;
+        this.ci = pickColor();
+        this.core = ambient ? 0.4 + mag * 1.3 : 0.5 + mag * 2.0;
+        this.bright = ambient ? 0.3 + mag * 0.45 : 0.6 + mag * 0.4;
+        this.glowSize = this.core * 2 / GLOW_CORE;
+        this.glowImg = glowSprites[this.ci][pickGlowLevel(this.glowSize)];
+        this.spike = mag > 0.9;
+        this.spikeSize = this.core * 26;
 
-        // Custom Sequence Phase 1: Glow within first 2 seconds (0 to 2000ms random delay)
-        this.fadeStart = Math.random() * 2000;
-        this.fadeDuration = 400 + Math.random() * 600;
+        this.hazeR = 0;
+        if (!ambient && Math.random() < 0.07) {
+          this.hazeR = 18 + Math.random() * 26;
+          this.hazeA = 0.05 + Math.random() * 0.06;
+        }
+
+        this.tws = 0.0012 + Math.random() * 0.0035;
+        this.twp = Math.random() * 6.283;
+
+        this.ox = 0; this.oy = 0;
+        this.vx = 0; this.vy = 0;
+        this.w = MOTION.returnSpeed * (0.85 + Math.random() * 0.35);
+        this.resp = (0.6 + Math.random() * 0.7) / (1 + mag * 0.8);
+
+        this.idleFx = 0.0007 + Math.random() * 0.0011;
+        this.idleFy = 0.0007 + Math.random() * 0.0011;
+        this.idleSx = Math.random() * 1000;
+        this.idleSy = Math.random() * 1000;
+        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+
+        this.ambient = ambient;
+        this.driftX = (Math.random() - 0.5) * (ambient ? 0.28 : 0.20);
+        this.driftY = (Math.random() - 0.5) * (ambient ? 0.28 : 0.20);
+
+        this.intro = !!o.scatter;
+        if (this.intro) {
+          this.ox = Math.random() * width - hx;
+          this.oy = Math.random() * height - hy;
+        }
+
+        this.fadeStart = Math.random() * (ambient ? 800 : 1750);
+        this.fadeDur = ambient ? 800 + Math.random() * 400 : 700 + Math.random() * 560;
+        this.moveStart = this.fadeStart + this.fadeDur + Math.random() * 840;
         this.alpha = 0;
-
-        // Custom Sequence Phase 2: Start moving smoothly right after it lights up 
-        this.moveStartTime = this.fadeStart + this.fadeDuration + (Math.random() * 800);
-
-        this.seedX = Math.random() * 1000;
-        this.seedY = Math.random() * 1000;
-        this.freqX = 0.001 + Math.random() * 0.003;
-        this.freqY = 0.001 + Math.random() * 0.003;
-        this.rangeX = 4 + Math.random() * 8;
-        this.rangeY = 4 + Math.random() * 8;
+        this.x = hx + this.ox;
+        this.y = hy + this.oy;
       }
 
-      update(dt, time, elapsedTime) {
-        if (elapsedTime < this.fadeStart) {
-          this.alpha = 0;
-        } else {
-          this.alpha = Math.min(1, (elapsedTime - this.fadeStart) / this.fadeDuration);
+      update(dt, t, elapsed) {
+        this.alpha = elapsed < this.fadeStart ? 0 : Math.min(1, (elapsed - this.fadeStart) / this.fadeDur);
+
+        if (this.ambient) {
+          this.hx += this.driftX * dt;
+          this.hy += this.driftY * dt;
+          if (this.hx < -20) this.hx = width + 20; else if (this.hx > width + 20) this.hx = -20;
+          if (this.hy < -20) this.hy = height + 20; else if (this.hy > height + 20) this.hy = -20;
         }
 
-        const randomX = Math.sin(time * this.freqX + this.seedX) * this.rangeX;
-        const randomY = Math.cos(time * this.freqY + this.seedY) * this.rangeY;
-        const targetX = this.hx + randomX;
-        const targetY = this.hy + randomY;
+        let w = this.w;
+        if (this.intro) {
+          if (elapsed < this.moveStart) {
+            this.ox += this.driftX * dt;
+            this.oy += this.driftY * dt;
+            this.x = this.hx + this.ox;
+            this.y = this.hy + this.oy;
+            return;
+          }
+          const p = Math.min(1, (elapsed - this.moveStart) / 2200);
+          w *= 0.5 + 1.6 * p * p;
+          if (elapsed > this.moveStart + 5500) this.intro = false;
+        }
 
-        // Dynamic Cursor Distortion: push star away on mouseover
-        if (this.alpha > 0) {
-          const dx = this.x - mouse.x;
-          const dy = this.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        let vx = this.vx, vy = this.vy;
 
-          if (dist < mouse.radius && dist > 0.001) {
-            const force = Math.pow((mouse.radius - dist) / mouse.radius, 1.8);
-            const push = force * 10.0;
-            this.vx += (dx / dist) * push * dt;
-            this.vy += (dy / dist) * push * dt;
+        if (ptr.active && ptr.speed > 0.05 && !isScrolling && !prefersReducedMotion) {
+          const dx = this.x - ptr.x, dy = this.y - ptr.y;
+          const d2 = dx * dx + dy * dy, R = MOTION.radius;
+          if (d2 < R * R) {
+            const d = Math.sqrt(d2) + 0.001;
+            const k = 1 - d / R;
+            const f = k * k * this.resp;
+            vx += (ptr.dx * MOTION.drag + (dx / d) * ptr.speed * MOTION.part) * f;
+            vy += (ptr.dy * MOTION.drag + (dy / d) * ptr.speed * MOTION.part) * f;
           }
         }
 
-        if (this.scatter && elapsedTime < this.moveStartTime) {
-          // Pre-movement slight random ambient drift before forming the text
-          this.x += (Math.random() - 0.5) * 0.1 * dt;
-          this.y += (Math.random() - 0.5) * 0.1 * dt;
-        } else {
-          let pullStrength = 0.06;
-          if (this.scatter && elapsedTime >= this.moveStartTime) {
-            let timeActive = elapsedTime - this.moveStartTime;
-            let progress = Math.min(1, Math.max(0, timeActive / 3500.0));
-            pullStrength = 0.06 * (progress * progress);
-          }
+        vx -= this.ox * w * w * dt;
+        vy -= this.oy * w * w * dt;
+        const damp = Math.exp(-2 * 0.88 * w * dt);
+        vx *= damp;
+        vy *= damp;
 
-          // Spring physics pull towards home target position (automatic snap-back)
-          this.vx += (targetX - this.x) * pullStrength * dt;
-          this.vy += (targetY - this.y) * pullStrength * dt;
-
-          // Friction / Damping for smooth return
-          const damping = Math.pow(0.84, dt);
-          this.vx *= damping;
-          this.vy *= damping;
-
-          this.x += this.vx * dt;
-          this.y += this.vy * dt;
+        const s2 = vx * vx + vy * vy;
+        if (s2 > MOTION.maxSpeed * MOTION.maxSpeed) {
+          const k = MOTION.maxSpeed / Math.sqrt(s2);
+          vx *= k;
+          vy *= k;
         }
+        this.vx = vx;
+        this.vy = vy;
+        this.ox += vx * dt;
+        this.oy += vy * dt;
+
+        const idleX = prefersReducedMotion ? 0 : Math.sin(t * this.idleFx + this.idleSx) * this.idleAx;
+        const idleY = prefersReducedMotion ? 0 : Math.cos(t * this.idleFy + this.idleSy) * this.idleAy;
+        this.x = this.hx + this.ox + idleX;
+        this.y = this.hy + this.oy + idleY;
       }
     }
 
     function initParticles(assemble) {
       ambientStars = [];
-      // Ambient star count reduced by 20%
-      const count = Math.floor(((width * height) / 18000) * 0.8); 
+      const count = Math.min(180, Math.round((width * height) / 9000));
       for (let i = 0; i < count; i++) {
-        ambientStars.push(new AmbientStar());
+        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
       }
-
-      const { points, avgSpacing } = buildKLPoints();
-      letterLinkDist = avgSpacing * 1.35;
-      letterStars = [];
-      for (let i = 0; i < points.length; i += 2) {
-        letterStars.push(new LetterStar(points[i], points[i + 1], assemble));
-      }
+      letterStars = buildKLPoints().map(p =>
+        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble })
+      );
     }
     initParticles(KL.assembleOnLoad && !prefersReducedMotion);
 
-    // ---- Ambient Stars Drawing ----
-    function drawStars(list) {
+    function drawStars(list, t) {
       for (let i = 0; i < list.length; i++) {
         const p = list[i];
-        if (p.alpha <= 0) continue;
-        ctx.fillStyle = `rgba(56, 189, 248, ${0.4 * p.alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, TAU);
-        ctx.fill();
-      }
-    }
+        if (p.alpha <= 0.01) continue;
 
-    // ---- Bright Glowing KL Letter Stars Drawing (Optimized) ----
-    function drawLetterStars(list) {
-      for (let i = 0; i < list.length; i++) {
-        const p = list[i];
-        if (p.alpha <= 0) continue;
+        // Viewport frustum culling
+        if (p.x < -30 || p.x > width + 30 || p.y < -30 || p.y > height + 30) continue;
 
-        // Pass 1: Outer Luminous Radial Glow (replaces expensive ctx.shadowBlur)
-        ctx.fillStyle = `rgba(56, 189, 248, ${0.25 * p.alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 2.2, 0, TAU);
-        ctx.fill();
+        const sineWave = Math.sin(t * p.tws + p.twp);
+        const tw = Math.max(0, (sineWave + 0.15) * 1.35);
+        const a = p.alpha * p.bright * tw;
 
-        // Pass 2: Ultra Bright Pure White Core
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 0.8, 0, TAU);
-        ctx.fill();
-      }
-    }
+        if (a <= 0.02) continue; // Early exit for near-invisible stars
 
-    // ---- Reusable Buffer Arrays (Prevents Garbage Collection Frame Drops) ----
-    let headBuf = new Int32Array(4000);
-    let nextBuf = new Int32Array(2000);
-    let cellXBuf = new Int32Array(2000);
-    let cellYBuf = new Int32Array(2000);
+        if (p.hazeR) {
+          ctx.globalAlpha = Math.min(1, p.alpha * p.hazeA * tw);
+          const hs = p.hazeR * 2;
+          ctx.drawImage(hazeSprites[p.ci], p.x - p.hazeR, p.y - p.hazeR, hs, hs);
+        }
 
-    function getBuffer(buf, size) {
-      return buf.length >= size ? buf : new Int32Array(size * 2);
-    }
+        ctx.globalAlpha = Math.min(1, a);
+        const s = p.glowSize;
+        ctx.drawImage(p.glowImg, p.x - s / 2, p.y - s / 2, s, s);
 
-    const LINK_BUCKETS = 4;
-    function connectGroup(list, maxDist, maxAlpha) {
-      const n = list.length;
-      if (n < 2) return;
-
-      const gw = Math.ceil(width / maxDist) + 3;
-      const gh = Math.ceil(height / maxDist) + 3;
-      const totalCells = gw * gh;
-
-      headBuf = getBuffer(headBuf, totalCells);
-      nextBuf = getBuffer(nextBuf, n);
-      cellXBuf = getBuffer(cellXBuf, n);
-      cellYBuf = getBuffer(cellYBuf, n);
-
-      headBuf.fill(-1, 0, totalCells);
-
-      for (let i = 0; i < n; i++) {
-        const p = list[i];
-        if (p.alpha < 0.1) continue;
-        const gx = Math.min(gw - 1, Math.max(0, ((p.x / maxDist) | 0) + 1));
-        const gy = Math.min(gh - 1, Math.max(0, ((p.y / maxDist) | 0) + 1));
-        cellXBuf[i] = gx;
-        cellYBuf[i] = gy;
-        nextBuf[i] = headBuf[gy * gw + gx];
-        headBuf[gy * gw + gx] = i;
-      }
-
-      const max2 = maxDist * maxDist;
-      const segs = [[], [], [], []];
-
-      for (let i = 0; i < n; i++) {
-        const a = list[i];
-        if (a.alpha < 0.1) continue;
-        for (let yy = Math.max(0, cellYBuf[i] - 1); yy <= Math.min(gh - 1, cellYBuf[i] + 1); yy++) {
-          for (let xx = Math.max(0, cellXBuf[i] - 1); xx <= Math.min(gw - 1, cellXBuf[i] + 1); xx++) {
-            for (let j = headBuf[yy * gw + xx]; j !== -1; j = nextBuf[j]) {
-              if (j <= i) continue;
-              const b = list[j];
-              if (b.alpha < 0.1) continue;
-              const dx = a.x - b.x;
-              const dy = a.y - b.y;
-              const d2 = dx * dx + dy * dy;
-              if (d2 < max2) {
-                const alphaFactor = a.alpha * b.alpha;
-                const t = (1 - Math.sqrt(d2) / maxDist) * alphaFactor;
-                const bucket = Math.min(LINK_BUCKETS - 1, (t * LINK_BUCKETS) | 0);
-                if (bucket >= 0) {
-                  segs[bucket].push(a.x, a.y, b.x, b.y);
-                }
-              }
-            }
-          }
+        if (p.spike) {
+          ctx.globalAlpha = Math.min(1, a * 0.75);
+          const L = p.spikeSize;
+          ctx.drawImage(spikeSprites[p.ci], p.x - L / 2, p.y - L / 2, L, L);
         }
       }
-
-      ctx.lineWidth = 1;
-      for (let b = 0; b < LINK_BUCKETS; b++) {
-        const s = segs[b];
-        if (!s.length) continue;
-        ctx.strokeStyle = `rgba(56, 189, 248, ${maxAlpha * (b + 0.5) / LINK_BUCKETS})`;
-        ctx.beginPath();
-        for (let k = 0; k < s.length; k += 4) {
-          ctx.moveTo(s[k], s[k + 1]);
-          ctx.lineTo(s[k + 2], s[k + 3]);
-        }
-        ctx.stroke();
-      }
     }
+
+    // Additive subtle sky grain
+    (function addGrain() {
+      const n = 160;
+      const c = document.createElement('canvas');
+      c.width = c.height = n;
+      const g = c.getContext('2d');
+      const img = g.createImageData(n, n);
+      for (let i = 0; i < img.data.length; i += 4) {
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = 255;
+        img.data[i + 3] = Math.random() * 255;
+      }
+      g.putImageData(img, 0, 0);
+      const el = document.createElement('div');
+      el.setAttribute('aria-hidden', 'true');
+      el.style.cssText =
+        'position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.04;' +
+        `background-image:url(${c.toDataURL()});background-size:${n}px ${n}px;`;
+      document.body.appendChild(el);
+    })();
 
     let lastTime = performance.now();
     function animate(now) {
-      const currentTime = now || performance.now();
-      // Added safety cap (max dt = 1.5) to prevent massive rendering jumps during lag spikes/switching tabs
-      const dt = Math.max(0, Math.min((currentTime - lastTime) / 16.667, 1.5));
-      lastTime = currentTime;
-      const elapsedTime = currentTime - pageStartTime;
+      const t = now || performance.now();
+      const dt = Math.max(0.1, Math.min((t - lastTime) / 16.667, 2.0));
+      lastTime = t;
+      const elapsed = t - pageStartTime;
 
+      let rawSpeed = Math.hypot(ptr.dx, ptr.dy);
+      if (rawSpeed > 60) {
+        ptr.dx *= 60 / rawSpeed;
+        ptr.dy *= 60 / rawSpeed;
+        rawSpeed = 60;
+      }
+      ptr.speed = rawSpeed;
+
+      renderCursor();
+
+      ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, elapsedTime);
-      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, currentTime, elapsedTime);
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t, elapsed);
 
-      // Draw all stars directly 
-      drawStars(ambientStars);
-      drawLetterStars(letterStars);
+      ctx.globalCompositeOperation = 'lighter';
+      drawStars(ambientStars, t);
+      drawStars(letterStars, t);
+      ctx.globalAlpha = 1;
 
-      // Critical UI Performance Optimization:
-      // Connecting grouped lines costs extreme GPU/CPU usage. We disable connecting offscreen points
-      // during heavy down-scrolling (globalScrollY > 400). Stars will still bounce, preventing scroll/loading lags entirely.
-      if (globalScrollY < 400) {
-        connectGroup(ambientStars, 120, 0.15);
-        connectGroup(letterStars, letterLinkDist, 0.42);
-      } else if (globalScrollY < 900) {
-        // Less intensive processing when halfway down
-        connectGroup(letterStars, letterLinkDist, 0.25);
-      }
-
+      ptr.dx = ptr.dy = 0;
       requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
