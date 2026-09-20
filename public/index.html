@@ -558,19 +558,21 @@
 
   <!-- JavaScript Logic -->
   <script>
-    // --- Page Initialization & Scroll State ---
+    // --- Page Initialization & Scroll Tracking (For Optimizations) ---
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
 
-    window.scrollTo(0, 0);
+    let globalScrollY = 0;
+    window.addEventListener('scroll', () => {
+      globalScrollY = window.scrollY;
+    }, { passive: true });
 
     document.addEventListener('DOMContentLoaded', () => {
       window.scrollTo(0, 0);
       document.body.classList.add('is-loaded');
     });
 
-    // Set Current Year (if element present)
     const yearElem = document.getElementById('year');
     if (yearElem) {
       yearElem.innerText = new Date().getFullYear();
@@ -591,15 +593,9 @@
 
     // --- Dynamic Greetings on Reload ---
     const greetings = [
-      "Hey, I'm",
-      "Yo! I'm",
-      "Welcome, I'm",
-      "What's up, I'm",
-      "Hello world, I'm",
-      "Greetings, I'm",
-      "Howdy, I'm",
-      "Nice to meet you, I'm",
-      "Glad you're here, I'm"
+      "Hey, I'm", "Yo! I'm", "Welcome, I'm", "What's up, I'm", 
+      "Hello world, I'm", "Greetings, I'm", "Howdy, I'm", 
+      "Nice to meet you, I'm", "Glad you're here, I'm"
     ];
     const greetingElement = document.getElementById('greeting-prefix');
     if (greetingElement) {
@@ -639,7 +635,6 @@
         wordIndex = (wordIndex + 1) % words.length;
         typeSpeed = 400;
       }
-
       setTimeout(typeEffect, typeSpeed);
     }
     typeEffect();
@@ -679,16 +674,13 @@
         const rect = card.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        
         const centerX = rect.width / 2;
         const centerY = rect.height / 2;
         
         const rotateX = (y - centerY) / 10;
         const rotateY = (centerX - x) / 10;
-
         card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
       });
-
       card.addEventListener('mouseleave', () => {
         card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
       });
@@ -699,15 +691,16 @@
     const ctx = canvas.getContext('2d');
 
     const KL = {
-      heightRatio: 0.6,     // KL height as a fraction of the viewport height
-      centerX: 0.5,         // KL center as a fraction of viewport width
-      centerY: 0.5,         // KL center as a fraction of viewport height
-      spacing: 11,          // rough px between stars inside the letters
-      minStars: 350,
-      maxStars: 2200,       // safety cap
+      heightRatio: 0.6,
+      centerX: 0.5,
+      centerY: 0.5,
+      spacing: 4.5,       // Lowered spacing for a much denser star appearance
+      minStars: 800,      // Raised minimum star threshold
+      maxStars: 2500,     // Raised cap to accommodate the high star density
       assembleOnLoad: true  
     };
 
+    const pageStartTime = performance.now();
     const TAU = Math.PI * 2;
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -782,8 +775,10 @@
 
       const data = c.getImageData(0, 0, cw, ch).data;
       const filled = [];
-      for (let y = 0; y < ch; y++) {
-        for (let x = 0; x < cw; x++) {
+
+      // Stride scan by 2 for higher resolution sampling
+      for (let y = 0; y < ch; y += 2) {
+        for (let x = 0; x < cw; x += 2) {
           if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
         }
       }
@@ -804,11 +799,12 @@
       const originY = height * KL.centerY - H / 2 - pad;
 
       let attempts = 0;
-      while (picked.length / 2 < target && attempts < target * 40) {
+      const maxAttempts = target * 12;
+      while (picked.length / 2 < target && attempts < maxAttempts) {
         attempts++;
         const i = (Math.random() * area) | 0;
-        const px = filled[i * 2] + Math.random();
-        const py = filled[i * 2 + 1] + Math.random();
+        const px = filled[i * 2];
+        const py = filled[i * 2 + 1];
         const gx = (px / cell) | 0;
         const gy = (py / cell) | 0;
 
@@ -844,9 +840,18 @@
         this.size = Math.random() * 2 + 1;
         this.vx = (Math.random() - 0.5) * 0.8;
         this.vy = (Math.random() - 0.5) * 0.8;
+        this.fadeStart = Math.random() * 1000;
+        this.fadeDuration = 600 + Math.random() * 400;
+        this.alpha = 0;
       }
 
-      update(dt) {
+      update(dt, elapsedTime) {
+        if (elapsedTime < this.fadeStart) {
+          this.alpha = 0;
+        } else {
+          this.alpha = Math.min(1, (elapsedTime - this.fadeStart) / this.fadeDuration);
+        }
+
         this.x += this.vx * dt;
         this.y += this.vy * dt;
 
@@ -857,7 +862,7 @@
         const dy = mouse.y - this.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < mouse.radius) {
+        if (distance < mouse.radius && this.alpha > 0) {
           const angle = Math.atan2(dy, dx);
           const force = (mouse.radius - distance) / mouse.radius;
           this.x -= Math.cos(angle) * force * 1.5 * dt;
@@ -866,21 +871,25 @@
       }
     }
 
-    // Stars that form KL: updated with individual random drifting and independent wander forces
     class LetterStar {
       constructor(hx, hy, scatter) {
         this.hx = hx;
         this.hy = hy;
+        this.scatter = scatter;
 
         this.x = scatter ? Math.random() * width : hx;
         this.y = scatter ? Math.random() * height : hy;
 
-        this.vx = 0;
-        this.vy = 0;
-        
         this.size = Math.random() * 1.3 + 1.2;
 
-        // Individual unique random seeds, frequencies, and ranges for random movement
+        // Custom Sequence Phase 1: Glow within first 2 seconds (0 to 2000ms random delay)
+        this.fadeStart = Math.random() * 2000;
+        this.fadeDuration = 400 + Math.random() * 600;
+        this.alpha = 0;
+
+        // Custom Sequence Phase 2: Start moving smoothly right after it lights up 
+        this.moveStartTime = this.fadeStart + this.fadeDuration + (Math.random() * 800);
+
         this.seedX = Math.random() * 1000;
         this.seedY = Math.random() * 1000;
         this.freqX = 0.001 + Math.random() * 0.003;
@@ -889,48 +898,64 @@
         this.rangeY = 4 + Math.random() * 8;
       }
 
-      update(dt, time) {
-        // 1. Completely random walk velocity perturbation
-        this.vx += (Math.random() - 0.5) * 0.2 * dt;
-        this.vy += (Math.random() - 0.5) * 0.2 * dt;
+      update(dt, time, elapsedTime) {
+        if (elapsedTime < this.fadeStart) {
+          this.alpha = 0;
+        } else {
+          this.alpha = Math.min(1, (elapsedTime - this.fadeStart) / this.fadeDuration);
+        }
 
-        // 2. Individualized un-synchronized random wandering position around origin target
+        // Apply interactive mouse repel (only if lit up)
+        if (this.alpha > 0) {
+          const dx = this.x - mouse.x;
+          const dy = this.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < mouse.radius && dist > 0.001) {
+            const force = (mouse.radius - dist) / mouse.radius;
+            const push = force * force * 0.65 * dt;
+            // Immediate manual move away from cursor overrides current path momentarily
+            this.x += (dx / dist) * push;
+            this.y += (dy / dist) * push;
+          }
+        }
+
         const randomX = Math.sin(time * this.freqX + this.seedX) * this.rangeX;
         const randomY = Math.cos(time * this.freqY + this.seedY) * this.rangeY;
-
         const targetX = this.hx + randomX;
         const targetY = this.hy + randomY;
 
-        // 3. Mouse displacement force
-        const dx = this.x - mouse.x;
-        const dy = this.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (this.scatter && elapsedTime > this.moveStartTime) {
+            // Custom Sequence Phase 3: Gradually increase speed towards KL shape
+            let timeActive = elapsedTime - this.moveStartTime;
+            
+            // Reaches maximum pull (speed) over 4.5 seconds for a smooth, slow start
+            let progress = Math.min(1, Math.max(0, timeActive / 4500.0));
+            // Quadratic ease-in mapping gives the "slowly begin, gradually increase" effect
+            let currentPull = 0.045 * (progress * progress); 
+            
+            const pullFactor = 1 - Math.pow(1 - currentPull, dt);
+            
+            this.x += (targetX - this.x) * pullFactor;
+            this.y += (targetY - this.y) * pullFactor;
 
-        if (dist < mouse.radius && dist > 0.001) {
-          const force = (mouse.radius - dist) / mouse.radius;
-          const push = force * force * 0.65 * dt;
-          this.vx += (dx / dist) * push;
-          this.vy += (dy / dist) * push;
+        } else if (!this.scatter) {
+            // Pre-assembled state logic
+            const pullFactor = 1 - Math.pow(1 - 0.025, dt);
+            this.x += (targetX - this.x) * pullFactor;
+            this.y += (targetY - this.y) * pullFactor;
+        } else {
+            // Pre-movement slight random ambient drift before forming the text
+            this.x += (Math.random() - 0.5) * 0.1 * dt;
+            this.y += (Math.random() - 0.5) * 0.1 * dt;
         }
-
-        // Apply friction damping
-        const damping = Math.pow(0.85, dt);
-        this.vx *= damping;
-        this.vy *= damping;
-
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
-
-        // Smooth assembly pull towards random wander target position
-        const pullFactor = 1 - Math.pow(1 - 0.085, dt);
-        this.x += (targetX - this.x) * pullFactor;
-        this.y += (targetY - this.y) * pullFactor;
       }
     }
 
     function initParticles(assemble) {
       ambientStars = [];
-      const count = Math.floor((width * height) / 12000);
+      // Reduced ambient star base count to provide a cleaner canvas & heavier optimization buffer 
+      const count = Math.floor((width * height) / 18000); 
       for (let i = 0; i < count; i++) {
         ambientStars.push(new AmbientStar());
       }
@@ -945,45 +970,45 @@
     initParticles(KL.assembleOnLoad && !prefersReducedMotion);
 
     // ---- Ambient Stars Drawing ----
-    function drawStars(list, color) {
-      ctx.fillStyle = color;
-      ctx.beginPath();
+    function drawStars(list) {
       for (let i = 0; i < list.length; i++) {
         const p = list[i];
-        ctx.moveTo(p.x + p.size, p.y);
+        if (p.alpha <= 0) continue;
+        ctx.fillStyle = `rgba(56, 189, 248, ${0.4 * p.alpha})`;
+        ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, TAU);
+        ctx.fill();
       }
-      ctx.fill();
     }
 
-    // ---- Bright Glowing KL Letter Stars Drawing ----
+    // ---- Bright Glowing KL Letter Stars Drawing (Optimized) ----
     function drawLetterStars(list) {
-      ctx.save();
-      
-      // Pass 1: Outer Luminous Neon Glow
-      ctx.shadowBlur = 14;
-      ctx.shadowColor = '#38bdf8';
-      ctx.fillStyle = 'rgba(186, 230, 253, 0.95)';
-      ctx.beginPath();
       for (let i = 0; i < list.length; i++) {
         const p = list[i];
-        ctx.moveTo(p.x + p.size * 1.1, p.y);
-        ctx.arc(p.x, p.y, p.size * 1.1, 0, TAU);
-      }
-      ctx.fill();
+        if (p.alpha <= 0) continue;
 
-      // Pass 2: Ultra Bright Pure White Core
-      ctx.shadowBlur = 0;
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      for (let i = 0; i < list.length; i++) {
-        const p = list[i];
-        ctx.moveTo(p.x + p.size * 0.6, p.y);
-        ctx.arc(p.x, p.y, p.size * 0.6, 0, TAU);
+        // Pass 1: Outer Luminous Radial Glow (replaces expensive ctx.shadowBlur)
+        ctx.fillStyle = `rgba(56, 189, 248, ${0.25 * p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2.2, 0, TAU);
+        ctx.fill();
+
+        // Pass 2: Ultra Bright Pure White Core
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 0.8, 0, TAU);
+        ctx.fill();
       }
-      ctx.fill();
-      
-      ctx.restore();
+    }
+
+    // ---- Reusable Buffer Arrays (Prevents Garbage Collection Frame Drops) ----
+    let headBuf = new Int32Array(4000);
+    let nextBuf = new Int32Array(2000);
+    let cellXBuf = new Int32Array(2000);
+    let cellYBuf = new Int32Array(2000);
+
+    function getBuffer(buf, size) {
+      return buf.length >= size ? buf : new Int32Array(size * 2);
     }
 
     const LINK_BUCKETS = 4;
@@ -993,39 +1018,48 @@
 
       const gw = Math.ceil(width / maxDist) + 3;
       const gh = Math.ceil(height / maxDist) + 3;
-      const head = new Int32Array(gw * gh).fill(-1);
-      const next = new Int32Array(n);
-      const cellX = new Int32Array(n);
-      const cellY = new Int32Array(n);
+      const totalCells = gw * gh;
+
+      headBuf = getBuffer(headBuf, totalCells);
+      nextBuf = getBuffer(nextBuf, n);
+      cellXBuf = getBuffer(cellXBuf, n);
+      cellYBuf = getBuffer(cellYBuf, n);
+
+      headBuf.fill(-1, 0, totalCells);
 
       for (let i = 0; i < n; i++) {
         const p = list[i];
+        if (p.alpha < 0.1) continue;
         const gx = Math.min(gw - 1, Math.max(0, ((p.x / maxDist) | 0) + 1));
         const gy = Math.min(gh - 1, Math.max(0, ((p.y / maxDist) | 0) + 1));
-        cellX[i] = gx;
-        cellY[i] = gy;
-        next[i] = head[gy * gw + gx];
-        head[gy * gw + gx] = i;
+        cellXBuf[i] = gx;
+        cellYBuf[i] = gy;
+        nextBuf[i] = headBuf[gy * gw + gx];
+        headBuf[gy * gw + gx] = i;
       }
 
       const max2 = maxDist * maxDist;
-      const segs = [];
-      for (let b = 0; b < LINK_BUCKETS; b++) segs.push([]);
+      const segs = [[], [], [], []];
 
       for (let i = 0; i < n; i++) {
         const a = list[i];
-        for (let yy = Math.max(0, cellY[i] - 1); yy <= Math.min(gh - 1, cellY[i] + 1); yy++) {
-          for (let xx = Math.max(0, cellX[i] - 1); xx <= Math.min(gw - 1, cellX[i] + 1); xx++) {
-            for (let j = head[yy * gw + xx]; j !== -1; j = next[j]) {
+        if (a.alpha < 0.1) continue;
+        for (let yy = Math.max(0, cellYBuf[i] - 1); yy <= Math.min(gh - 1, cellYBuf[i] + 1); yy++) {
+          for (let xx = Math.max(0, cellXBuf[i] - 1); xx <= Math.min(gw - 1, cellXBuf[i] + 1); xx++) {
+            for (let j = headBuf[yy * gw + xx]; j !== -1; j = nextBuf[j]) {
               if (j <= i) continue;
               const b = list[j];
+              if (b.alpha < 0.1) continue;
               const dx = a.x - b.x;
               const dy = a.y - b.y;
               const d2 = dx * dx + dy * dy;
               if (d2 < max2) {
-                const t = 1 - Math.sqrt(d2) / maxDist;
+                const alphaFactor = a.alpha * b.alpha;
+                const t = (1 - Math.sqrt(d2) / maxDist) * alphaFactor;
                 const bucket = Math.min(LINK_BUCKETS - 1, (t * LINK_BUCKETS) | 0);
-                segs[bucket].push(a.x, a.y, b.x, b.y);
+                if (bucket >= 0) {
+                  segs[bucket].push(a.x, a.y, b.x, b.y);
+                }
               }
             }
           }
@@ -1049,21 +1083,30 @@
     let lastTime = performance.now();
     function animate(now) {
       const currentTime = now || performance.now();
-      const dt = Math.max(0, Math.min((currentTime - lastTime) / 16.667, 3));
+      // Added safety cap (max dt = 1.5) to prevent massive rendering jumps during lag spikes/switching tabs
+      const dt = Math.max(0, Math.min((currentTime - lastTime) / 16.667, 1.5));
       lastTime = currentTime;
+      const elapsedTime = currentTime - pageStartTime;
 
       ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt);
-      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, currentTime);
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, elapsedTime);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, currentTime, elapsedTime);
 
-      // Draw ambient stars
-      drawStars(ambientStars, 'rgba(56, 189, 248, 0.4)');
-      connectGroup(ambientStars, 120, 0.15);
-
-      // Draw bright glowing KL stars & constellation links
+      // Draw all stars directly 
+      drawStars(ambientStars);
       drawLetterStars(letterStars);
-      connectGroup(letterStars, letterLinkDist, 0.42);
+
+      // Critical UI Performance Optimization:
+      // Connecting grouped lines costs extreme GPU/CPU usage. We disable connecting offscreen points
+      // during heavy down-scrolling (globalScrollY > 400). Stars will still bounce, preventing scroll/loading lags entirely.
+      if (globalScrollY < 400) {
+        connectGroup(ambientStars, 120, 0.15);
+        connectGroup(letterStars, letterLinkDist, 0.42);
+      } else if (globalScrollY < 900) {
+        // Less intensive processing when halfway down
+        connectGroup(letterStars, letterLinkDist, 0.25);
+      }
 
       requestAnimationFrame(animate);
     }
