@@ -7,14 +7,8 @@
       "**/node_modules/**"
     ],
     "rewrites": [
-      {
-        "source": "/home",
-        "destination": "/index.html"
-      },
-      {
-        "source": "/colordle-solver",
-        "destination": "/colordle.html"
-      }
+      { "source": "/home", "destination": "/index.html" },
+      { "source": "/colordle-solver", "destination": "/colordle.html" }
     ]
   }
 }
