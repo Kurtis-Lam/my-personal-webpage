@@ -322,10 +322,10 @@
       </h1>
 
       <!-- Animated Subtitle / Typewriter -->
-      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-100 text-lg md:text-xl font-semibold">
-        <span class="text-cyan-300 font-bold drop-shadow-[0_0_10px_rgba(56,189,248,0.9)]">&gt;&nbsp;</span>
-        <span id="typewriter" class="text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]"></span>
-        <span class="animate-pulse text-cyan-300 font-bold drop-shadow-[0_0_10px_rgba(56,189,248,0.9)]">|</span>
+      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-100 text-lg md:text-xl">
+        <span class="text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">&gt;&nbsp;</span>
+        <span id="typewriter" class="text-white font-semibold drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]"></span>
+        <span class="animate-pulse text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">|</span>
       </div>
     </header>
 
@@ -741,19 +741,19 @@
       document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
     }
 
-    // --- Canvas Star Field: balanced crisp glowing stars + clean "KL" formation ---
+    // --- Canvas Star Field: realistic glowing stars + enhanced "KL" star formation ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const pageStartTime = performance.now();
 
     const KL = {
-      heightRatio: 0.50,
+      heightRatio: 0.55,
       centerX: 0.5,
       centerY: 0.5,
-      density: 0.0055,       // Balanced density to keep star outline sharp & clear without over-clustering
-      minStars: 180,         // Reduced minimum floor
-      maxStars: 420,         // Clean maximum cap to eliminate white splash blur
+      density: 0.025,        // Increased density for sharp visibility
+      minStars: 900,         // Higher floor for star count
+      maxStars: 2400,        // Higher cap to populate letter strokes densely
       assembleOnLoad: true
     };
 
@@ -797,11 +797,11 @@
       const core = mixWhite(rgb, 0.8);
       const grad = g.createRadialGradient(h, h, 0, h, h, h);
       grad.addColorStop(0, rgba([255, 255, 255], 1));
-      grad.addColorStop(GLOW_CORE * 0.6, rgba(core, 0.95));
-      grad.addColorStop(GLOW_CORE, rgba(core, 0.7));
-      grad.addColorStop(0.2, rgba(rgb, 0.35));
-      grad.addColorStop(0.38, rgba(rgb, 0.12));
-      grad.addColorStop(0.65, rgba(rgb, 0.03));
+      grad.addColorStop(GLOW_CORE * 0.6, rgba(core, 1));
+      grad.addColorStop(GLOW_CORE, rgba(core, 0.9));
+      grad.addColorStop(0.2, rgba(rgb, 0.5));
+      grad.addColorStop(0.38, rgba(rgb, 0.16));
+      grad.addColorStop(0.65, rgba(rgb, 0.045));
       grad.addColorStop(1, rgba(rgb, 0));
       g.fillStyle = grad;
       g.fillRect(0, 0, size, size);
@@ -817,7 +817,7 @@
         const grad = vertical ? g.createLinearGradient(h, 0, h, S) : g.createLinearGradient(0, h, S, h);
         grad.addColorStop(0, rgba(tint, 0));
         grad.addColorStop(0.32, rgba(tint, 0.12));
-        grad.addColorStop(0.5, 'rgba(255,255,255,0.85)');
+        grad.addColorStop(0.5, 'rgba(255,255,255,0.95)');
         grad.addColorStop(0.68, rgba(tint, 0.12));
         grad.addColorStop(1, rgba(tint, 0));
         g.fillStyle = grad;
@@ -830,8 +830,8 @@
       const S = 64, h = 32;
       const c = spriteCanvas(S), g = c.getContext('2d');
       const grad = g.createRadialGradient(h, h, 0, h, h, h);
-      grad.addColorStop(0, rgba(rgb, 0.35));
-      grad.addColorStop(0.45, rgba(rgb, 0.08));
+      grad.addColorStop(0, rgba(rgb, 0.5));
+      grad.addColorStop(0.45, rgba(rgb, 0.14));
       grad.addColorStop(1, rgba(rgb, 0));
       g.fillStyle = grad;
       g.fillRect(0, 0, S, S);
@@ -942,13 +942,13 @@
 
       const data = c.getImageData(0, 0, cw, ch).data;
       const filled = [];
-      for (let y = 0; y < ch; y += 3) {
-        for (let x = 0; x < cw; x += 3) {
+      for (let y = 0; y < ch; y += 2) {
+        for (let x = 0; x < cw; x += 2) {
           if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
         }
       }
       const samples = filled.length / 2;
-      const areaPx = samples * 9;
+      const areaPx = samples * 4;
       const target = Math.max(KL.minStars, Math.min(KL.maxStars, Math.round(areaPx * KL.density)));
 
       const originX = width * KL.centerX - totalW / 2 - pad;
@@ -965,15 +965,15 @@
       };
 
       const out = [];
-      const nField = Math.round(target * 0.82);
-      const nClump = Math.round(target * 0.13);
-      const nStray = Math.round(target * 0.05);
+      const nField = Math.round(target * 0.62);
+      const nClump = Math.round(target * 0.30);
+      const nStray = Math.round(target * 0.04);
 
       let guard = 0;
       while (out.length < nField && guard++ < nField * 20) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        out.push({ x: x + gauss() * 1.0, y: y + gauss() * 1.0, kind: 'field' });
+        out.push({ x: x + gauss() * 1.3, y: y + gauss() * 1.3, kind: 'field' });
       }
 
       let made = 0;
@@ -981,8 +981,8 @@
       while (made < nClump && guard++ < nClump * 10) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        const members = 2 + ((Math.random() * 3) | 0);
-        const sigma = 3 + Math.random() * 3.0;
+        const members = 4 + ((Math.random() * 7) | 0);
+        const sigma = 2 + Math.random() * 2.5;
         out.push({ x, y, kind: 'lead' });
         for (let m = 1; m < members; m++) {
           out.push({ x: x + gauss() * sigma, y: y + gauss() * sigma, kind: 'field' });
@@ -993,7 +993,7 @@
       for (let s = 0; s < nStray; s++) {
         const [x, y] = pickSample();
         const ang = Math.random() * Math.PI * 2;
-        const dist = 8 + Math.random() * 24;
+        const dist = 10 + Math.random() * 34;
         out.push({ x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist, kind: 'stray' });
       }
 
@@ -1011,22 +1011,22 @@
         this.hy = hy;
 
         let mag = Math.pow(Math.random(), 3.2);
-        if (o.kind === 'lead') mag = Math.max(mag, 0.4 + Math.random() * 0.4);
+        if (o.kind === 'lead') mag = Math.max(mag, 0.4 + Math.random() * 0.5);
         if (o.kind === 'stray') mag *= 0.35;
 
         this.ci = pickColor();
-        // Balanced sizing & brightness so stars don't stack into white splash
-        this.core = ambient ? 0.3 + mag * 1.0 : 0.4 + mag * 1.2;
-        this.bright = ambient ? 0.25 + mag * 0.35 : 0.45 + mag * 0.35;
+        // Boosted size and baseline brightness for letter stars
+        this.core = ambient ? 0.4 + mag * 1.3 : 0.75 + mag * 2.2;
+        this.bright = ambient ? 0.3 + mag * 0.45 : 0.85 + mag * 0.5;
         this.glowSize = this.core * 2 / GLOW_CORE;
         this.glowImg = glowSprites[this.ci][pickGlowLevel(this.glowSize)];
-        this.spike = mag > 0.88;
-        this.spikeSize = this.core * 22;
+        this.spike = mag > 0.85;
+        this.spikeSize = this.core * 26;
 
         this.hazeR = 0;
-        if (!ambient && Math.random() < 0.08) {
-          this.hazeR = 15 + Math.random() * 20;
-          this.hazeA = 0.05 + Math.random() * 0.05;
+        if (!ambient && Math.random() < 0.12) {
+          this.hazeR = 20 + Math.random() * 30;
+          this.hazeA = 0.08 + Math.random() * 0.08;
         }
 
         this.tws = 0.0012 + Math.random() * 0.0035;
@@ -1041,8 +1041,8 @@
         this.idleFy = 0.0007 + Math.random() * 0.0011;
         this.idleSx = Math.random() * 1000;
         this.idleSy = Math.random() * 1000;
-        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : 2.5 + Math.random() * 3.0;
-        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : 2.5 + Math.random() * 3.0;
+        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
 
         this.ambient = ambient;
         this.driftX = (Math.random() - 0.5) * (ambient ? 0.28 : 0.20);
@@ -1131,7 +1131,7 @@
 
     function initParticles(assemble) {
       ambientStars = [];
-      const count = Math.min(250, Math.round((width * height) / 7000));
+      const count = Math.min(350, Math.round((width * height) / 5000));
       for (let i = 0; i < count; i++) {
         ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
       }
@@ -1147,9 +1147,10 @@
         if (p.alpha <= 0.01) continue;
 
         const sineWave = Math.sin(t * p.tws + p.twp);
+        // Added brightness floor so letter stars don't fade to black
         const tw = p.ambient 
           ? Math.max(0, (sineWave + 0.15) * 1.35)
-          : Math.max(0.2, (sineWave + 0.25) * 1.0);
+          : Math.max(0.35, (sineWave + 0.35) * 1.2);
         const a = p.alpha * p.bright * tw;
 
         if (a <= 0.001) continue;
@@ -1165,7 +1166,7 @@
         ctx.drawImage(p.glowImg, p.x - s / 2, p.y - s / 2, s, s);
 
         if (p.spike) {
-          ctx.globalAlpha = Math.min(1, a * 0.6);
+          ctx.globalAlpha = Math.min(1, a * 0.75);
           const L = p.spikeSize;
           ctx.drawImage(spikeSprites[p.ci], p.x - L / 2, p.y - L / 2, L, L);
         }
