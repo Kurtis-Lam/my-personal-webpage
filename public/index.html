@@ -193,11 +193,11 @@
       animation: shiftGradSpread 10s linear infinite;
     }
 
-    /* Glassmorphism Card Style */
+    /* Glassmorphism Card Style - Solid background fill to ensure text readability without lag */
     .glass-card {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      background: rgba(11, 17, 32, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                   box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                   border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -337,15 +337,15 @@
         <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div class="text-center md:text-left">
-            <div class="flex items-center gap-2 text-slate-400 text-sm font-mono mb-1 justify-center md:justify-start">
+            <div class="flex items-center gap-2 text-slate-300 text-sm font-mono mb-1 justify-center md:justify-start">
               <i class="fa-solid fa-cake-candles text-pink-400"></i>
               <span>BIRTHDAY: OCT 22, 2010</span>
             </div>
             <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
           </div>
-          <div class="bg-slate-900/40 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner">
+          <div class="bg-slate-900/70 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner">
             <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-400 tracking-wider">15.00000000</span>
-            <span class="text-xs text-slate-500 block font-mono">YEARS OLD</span>
+            <span class="text-xs text-slate-400 block font-mono">YEARS OLD</span>
           </div>
         </div>
       </div>
@@ -357,7 +357,7 @@
             <i class="fa-solid fa-globe text-cyan-400"></i>
             <span>Profiles &amp; Socials</span>
           </h2>
-          <span class="text-xs font-mono text-slate-400">Connect &amp; Follow</span>
+          <span class="text-xs font-mono text-slate-300">Connect &amp; Follow</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -367,15 +367,15 @@
              class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
                   <i class="fa-brands fa-instagram"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-insta transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-insta transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Instagram</h2>
-              <p class="text-sm font-mono text-slate-400">@kurtis_1022</p>
+              <p class="text-sm font-mono text-slate-300">@kurtis_1022</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
               <span class="w-2 h-2 rounded-full bg-rose-500"></span>
               <span>Socials &amp; Highlights</span>
             </div>
@@ -386,15 +386,15 @@
              class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
                   <i class="fa-brands fa-github"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">GitHub</h2>
-              <p class="text-sm font-mono text-slate-400">@Kurtis-Lam</p>
+              <p class="text-sm font-mono text-slate-300">@Kurtis-Lam</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span>Code &amp; Repositories</span>
             </div>
@@ -405,15 +405,15 @@
              class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/50 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
                   <i class="fa-solid fa-keyboard"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-monkeytype transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-monkeytype transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-monkeytype transition-colors">Monkeytype</h2>
-              <p class="text-sm font-mono text-slate-400">kurtislam</p>
+              <p class="text-sm font-mono text-slate-300">kurtislam</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-400 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
               <span class="w-2 h-2 rounded-full bg-monkeytype"></span>
               <span>Speed Typing Leaderboards</span>
             </div>
@@ -429,7 +429,7 @@
             <i class="fa-solid fa-rocket text-cyan-400"></i>
             <span>My Currently Active Projects</span>
           </h2>
-          <span class="text-xs font-mono text-slate-400">Deployed Applications</span>
+          <span class="text-xs font-mono text-slate-300">Deployed Applications</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -440,12 +440,12 @@
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#95f4ee] transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#95f4ee] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-gteyc-text">GTEYC 2627 SU</h3>
-              <p class="text-xs text-slate-400 line-clamp-2">Official webpage developed for GTEYC 2627 SU: Aurora</p>
+              <p class="text-xs text-slate-300 line-clamp-2">Official webpage developed for GTEYC 2627 SU: Aurora</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
               <span class="moving-grad-gteyc-text font-semibold">gtcsu-aurora.web.app</span>
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
@@ -457,12 +457,12 @@
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#92A8D1] transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#92A8D1] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-svt-text">SVT Match</h3>
-              <p class="text-xs text-slate-400 line-clamp-2">A SVT based game featuring friends, leaderboards, shops, and more...</p>
+              <p class="text-xs text-slate-300 line-clamp-2">A SVT based game featuring friends, leaderboards, shops, and more...</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
               <span class="moving-grad-svt-text font-semibold">svt-match.web.app</span>
               <i class="fa-solid fa-gamepad"></i>
             </div>
@@ -474,12 +474,12 @@
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#fbcfe8] transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#fbcfe8] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-ktown-text">kTown</h3>
-              <p class="text-xs text-slate-400 line-clamp-2">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p>
+              <p class="text-xs text-slate-300 line-clamp-2">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
               <span class="moving-grad-ktown-text font-semibold">ktown-45.web.app</span>
               <i class="fa-solid fa-book-open"></i>
             </div>
@@ -491,12 +491,12 @@
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-[#fff7d7] transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#fff7d7] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-dropspot-text">DropSpot</h3>
-              <p class="text-xs text-slate-400 line-clamp-2">Fast, light-weight web-based data &amp; file transfer application.</p>
+              <p class="text-xs text-slate-300 line-clamp-2">Fast, light-weight web-based data &amp; file transfer application.</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
               <span class="moving-grad-dropspot-text font-semibold">dropspot-0.web.app</span>
               <i class="fa-solid fa-arrow-right-arrow-left"></i>
             </div>
@@ -512,7 +512,7 @@
             <i class="fa-solid fa-cubes text-cyan-400"></i>
             <span>My Small Projects</span>
           </h2>
-          <span class="text-xs font-mono text-slate-400">Mini Tools &amp; Utilities</span>
+          <span class="text-xs font-mono text-slate-300">Mini Tools &amp; Utilities</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -523,12 +523,12 @@
             <div>
               <div class="flex items-center justify-between mb-4">
                 <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-solver-text">Colordle Solver</h3>
-              <p class="text-xs text-slate-400 line-clamp-2">Solves colordle.ryantanen.com using mathematical formulas.</p>
+              <p class="text-xs text-slate-300 line-clamp-2">Solves colordle.ryantanen.com using mathematical formulas.</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-400">
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
               <span class="moving-grad-solver-text font-semibold">kurtis-lam.web.app/colordle-solver</span>
               <i class="fa-solid fa-palette"></i>
             </div>
@@ -546,11 +546,11 @@
               <span>Get In Touch</span>
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
-              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
+              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/70 border border-slate-800/80 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam100@gmail.com</span>
               </a>
-              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 text-slate-300 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
+              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/70 border border-slate-800/80 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam200@gmail.com</span>
               </a>
@@ -562,7 +562,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full text-center pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 font-mono gap-4 fade-in">
+    <footer class="w-full text-center pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-4 fade-in">
       <div>
         Made with 💖 by Kurtis Lam
       </div>
