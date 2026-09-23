@@ -1,0 +1,23 @@
+# Kurtis Lam - Portfolio & Projects
+
+> Kurtis Lam is a student, developer, and speed typer specializing in web application development, utilities, and Discord tools.
+
+## Overview
+Kurtis Lam (born October 22, 2010) builds web applications, study tools, interactive web games, and mathematical utilities.
+
+## Main Projects
+- [GTEYC 2627 SU (Aurora)](https://gtcsu-aurora.web.app): Official webpage for GTEYC 2627 SU.
+- [SVT Match](https://svt-match.web.app): A web-based game featuring leaderboards, shops, and social features.
+- [kTown](https://ktown-45.web.app): An IB study and productivity web app featuring notes and citation tools.
+- [DropSpot](https://dropspot-0.web.app): Lightweight peer-to-peer data and file transfer utility.
+- [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): A color match tool that solves Colordle using CIEDE2000 ($\Delta E_{00}$) calculations in CIE Lab space.
+
+## Pages
+- [Portfolio Homepage](https://kurtis-lam.web.app/): Main portfolio showcasing projects, live age counter, and active profiles.
+- [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): Live utility for estimating mystery colors using primary similarities.
+
+## Socials & Contact
+- GitHub: https://github.com/Kurtis-Lam
+- Instagram: https://www.instagram.com/kurtis_1022/
+- Monkeytype: https://monkeytype.com/profile/kurtislam
+- Contact Email: kurtislam100@gmail.com
