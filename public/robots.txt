@@ -1,0 +1,26 @@
+# robots.txt for https://kurtis-lam.web.app
+# Public portfolio and project hub.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kurtis-lam.web.app/sitemap.xml
+
+# Explicitly allow common AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
