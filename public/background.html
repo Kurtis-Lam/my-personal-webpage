@@ -1,0 +1,206 @@
+<!-- background.html -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Background</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #07090e;
+      margin: 0;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Custom Interactive Cursor */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #38bdf8;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s;
+    }
+
+    .cursor-outline {
+      width: 36px;
+      height: 36px;
+      border: 2px solid rgba(56, 189, 248, 0.5);
+      position: fixed;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: all 0.15s ease-out;
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] antialiased">
+
+  <!-- Canvas Background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Dynamic Ambient Light Orbs -->
+  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
+
+  <!-- Custom Glowing Cursor -->
+  <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
+  <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
+
+  <script>
+    // --- Dynamic Light Orbs Generator ---
+    function generateBrightVibrantColor() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsla(${hue}, 95%, 60%, 0.45)`;
+    }
+    const orbLeft = document.getElementById('orb-left');
+    const orbRight = document.getElementById('orb-right');
+    if (orbLeft && orbRight) {
+      orbLeft.style.backgroundColor = generateBrightVibrantColor();
+      orbRight.style.backgroundColor = generateBrightVibrantColor();
+    }
+
+    // --- Custom Cursor Controls ---
+    const cursorDot = document.getElementById('cursor-dot');
+    const cursorOutline = document.getElementById('cursor-outline');
+
+    function updateCursor(x, y) {
+      if (!cursorDot || !cursorOutline) return;
+      cursorDot.style.left = `${x}px`;
+      cursorDot.style.top = `${y}px`;
+      cursorOutline.animate({
+        left: `${x}px`,
+        top: `${y}px`
+      }, { duration: 500, fill: "forwards" });
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      updateCursor(e.clientX, e.clientY);
+    });
+
+    // --- Canvas Particle System ---
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+    let particles = [];
+    const mouse = { x: -1000, y: -1000, radius: 150 };
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    // Receive mouse coordinates if embedded inside an iframe
+    window.addEventListener('message', (event) => {
+      if (event.data && event.data.type === 'mousemove') {
+        mouse.x = event.data.x;
+        mouse.y = event.data.y;
+        updateCursor(event.data.x, event.data.y);
+      }
+    });
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 2 + 1;
+        this.vx = (Math.random() - 0.5) * 0.8;
+        this.vy = (Math.random() - 0.5) * 0.8;
+      }
+
+      draw() {
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < mouse.radius) {
+          const angle = Math.atan2(dy, dx);
+          const force = (mouse.radius - distance) / mouse.radius;
+          this.x -= Math.cos(angle) * force * 3;
+          this.y -= Math.sin(angle) * force * 3;
+        }
+      }
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((width * height) / 12000);
+      for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    function connectParticles() {
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          let dx = particles[a].x - particles[b].x;
+          let dy = particles[a].y - particles[b].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 120) {
+            let opacity = 1 - distance / 120;
+            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity * 0.15})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      connectParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
