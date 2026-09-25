@@ -1,3 +1,6 @@
 .firebase/
 .firebaserc
 node_modules/
+
+public/dc.html
+firebase.json
