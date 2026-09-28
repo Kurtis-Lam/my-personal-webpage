@@ -8,7 +8,8 @@
     ],
     "rewrites": [
       { "source": "/home", "destination": "/index.html" },
-      { "source": "/colordle-solver", "destination": "/colordle.html" }
+      { "source": "/colordle-solver", "destination": "/colordle.html" },
+      { "source": "/cl", "destination": "/checklist.html" }
     ]
   }
 }

@@ -2,5 +2,5 @@
 .firebaserc
 node_modules/
 
-public/dc.html
+public/checklist.html
 firebase.json
