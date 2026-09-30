@@ -1,206 +1,808 @@
-<!-- background.html -->
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Background</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      background-color: #07090e;
-      margin: 0;
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
-    }
-
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background-color: #07090e; }
+    #nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07090e; }
+    #nebula canvas { position: absolute; }
+    #overlay { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
     #bg-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* Custom Interactive Cursor */
-    .cursor-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #38bdf8;
-      position: fixed;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s, height 0.2s;
-    }
-
-    .cursor-outline {
-      width: 36px;
-      height: 36px;
-      border: 2px solid rgba(56, 189, 248, 0.5);
-      position: fixed;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: all 0.15s ease-out;
+      position: fixed; top: 0; left: 0;
+      z-index: 1; pointer-events: none;
     }
   </style>
 </head>
-<body class="bg-[#07090e] antialiased">
-
-  <!-- Canvas Background -->
+<body>
+  <div id="nebula"></div>
   <canvas id="bg-canvas"></canvas>
-
-  <!-- Dynamic Ambient Light Orbs -->
-  <div id="orb-left" class="fixed top-1/4 -left-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
-  <div id="orb-right" class="fixed bottom-1/4 -right-40 w-[30rem] h-[30rem] rounded-full blur-[100px] pointer-events-none transition-all duration-1000"></div>
-
-  <!-- Custom Glowing Cursor -->
-  <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
-  <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
-
+  <div id="overlay"></div>
   <script>
-    // --- Dynamic Light Orbs Generator ---
-    function generateBrightVibrantColor() {
-      const hue = Math.floor(Math.random() * 360);
-      return `hsla(${hue}, 95%, 60%, 0.45)`;
-    }
-    const orbLeft = document.getElementById('orb-left');
-    const orbRight = document.getElementById('orb-right');
-    if (orbLeft && orbRight) {
-      orbLeft.style.backgroundColor = generateBrightVibrantColor();
-      orbRight.style.backgroundColor = generateBrightVibrantColor();
-    }
+    const rootEl = document.documentElement;
+    const STATIC_MODE = false;   // true = nothing moves (single rendered frame)
+    const NEB_SPEED = 1;         // speed of the drifting background colours (try 0.5 - 2)
+    const SCROLL_IDLE_MS = 150;
+    let isScrolling = false;
+    let lastScrollTime = 0;
 
-    // --- Custom Cursor Controls ---
-    const cursorDot = document.getElementById('cursor-dot');
-    const cursorOutline = document.getElementById('cursor-outline');
-
-    function updateCursor(x, y) {
-      if (!cursorDot || !cursorOutline) return;
-      cursorDot.style.left = `${x}px`;
-      cursorDot.style.top = `${y}px`;
-      cursorOutline.animate({
-        left: `${x}px`,
-        top: `${y}px`
-      }, { duration: 500, fill: "forwards" });
-    }
-
-    window.addEventListener('mousemove', (e) => {
-      updateCursor(e.clientX, e.clientY);
-    });
-
-    // --- Canvas Particle System ---
+    // --- Canvas Star Field: realistic glowing stars + enhanced "KL" star formation ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
-    let width, height;
-    let particles = [];
-    const mouse = { x: -1000, y: -1000, radius: 150 };
+    const prefersReducedMotion = STATIC_MODE || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pageStartTime = performance.now();
 
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
+    const KL = {
+      heightRatio: 0.55,
+      centerX: 0.5,
+      centerY: 0.5,
+      density: 0.012,        // [perf] was 0.017
+      minStars: 700,         // [perf] was 900
+      maxStars: 1600,        // [perf] was 2400
+      assembleOnLoad: true
+    };
 
-    // Receive mouse coordinates if embedded inside an iframe
-    window.addEventListener('message', (event) => {
-      if (event.data && event.data.type === 'mousemove') {
-        mouse.x = event.data.x;
-        mouse.y = event.data.y;
-        updateCursor(event.data.x, event.data.y);
+    const MOTION = {
+      radius: 120,
+      drag: 0.02,
+      part: 0.035,
+      maxSpeed: 8,
+      returnSpeed: 0.045
+    };
+
+    const PALETTE = [
+      { rgb: [178, 214, 255], w: 34 },
+      { rgb: [255, 255, 255], w: 24 },
+      { rgb: [120, 176, 255], w: 14 },
+      { rgb: [255, 176, 112], w: 18 },
+      { rgb: [255, 216, 178], w: 10 }
+    ];
+    const PALETTE_TOTAL = PALETTE.reduce((s, p) => s + p.w, 0);
+    function pickColor() {
+      let r = Math.random() * PALETTE_TOTAL;
+      for (let i = 0; i < PALETTE.length; i++) {
+        r -= PALETTE[i].w;
+        if (r <= 0) return i;
       }
-    });
-
-    function resize() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      return 0;
     }
-    window.addEventListener('resize', resize);
+
+    const GLOW_LEVELS = [16, 32, 64, 128];
+    const GLOW_CORE = 0.12;
+    const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+    const mixWhite = (c, k) => c.map(v => Math.round(v + (255 - v) * k));
+    function spriteCanvas(size) {
+      const c = document.createElement('canvas');
+      c.width = c.height = size;
+      return c;
+    }
+
+    function makeGlow(rgb, size) {
+      const c = spriteCanvas(size), g = c.getContext('2d'), h = size / 2;
+      const core = mixWhite(rgb, 0.8);
+      const grad = g.createRadialGradient(h, h, 0, h, h, h);
+      grad.addColorStop(0, rgba([255, 255, 255], 1));
+      grad.addColorStop(GLOW_CORE * 0.6, rgba(core, 1));
+      grad.addColorStop(GLOW_CORE, rgba(core, 0.9));
+      grad.addColorStop(0.2, rgba(rgb, 0.3));
+      grad.addColorStop(0.38, rgba(rgb, 0.08));
+      grad.addColorStop(0.65, rgba(rgb, 0.045));
+      grad.addColorStop(1, rgba(rgb, 0));
+      g.fillStyle = grad;
+      g.fillRect(0, 0, size, size);
+      return c;
+    }
+
+    function makeSpike(rgb) {
+      const S = 128, h = 64;
+      const c = spriteCanvas(S), g = c.getContext('2d');
+      const tint = mixWhite(rgb, 0.5);
+      g.globalCompositeOperation = 'lighter';
+      for (const vertical of [false, true]) {
+        const grad = vertical ? g.createLinearGradient(h, 0, h, S) : g.createLinearGradient(0, h, S, h);
+        grad.addColorStop(0, rgba(tint, 0));
+        grad.addColorStop(0.32, rgba(tint, 0.12));
+        grad.addColorStop(0.5, 'rgba(255,255,255,0.95)');
+        grad.addColorStop(0.68, rgba(tint, 0.12));
+        grad.addColorStop(1, rgba(tint, 0));
+        g.fillStyle = grad;
+        if (vertical) g.fillRect(h - 1, 0, 2, S); else g.fillRect(0, h - 1, S, 2);
+      }
+      return c;
+    }
+
+    function makeHaze(rgb) {
+      const S = 64, h = 32;
+      const c = spriteCanvas(S), g = c.getContext('2d');
+      const grad = g.createRadialGradient(h, h, 0, h, h, h);
+      grad.addColorStop(0, rgba(rgb, 0.5));
+      grad.addColorStop(0.45, rgba(rgb, 0.14));
+      grad.addColorStop(1, rgba(rgb, 0));
+      g.fillStyle = grad;
+      g.fillRect(0, 0, S, S);
+      return c;
+    }
+
+    // All sprites live in ONE atlas texture so the GPU can batch thousands of star draws
+    const ATLAS_PAD = 4, ROW_H = 128 + ATLAS_PAD;
+    const atlas = spriteCanvas(1);
+    const glowRects = [], spikeRects = [], hazeRects = [];
+    (function buildAtlas() {
+      atlas.width = GLOW_LEVELS.reduce((a, v) => a + v, 0) + 128 + 64 + (GLOW_LEVELS.length + 2) * ATLAS_PAD;
+      atlas.height = PALETTE.length * ROW_H;
+      const g = atlas.getContext('2d');
+      PALETTE.forEach((p, ci) => {
+        let x = 0; const y = ci * ROW_H;
+        const put = spr => { g.drawImage(spr, x, y); const r = { x, y, s: spr.width }; x += spr.width + ATLAS_PAD; return r; };
+        glowRects.push(GLOW_LEVELS.map(s => put(makeGlow(p.rgb, s))));
+        spikeRects.push(put(makeSpike(p.rgb)));
+        hazeRects.push(put(makeHaze(p.rgb)));
+      });
+    })();
+    function pickGlowLevel(diameter) {
+      for (let i = 0; i < GLOW_LEVELS.length; i++) if (GLOW_LEVELS[i] >= diameter) return i;
+      return GLOW_LEVELS.length - 1;
+    }
+
+    let width, height, dpr = 1;
+    let ambientStars = [];
+    let letterStars = [];
+    let haloStars = [];
+    let klBox = null;
+
+    const MAX_DPR = 1;   // soft glows don't need hi-dpi; raise to 1.5 for crisper cores (costs ~2x fill)
+    function getSize() {
+      const de = document.documentElement;
+      return {
+        w: Math.max(window.innerWidth || 0, de.clientWidth || 0) || screen.width,
+        h: Math.max(window.innerHeight || 0, de.clientHeight || 0) || screen.height
+      };
+    }
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
+      const sz = getSize();
+      width = sz.w;
+      height = sz.h;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
     resize();
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * width;
-        this.y = Math.random() * height;
-        this.size = Math.random() * 2 + 1;
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
+    let resizeTimer;
+    function checkSize() {
+      const sz = getSize();
+      if (sz.w !== width || sz.h !== height) {
+        resize();
+        initParticles(false);
+        drawNebula();
+        dirty = true;
+        if (STATIC_MODE) requestAnimationFrame(animate);
       }
+    }
+    function scheduleCheck() { clearTimeout(resizeTimer); resizeTimer = setTimeout(checkSize, 120); }
+    window.addEventListener('resize', scheduleCheck);
+    if (window.ResizeObserver) new ResizeObserver(scheduleCheck).observe(document.documentElement);
+    setInterval(checkSize, 4000); // Plash doesn't always fire resize (display change, wake from sleep)
 
-      draw() {
-        ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.closePath();
-        ctx.fill();
+    const ptr = { x: -9999, y: -9999, lastX: -9999, lastY: -9999, dx: 0, dy: 0, speed: 0, active: false };
+    let pushing = false;
+    let lastRealMove = -1e9;
+    window.addEventListener('pointermove', (e) => {
+      if (isScrolling) return;
+      if (ptr.lastX > -9000) {
+        ptr.dx += e.clientX - ptr.lastX;
+        ptr.dy += e.clientY - ptr.lastY;
       }
+      ptr.x = ptr.lastX = e.clientX;
+      ptr.y = ptr.lastY = e.clientY;
+      ptr.active = true;
+      lastRealMove = performance.now();
+    }, { passive: true });
 
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x < 0 || this.x > width) this.vx *= -1;
-        if (this.y < 0 || this.y > height) this.vy *= -1;
+    // Receive mouse coordinates when embedded inside an iframe (parent posts {type:'mousemove', x, y})
+    window.addEventListener('message', (event) => {
+      const d = event.data;
+      if (!d || d.type !== 'mousemove' || typeof d.x !== 'number' || typeof d.y !== 'number') return;
+      if (isScrolling) return;
+      if (ptr.lastX > -9000) {
+        ptr.dx += d.x - ptr.lastX;
+        ptr.dy += d.y - ptr.lastY;
+      }
+      ptr.x = ptr.lastX = d.x;
+      ptr.y = ptr.lastY = d.y;
+      ptr.active = true;
+      lastRealMove = performance.now();
+    });
 
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
+    document.documentElement.addEventListener('mouseleave', () => {
+      ptr.active = false;
+      ptr.x = ptr.y = ptr.lastX = ptr.lastY = -9999;
+      ptr.dx = ptr.dy = 0;
+    });
 
-        if (distance < mouse.radius) {
-          const angle = Math.atan2(dy, dx);
-          const force = (mouse.radius - distance) / mouse.radius;
-          this.x -= Math.cos(angle) * force * 3;
-          this.y -= Math.sin(angle) * force * 3;
+    function hash2(x, y) {
+      let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    }
+    function valueNoise(x, y) {
+      const ix = Math.floor(x), iy = Math.floor(y);
+      const fx = x - ix, fy = y - iy;
+      const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+      const a = hash2(ix, iy), b = hash2(ix + 1, iy), c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+      return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+    }
+    const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
+
+    function buildKLPoints() {
+      const H = Math.min(height * KL.heightRatio, (width * 0.9) / 1.24);
+      const S = H * 0.15;
+      const T = S * 1.15;
+      const Wk = H * 0.62;
+      const Wl = H * 0.5;
+      const gap = H * 0.12;
+      const totalW = Wk + gap + Wl;
+      const pad = 4;
+      const cw = Math.ceil(totalW) + pad * 2;
+      const ch = Math.ceil(H) + pad * 2;
+
+      const off = document.createElement('canvas');
+      off.width = cw;
+      off.height = ch;
+      const c = off.getContext('2d');
+      c.fillStyle = '#fff';
+      c.translate(pad, pad);
+
+      c.fillRect(0, 0, S, H);
+      const x2 = S * 0.35, mid = H / 2;
+      c.beginPath();
+      c.moveTo(Wk - T, 0); c.lineTo(Wk, 0); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
+      c.closePath();
+      c.fill();
+      c.beginPath();
+      c.moveTo(Wk - T, H); c.lineTo(Wk, H); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
+      c.closePath();
+      c.fill();
+
+      const lx = Wk + gap;
+      c.fillRect(lx, 0, S, H);
+      c.fillRect(lx, H - S * 0.9, Wl, S * 0.9);
+
+      const data = c.getImageData(0, 0, cw, ch).data;
+      const filled = [];
+      for (let y = 0; y < ch; y += 2) {
+        for (let x = 0; x < cw; x += 2) {
+          if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
         }
       }
-    }
+      const samples = filled.length / 2;
+      const areaPx = samples * 4;
+      const target = Math.max(KL.minStars, Math.min(KL.maxStars, Math.round(areaPx * KL.density)));
 
-    function initParticles() {
-      particles = [];
-      const count = Math.floor((width * height) / 12000);
-      for (let i = 0; i < count; i++) {
-        particles.push(new Particle());
+      const originX = width * KL.centerX - totalW / 2 - pad;
+      const originY = height * KL.centerY - H / 2 - pad;
+      klBox = { x: originX + pad, y: originY + pad, w: totalW, h: H };
+
+      const seed = (Math.random() * 1000) | 0;
+      const density = (x, y) => {
+        const n = valueNoise(x / 46 + seed, y / 46 + seed * 0.37);
+        return 0.55 + 0.45 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
+      };
+      const pickSample = () => {
+        const i = (Math.random() * samples) | 0;
+        return [filled[i * 2], filled[i * 2 + 1]];
+      };
+
+      const out = [];
+      const nField = Math.round(target * 0.62);
+      const nClump = Math.round(target * 0.30);
+      const nStray = Math.round(target * 0.04);
+
+      let guard = 0;
+      while (out.length < nField && guard++ < nField * 20) {
+        const [x, y] = pickSample();
+        if (Math.random() > density(x, y)) continue;
+        out.push({ x: x + gauss() * 1.3, y: y + gauss() * 1.3, kind: 'field' });
       }
-    }
-    initParticles();
 
-    function connectParticles() {
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a; b < particles.length; b++) {
-          let dx = particles[a].x - particles[b].x;
-          let dy = particles[a].y - particles[b].y;
-          let distance = Math.sqrt(dx * dx + dy * dy);
-          if (distance < 120) {
-            let opacity = 1 - distance / 120;
-            ctx.strokeStyle = `rgba(56, 189, 248, ${opacity * 0.15})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
+      let made = 0;
+      guard = 0;
+      while (made < nClump && guard++ < nClump * 10) {
+        const [x, y] = pickSample();
+        if (Math.random() > density(x, y)) continue;
+        const members = 4 + ((Math.random() * 7) | 0);
+        const sigma = 2 + Math.random() * 2.5;
+        out.push({ x, y, kind: 'lead' });
+        for (let m = 1; m < members; m++) {
+          out.push({ x: x + gauss() * sigma, y: y + gauss() * sigma, kind: 'field' });
+        }
+        made += members;
+      }
+
+      for (let s = 0; s < nStray; s++) {
+        const [x, y] = pickSample();
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 10 + Math.random() * 34;
+        out.push({ x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist, kind: 'stray' });
+      }
+
+      for (const p of out) {
+        p.x += originX;
+        p.y += originY;
+      }
+      return out;
+    }
+
+    class Star {
+      constructor(hx, hy, o) {
+        const halo = o.layer === 'halo';
+        const dust = o.layer === 'dust';
+        const ambient = o.layer !== 'letter';
+        this.hx = hx;
+        this.hy = hy;
+
+        let mag = Math.pow(Math.random(), 3.2);
+        if (o.kind === 'lead') mag = Math.max(mag, 0.4 + Math.random() * 0.5);
+        if (o.kind === 'stray') mag *= 0.35;
+
+        this.ci = pickColor();
+        // Boosted size and baseline brightness for letter stars
+        this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : 0.75 + mag * 2.2;
+        this.bright = dust ? 0.1 + mag * 0.3 : halo ? 0.12 + mag * 0.2 : ambient ? 0.1 + mag * 0.3 : 0.6 + mag * 0.3;
+        this.glowSize = this.core * 2 / GLOW_CORE;
+        this.glowRect = glowRects[this.ci][pickGlowLevel(this.glowSize)];
+        this.spike = !halo && !dust && mag > 0.85;
+        this.spikeSize = this.core * 26;
+
+        this.hazeR = 0;
+        if (!ambient && Math.random() < 0.12) {
+          this.hazeR = 20 + Math.random() * 30;
+          this.hazeA = 0.08 + Math.random() * 0.08;
+        }
+
+        this.tws = 0.0012 + Math.random() * 0.0035;
+        this.twp = Math.random() * 6.283;
+
+        this.ox = 0; this.oy = 0;
+        this.vx = 0; this.vy = 0;
+        this.w = MOTION.returnSpeed * (0.85 + Math.random() * 0.35);
+        this.resp = (0.6 + Math.random() * 0.7) / (1 + mag * 0.8);
+
+        this.idleFx = 0.0007 + Math.random() * 0.0011;
+        this.idleFy = 0.0007 + Math.random() * 0.0011;
+        this.idleSx = Math.random() * 1000;
+        this.idleSy = Math.random() * 1000;
+        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+
+        this.ambient = ambient;
+        this.driftX = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
+        this.driftY = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
+
+        this.intro = !!o.scatter;
+        if (this.intro) {
+          this.ox = Math.random() * width - hx;
+          this.oy = Math.random() * height - hy;
+        }
+
+        this.fadeStart = Math.random() * (ambient ? 800 : 1750);
+        this.fadeDur = ambient ? 800 + Math.random() * 400 : 700 + Math.random() * 560;
+        this.moveStart = this.fadeStart + this.fadeDur + Math.random() * 840;
+        this.alpha = 0;
+        this.x = hx + this.ox;
+        this.y = hy + this.oy;
+      }
+
+      update(dt, t, elapsed) {
+        this.alpha = elapsed < this.fadeStart ? 0 : Math.min(1, (elapsed - this.fadeStart) / this.fadeDur);
+
+        if (this.ambient) {
+          this.hx += this.driftX * dt;
+          this.hy += this.driftY * dt;
+          if (this.hx < -20) this.hx = width + 20; else if (this.hx > width + 20) this.hx = -20;
+          if (this.hy < -20) this.hy = height + 20; else if (this.hy > height + 20) this.hy = -20;
+        }
+
+        let w = this.w;
+        if (this.intro) {
+          if (elapsed < this.moveStart) {
+            this.ox += this.driftX * dt;
+            this.oy += this.driftY * dt;
+            this.x = this.hx + this.ox;
+            this.y = this.hy + this.oy;
+            return;
+          }
+          const p = Math.min(1, (elapsed - this.moveStart) / 2200);
+          w *= 0.5 + 1.6 * p * p;
+          if (elapsed > this.moveStart + 5500) this.intro = false;
+        }
+
+        let vx = this.vx, vy = this.vy;
+
+        if (pushing) {
+          const dx = this.x - ptr.x, dy = this.y - ptr.y;
+          const d2 = dx * dx + dy * dy, R = MOTION.radius;
+          if (d2 < R * R) {
+            const d = Math.sqrt(d2) + 0.001;
+            const k = 1 - d / R;
+            const f = k * k * this.resp;
+            vx += (ptr.dx * MOTION.drag + (dx / d) * ptr.speed * MOTION.part) * f;
+            vy += (ptr.dy * MOTION.drag + (dy / d) * ptr.speed * MOTION.part) * f;
           }
         }
+
+        const atRest = this.ox * this.ox + this.oy * this.oy < 1e-4 && vx * vx + vy * vy < 1e-6;
+        if (atRest) {
+          this.ox = this.oy = this.vx = this.vy = 0;
+        } else {
+          vx -= this.ox * w * w * dt;
+          vy -= this.oy * w * w * dt;
+          const damp = Math.exp(-2 * 0.88 * w * dt);
+          vx *= damp;
+          vy *= damp;
+
+          const s2 = vx * vx + vy * vy;
+          if (s2 > MOTION.maxSpeed * MOTION.maxSpeed) {
+            const k = MOTION.maxSpeed / Math.sqrt(s2);
+            vx *= k;
+            vy *= k;
+          }
+          this.vx = vx;
+          this.vy = vy;
+          this.ox += vx * dt;
+          this.oy += vy * dt;
+        }
+
+        const idleX = prefersReducedMotion ? 0 : Math.sin(t * this.idleFx + this.idleSx) * this.idleAx;
+        const idleY = prefersReducedMotion ? 0 : Math.cos(t * this.idleFy + this.idleSy) * this.idleAy;
+        this.x = this.hx + this.ox + idleX;
+        this.y = this.hy + this.oy + idleY;
       }
     }
 
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      particles.forEach(p => {
-        p.update();
-        p.draw();
-      });
-      connectParticles();
-      requestAnimationFrame(animate);
+    function initParticles(assemble) {
+      ambientStars = [];
+      const count = Math.min(320, Math.round((width * height) / 6500));   // [perf] was 520 / 4000
+      for (let i = 0; i < count; i++) {
+        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
+      }
+      letterStars = buildKLPoints().map(p =>
+        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble })
+      );
+      buildHalo();
+      buildDust();
     }
-    animate();
+    // ---------- Procedural Milky Way + nebula (rendered once, low-res, smoothly upscaled) ----------
+    const BAND_ANG = -0.45;
+    const neb = document.getElementById('nebula');
+    const nebSeed = Math.random() * 100;
+    const fbm = (x, y) => {
+      let sum = 0, a = 0.5;
+      for (let i = 0; i < 5; i++) { sum += a * valueNoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.7; a *= 0.5; }
+      return sum;
+    };
+    const sstep = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+    const mix3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+
+    // Each colour of the nebula is its own layer. Layers are blended additively ("screen") and
+    // drift / pulse independently, so the colours slowly flow into and out of each other.
+    let nebLayers = [], nebCv, nebCtx, nebDim;
+    const TAU = Math.PI * 2, per = sec => TAU / (sec * 1000);
+    const LAYER_SPECS = [
+      { key: 'cool',   ax: 75, ay: 50, tx: 42, ty: 55, tr: 90,  ts: 60, to: 26, rot: 0.010, op: 0.85, pulse: 0.22, par: 18 },
+      { key: 'violet', ax: 65, ay: 58, tx: 51, ty: 38, tr: 75,  ts: 66, to: 33, rot: 0.012, op: 0.85, pulse: 0.30, par: 22 },
+      { key: 'warm',   ax: 85, ay: 52, tx: 35, ty: 47, tr: 80,  ts: 52, to: 24, rot: 0.010, op: 0.75, pulse: 0.35, par: 26 },
+      { key: 'rose',   ax: 90, ay: 62, tx: 29, ty: 44, tr: 70,  ts: 58, to: 21, rot: 0.012, op: 0.70, pulse: 0.42, par: 30 },
+      { key: 'teal',   ax: 60, ay: 64, tx: 60, ty: 33, tr: 85,  ts: 48, to: 30, rot: 0.010, op: 0.85, pulse: 0.30, par: 16 },
+      { key: 'dust',   ax: 45, ay: 34, tx: 70, ty: 80, tr: 110, ts: 90, to: 60, rot: 0.006, op: 0.95, pulse: 0.06, par: 12, plain: true }
+    ];
+
+    function drawNebula() {
+      neb.innerHTML = '';
+      nebLayers = [];
+      const M = 160, W = width + M * 2, H = height + M * 2, sc = 4;   // [perf] was 3 (44% fewer pixels)
+      const w = Math.ceil(W / sc), h = Math.ceil(H / sc);
+
+      // static sky gradient (with faint airglow at the bottom)
+      const bc = document.createElement('canvas');
+      bc.width = 2; bc.height = 256;
+      const bg = bc.getContext('2d'), gr = bg.createLinearGradient(0, 0, 0, 256);
+      gr.addColorStop(0, 'rgb(6,8,13)'); gr.addColorStop(0.72, 'rgb(11,18,37)'); gr.addColorStop(1, 'rgb(16,45,60)');
+      bg.fillStyle = gr; bg.fillRect(0, 0, 2, 256);
+      // (gradient is now painted into the single nebula canvas each update)
+
+      const tmp = document.createElement('canvas').getContext('2d');
+      const imgs = LAYER_SPECS.map(() => tmp.createImageData(w, h));
+      const D = imgs.map(im => im.data);
+      const m = Math.min(W, H), ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG);
+      const COOL = [46, 104, 214], VIOLET = [140, 70, 205], WARM = [255, 140, 110], TEAL = [30, 150, 170],
+            ROSE = [225, 70, 140], GOLD = [255, 205, 150];
+      const G = 1.15;
+      let i = 0;
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++, i += 4) {
+          const u = (x * sc) / m, v = (y * sc) / m;
+          const px = u - (W / m) * 0.5, py = v - (H / m) * 0.5;
+          const warp = (fbm(u * 1.3 + nebSeed * 3, v * 1.3) - 0.5) * 0.24;
+          const dist = -px * sa + py * ca + warp, along = px * ca + py * sa;
+          let band = Math.exp(-(dist * dist) / (2 * 0.2 * 0.2));
+          const bulge = Math.exp(-(along * along) / 0.14);
+          band *= 0.6 + 0.6 * Math.exp(-(along * along) / 1.1);
+
+          const gas = fbm(u * 2.2 + nebSeed, v * 2.2);
+          const fine = fbm(u * 6 + nebSeed * 2, v * 6);
+          const hue = fbm(u * 1.6 - nebSeed, v * 1.6 + 5);
+          const dens = band * (0.25 + gas * 1.1) * (0.75 + fine * 0.5);
+          const lane = sstep(0.48, 0.72, fbm(u * 3.5 + 40, v * 3.5 - nebSeed)) * band;
+
+          const s1 = sstep(0.3, 0.6, hue);
+          const wv = sstep(0.6, 0.85, fine) * 0.55 * band;
+          const Ib = dens * 0.55 * G;
+          const Ic = Ib * (1 - s1), Iv = Ib * s1;
+          const gk = Math.min(1, bulge * band * 1.2);
+          const Iw = Ib * wv * 1.1 + bulge * band * 0.16 * G;
+          const wc = mix3(WARM, GOLD, gk);
+          const Ie = sstep(0.6, 0.84, fbm(u * 1.8 + 120 + nebSeed, v * 1.8 - 30)) * (0.25 + 0.75 * band) * 0.5 * 0.6 * G;
+          const It = sstep(0.5, 0.85, fbm(u * 1.4 + 90, v * 1.4)) * 0.11 * (1 - band * 0.5) * G;
+
+          D[0][i] = COOL[0] * Ic;   D[0][i + 1] = COOL[1] * Ic;   D[0][i + 2] = COOL[2] * Ic;   D[0][i + 3] = 255;
+          D[1][i] = VIOLET[0] * Iv; D[1][i + 1] = VIOLET[1] * Iv; D[1][i + 2] = VIOLET[2] * Iv; D[1][i + 3] = 255;
+          D[2][i] = wc[0] * Iw;     D[2][i + 1] = wc[1] * Iw;     D[2][i + 2] = wc[2] * Iw;     D[2][i + 3] = 255;
+          D[3][i] = ROSE[0] * Ie;   D[3][i + 1] = ROSE[1] * Ie;   D[3][i + 2] = ROSE[2] * Ie;   D[3][i + 3] = 255;
+          D[4][i] = TEAL[0] * It;   D[4][i + 1] = TEAL[1] * It * 0.9; D[4][i + 2] = TEAL[2] * It; D[4][i + 3] = 255;
+          D[5][i] = 2; D[5][i + 1] = 3; D[5][i + 2] = 8; D[5][i + 3] = Math.min(255, lane * 0.8 * 255);
+        }
+      }
+
+      LAYER_SPECS.forEach((sp, k) => {
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').putImageData(imgs[k], 0, 0);
+        nebLayers.push({
+          el: c, plain: !!sp.plain, ax: sp.ax, ay: sp.ay, rot: sp.rot, op: sp.op, pulse: sp.pulse, par: sp.par,
+          fx: per(sp.tx), fy: per(sp.ty), fr: per(sp.tr), fs: per(sp.ts), fo: per(sp.to),
+          px: Math.random() * TAU, py: Math.random() * TAU
+        });
+      });
+      // One low-res canvas: layers are blended inside it (cheap), then the browser upscales it once
+      nebCv = document.createElement('canvas');
+      nebCv.width = w; nebCv.height = h;
+      nebCv.style.cssText = `left:${-M}px;top:${-M}px;width:${W}px;height:${H}px`;
+      neb.appendChild(nebCv);
+      nebCtx = nebCv.getContext('2d', { alpha: false });
+      nebDim = { W, H, M, kx: w / W, ky: h / H, bg: bc };
+      updateNebula(0);
+    }
+
+    function updateNebula(t) {
+      t *= NEB_SPEED;
+      if (!nebCtx) return;
+      const g = nebCtx, { W, H, M, kx, ky, bg } = nebDim;
+      g.setTransform(kx, 0, 0, ky, 0, 0);
+      g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+      g.drawImage(bg, 0, M, W, H - 2 * M);
+      for (const L of nebLayers) {
+        const dx = Math.sin(t * L.fx + L.px) * L.ax - par.x * L.par;
+        const dy = Math.cos(t * L.fy + L.py) * L.ay - par.y * L.par;
+        const r = Math.sin(t * L.fr + L.px * 2) * L.rot;
+        const sc = 1 + Math.sin(t * L.fs + L.py) * 0.03;
+        const o = Math.min(1, L.op * (1 + L.pulse * Math.sin(t * L.fo + L.px)));
+        g.setTransform(kx, 0, 0, ky, 0, 0);
+        g.translate(W / 2 + dx, H / 2 + dy); g.rotate(r); g.scale(sc, sc);
+        g.globalCompositeOperation = L.plain ? 'source-over' : 'screen';
+        g.globalAlpha = o;
+        g.drawImage(L.el, -W / 2, -H / 2, W, H);
+      }
+    }
+
+    // Dense tiny stars along the Milky Way band.
+    // [perf] Baked ONCE into a static offscreen canvas -> 1 drawImage per frame instead of ~1500.
+    let dustLayer = null;
+    function buildDust() {
+      dustLayer = document.createElement('canvas');
+      dustLayer.width = width; dustLayer.height = height;
+      const g = dustLayer.getContext('2d');
+      g.globalCompositeOperation = 'lighter';
+      const n = Math.min(1200, Math.round((width * height) / 1800));
+      const ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG), diag = Math.hypot(width, height);
+      const sigma = Math.min(width, height) * 0.2 * 0.85;
+      let made = 0, guard = 0;
+      while (made < n && guard++ < n * 4) {
+        const along = (Math.random() - 0.5) * diag * 1.1, offs = gauss() * sigma;
+        const x = width / 2 + along * ca - offs * sa, y = height / 2 + along * sa + offs * ca;
+        if (x < 0 || x > width || y < 0 || y > height) continue;
+        const p = new Star(x, y, { layer: 'dust' });
+        const s = p.glowSize;
+        g.globalAlpha = Math.min(1, p.bright * (0.5 + Math.random() * 0.7));
+        const gr = p.glowRect;
+        g.drawImage(atlas, gr.x, gr.y, gr.s, gr.s, x - s / 2, y - s / 2, s, s);
+        made++;
+      }
+    }
+
+    // Occasional shooting star
+    let shoot = null, nextShoot = performance.now() + 4000 + Math.random() * 6000;
+    function drawShoot(t, dt) {
+      if (!shoot && t > nextShoot && !prefersReducedMotion) {
+        const a = 0.35 + Math.random() * 0.5;
+        shoot = { x: Math.random() * width * 0.7, y: Math.random() * height * 0.35, vx: Math.cos(a) * 14, vy: Math.sin(a) * 14, life: 0, max: 55 };
+      }
+      if (!shoot) return;
+      shoot.x += shoot.vx * dt; shoot.y += shoot.vy * dt; shoot.life += dt;
+      const k = 1 - shoot.life / shoot.max;
+      if (k <= 0) { shoot = null; nextShoot = t + 7000 + Math.random() * 12000; return; }
+      const tx = shoot.x - shoot.vx * 11, ty = shoot.y - shoot.vy * 11;
+      const gr = ctx.createLinearGradient(tx, ty, shoot.x, shoot.y);
+      gr.addColorStop(0, 'rgba(180,210,255,0)');
+      gr.addColorStop(1, `rgba(225,238,255,${0.85 * k})`);
+      ctx.globalAlpha = 1; ctx.strokeStyle = gr; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(shoot.x, shoot.y); ctx.stroke();
+      ctx.globalAlpha = k; const sg = glowRects[0][1]; ctx.drawImage(atlas, sg.x, sg.y, sg.s, sg.s, shoot.x - 9, shoot.y - 9, 18, 18);
+    }
+
+    // Gentle pointer parallax for the nebula
+    const par = { x: 0, y: 0 };
+
+    function buildHalo() {
+      haloStars = [];
+      if (!klBox) return;
+      const m = klBox.h * 0.3, gap = klBox.h * 0.05;
+      const x0 = Math.max(10, klBox.x - m), x1 = Math.min(width - 10, klBox.x + klBox.w + m);
+      const y0 = Math.max(10, klBox.y - m), y1 = Math.min(height - 10, klBox.y + klBox.h + m);
+      const count = Math.max(18, Math.min(45, Math.round(width * height / 26000)));
+      let guard = 0;
+      while (haloStars.length < count && guard++ < 2000) {
+        const x = x0 + Math.random() * (x1 - x0), y = y0 + Math.random() * (y1 - y0);
+        const inside = x > klBox.x - gap && x < klBox.x + klBox.w + gap && y > klBox.y - gap && y < klBox.y + klBox.h + gap;
+        if (inside) continue;
+        haloStars.push(new Star(x, y, { layer: 'halo' }));
+      }
+    }
+    initParticles(KL.assembleOnLoad && !prefersReducedMotion);
+    drawNebula();
+
+    function drawStars(list, t) {
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        if (p.alpha <= 0.01) continue;
+
+        const sineWave = Math.sin(t * p.tws + p.twp);
+        // Added brightness floor so letter stars don't fade to black
+        const tw = p.ambient 
+          ? Math.max(0, (sineWave + 0.15) * 1.35)
+          : Math.max(0.35, (sineWave + 0.35) * 1.2);
+        const a = p.alpha * p.bright * tw;
+
+        if (a <= 0.008) continue;
+
+        if (p.hazeR) {
+          ctx.globalAlpha = Math.min(1, p.alpha * p.hazeA * tw);
+          const hs = p.hazeR * 2;
+          const hr = hazeRects[p.ci]; ctx.drawImage(atlas, hr.x, hr.y, hr.s, hr.s, p.x - p.hazeR, p.y - p.hazeR, hs, hs);
+        }
+
+        ctx.globalAlpha = Math.min(1, a);
+        const s = p.glowSize;
+        const gr = p.glowRect; ctx.drawImage(atlas, gr.x, gr.y, gr.s, gr.s, p.x - s / 2, p.y - s / 2, s, s);
+
+        if (p.spike) {
+          ctx.globalAlpha = Math.min(1, a * 0.75);
+          const L = p.spikeSize;
+          const sr = spikeRects[p.ci]; ctx.drawImage(atlas, sr.x, sr.y, sr.s, sr.s, p.x - L / 2, p.y - L / 2, L, L);
+        }
+      }
+    }
+
+    (function addGrain() {
+      const n = 160;
+      const c = document.createElement('canvas');
+      c.width = c.height = n;
+      const g = c.getContext('2d');
+      const img = g.createImageData(n, n);
+      for (let i = 0; i < img.data.length; i += 4) {
+        img.data[i] = img.data[i + 1] = img.data[i + 2] = 255;
+        img.data[i + 3] = Math.random() * 255 * 0.04;
+      }
+      g.putImageData(img, 0, 0);
+      const ov = document.getElementById('overlay');
+      ov.style.backgroundImage = `radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(2,3,10,0.7) 100%), url(${c.toDataURL()})`;
+      ov.style.backgroundSize = `100% 100%, ${n}px ${n}px`;
+    })();
+
+    // Wallpaper engines (e.g. Plash) don't deliver mouse events, so when no real pointer has
+    // moved for AUTO_IDLE ms a virtual cursor glides through the stars on its own.
+    const AUTO_IDLE = 3500;
+    let autoT = 0, autoLast = null;
+    function autoPilot(t, dt) {
+      if (prefersReducedMotion || t - lastRealMove < AUTO_IDLE) { autoLast = null; return; }
+      autoT += 0.016 * dt;
+      const cx = width * KL.centerX, cy = height * KL.centerY;
+      const ax = cx + width * 0.38 * Math.sin(autoT * 0.9 + 0.6 * Math.sin(autoT * 0.37));
+      const ay = cy + height * 0.30 * Math.sin(autoT * 0.61 + 1.3);
+      if (autoLast) { ptr.dx += ax - autoLast.x; ptr.dy += ay - autoLast.y; }
+      ptr.x = ax; ptr.y = ay; ptr.active = true;
+      autoLast = { x: ax, y: ay };
+    }
+
+    let lastTime = performance.now();
+    let skipFrame = false;
+    let dirty = true;
+    const TARGET_FPS = 30, FRAME_MS = 1000 / TARGET_FPS;   // [perf] was 60. Halves all per-frame work
+    const NEB_MS = 1000 / 10;                              // [perf] nebula drifts very slowly: 10fps is plenty
+    let lastFrame = 0, lastNeb = 0;
+    function animate(now) {
+      if (STATIC_MODE) { if (!dirty) return; dirty = false; }
+      if (document.hidden) return;   // resumed by the visibilitychange handler
+      const t = STATIC_MODE ? 5000 : (now || performance.now());
+      if (!STATIC_MODE) {
+        const since = t - lastFrame;
+        if (since < FRAME_MS - 1) { requestAnimationFrame(animate); return; }
+        lastFrame = t - (since % FRAME_MS);
+      }
+
+      if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
+        isScrolling = false;
+        rootEl.classList.remove('is-scrolling');
+      }
+
+      if (isScrolling) {
+        skipFrame = !skipFrame;
+        if (skipFrame) { requestAnimationFrame(animate); return; }
+      } else {
+        skipFrame = false;
+      }
+
+      const dt = Math.max(0.1, Math.min((t - lastTime) / 16.667, 3.0));
+      lastTime = t;
+      const elapsed = STATIC_MODE ? 1e7 : t - pageStartTime;
+
+      autoPilot(t, dt);
+
+      let rawSpeed = Math.hypot(ptr.dx, ptr.dy);
+      if (rawSpeed > 60) {
+        ptr.dx *= 60 / rawSpeed;
+        ptr.dy *= 60 / rawSpeed;
+        rawSpeed = 60;
+      }
+      ptr.speed = rawSpeed;
+      pushing = ptr.active && ptr.speed > 0.05 && !isScrolling && !prefersReducedMotion;
+
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < haloStars.length; i++) haloStars[i].update(dt, t, elapsed);
+
+      ctx.globalCompositeOperation = 'lighter';
+      if (dustLayer) {
+        ctx.globalAlpha = Math.min(1, elapsed / 1200) * (0.85 + 0.15 * Math.sin(t * 0.0008));
+        ctx.drawImage(dustLayer, 0, 0, width, height);
+      }
+      drawStars(ambientStars, t);
+      drawStars(letterStars, t);
+      drawStars(haloStars, t);
+      drawShoot(t, dt);
+      par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * 0.04;
+      par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * 0.04;
+      if (!STATIC_MODE && t - lastNeb >= NEB_MS) { lastNeb = t; updateNebula(t); }
+      ctx.globalAlpha = 1;
+
+      ptr.dx = ptr.dy = 0;
+      if (!STATIC_MODE) requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+
+    // [perf] stop all work when the page is hidden (screen off / other space / minimised)
+    let paused = false;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { paused = true; }
+      else if (paused) { paused = false; lastTime = performance.now(); requestAnimationFrame(animate); }
+    });
   </script>
 </body>
 </html>
