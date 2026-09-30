@@ -141,7 +141,7 @@
 <body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
 
   <!-- Embedded Shared Background -->
-  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true"></iframe>
+  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1"></iframe>
 
   <!-- Preloader Overlay -->
   <div id="preloader"></div>
@@ -375,17 +375,27 @@
 
   <!-- JavaScript Logic -->
   <script>
-    // Forward mousemove events to background iframe
-    const bgIframe = document.getElementById('bg-iframe');
-    window.addEventListener('mousemove', (e) => {
-      if (bgIframe && bgIframe.contentWindow) {
-        bgIframe.contentWindow.postMessage({
-          type: 'mousemove',
-          x: e.clientX,
-          y: e.clientY
-        }, '*');
-      }
-    }, { passive: true });
+    // --- Forward pointer / scroll info to the shared background iframe ---
+    (function () {
+      const bgIframe = document.getElementById('bg-iframe');
+      if (!bgIframe) return;
+      const post = (msg) => {
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      };
+      let mx = 0, my = 0, movePending = false, scrollPending = false;
+      window.addEventListener('pointermove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (movePending) return;
+        movePending = true;
+        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
+      window.addEventListener('scroll', () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+      }, { passive: true });
+    })();
 
     // --- Page Initialization & Animation Effects ---
     document.addEventListener('DOMContentLoaded', () => {
