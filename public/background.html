@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Background</title>
+  <title>KL Star Background</title>
   <style>
     html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background-color: #07090e; }
-    #nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07090e; }
+    /* The nebula is generated in small slices, then fades in once ready (no pop-in) */
+    #nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07090e;
+              opacity: 0; transition: opacity 2.4s ease; }
+    #nebula.ready { opacity: 1; }
     #nebula canvas { position: absolute; }
     #overlay { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
-    #bg-canvas {
-      position: fixed; top: 0; left: 0;
-      z-index: 1; pointer-events: none;
-    }
+    #bg-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
   </style>
 </head>
 <body>
@@ -20,26 +20,44 @@
   <canvas id="bg-canvas"></canvas>
   <div id="overlay"></div>
   <script>
-    const rootEl = document.documentElement;
+    // =====================================================================
+    //  Shared KL star background.
+    //  Embedded by index.html / colordle.html / 404.html via <iframe>.
+    //  The parent forwards pointer + scroll info with postMessage.
+    // =====================================================================
     const STATIC_MODE = false;   // true = nothing moves (single rendered frame)
     const NEB_SPEED = 1;         // speed of the drifting background colours (try 0.5 - 2)
+    const NEB_FPS = 20;          // nebula redraw rate (it drifts very slowly, so 20 looks identical to 30)
+    const NEB_PIXELS = 80000;    // nebula is computed at ~this many pixels, then smoothly upscaled
+    const FPS_CAP = 80;          // 0 = follow display refresh. 80 keeps 60/90Hz untouched but halves work on 144Hz+ screens
     const SCROLL_IDLE_MS = 150;
+    const MAX_STEP_MS = 50;      // animation clock never advances more than this per frame
+    const INTRO_MS = 6500;       // roughly how long the KL assembly takes
+
+    const rootEl = document.documentElement;
     let isScrolling = false;
     let lastScrollTime = 0;
 
-    // --- Canvas Star Field: realistic glowing stars + enhanced "KL" star formation ---
     const canvas = document.getElementById('bg-canvas');
     const ctx = canvas.getContext('2d');
     const prefersReducedMotion = STATIC_MODE || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const pageStartTime = performance.now();
+
+    // ---- Animation clock ----------------------------------------------
+    // Advances only by (clamped) time between RENDERED frames. If the page stalls while the
+    // parent loads Tailwind / fonts / etc., the intro simply pauses instead of skipping ahead,
+    // which is what used to make the KL "suddenly appear".
+    let clock = STATIC_MODE ? 1e7 : 0;
+    let lastNow = null;
+    let NEB_MS = 1000 / NEB_FPS;
+    let quality = 0, emaDelta = 16.7, slowMs = 0;   // adaptive quality governor (see applyQuality)
 
     const KL = {
       heightRatio: 0.55,
       centerX: 0.5,
       centerY: 0.5,
-      density: 0.012,        // [perf] was 0.017
-      minStars: 700,         // [perf] was 900
-      maxStars: 1600,        // [perf] was 2400
+      density: 0.012,
+      minStars: 700,
+      maxStars: 1600,
       assembleOnLoad: true
     };
 
@@ -50,6 +68,10 @@
       maxSpeed: 8,
       returnSpeed: 0.045
     };
+
+    const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
+    const smooth = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
+    const easeInOutCubic = p => p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
     const PALETTE = [
       { rgb: [178, 214, 255], w: 34 },
@@ -150,6 +172,7 @@
     let letterStars = [];
     let haloStars = [];
     let klBox = null;
+    let leaving = null;          // previous star set, cross-fading out after a resize
 
     const MAX_DPR = 1;   // soft glows don't need hi-dpi; raise to 1.5 for crisper cores (costs ~2x fill)
     function getSize() {
@@ -172,68 +195,70 @@
     }
     resize();
 
-    let resizeTimer;
-    function checkSize() {
-      const sz = getSize();
-      if (sz.w !== width || sz.h !== height) {
-        resize();
-        initParticles(false);
-        drawNebula();
-        dirty = true;
-        if (STATIC_MODE) requestAnimationFrame(animate);
-      }
-    }
-    function scheduleCheck() { clearTimeout(resizeTimer); resizeTimer = setTimeout(checkSize, 120); }
-    window.addEventListener('resize', scheduleCheck);
-    if (window.ResizeObserver) new ResizeObserver(scheduleCheck).observe(document.documentElement);
-    setInterval(checkSize, 4000); // Plash doesn't always fire resize (display change, wake from sleep)
+    const par = { x: 0, y: 0 };   // gentle pointer parallax for the nebula
 
+    // ---- Pointer input (direct, or forwarded from the parent page) ------
     const ptr = { x: -9999, y: -9999, lastX: -9999, lastY: -9999, dx: 0, dy: 0, speed: 0, active: false };
     let pushing = false;
     let lastRealMove = -1e9;
-    window.addEventListener('pointermove', (e) => {
+    let autoActive = false;
+
+    function onMove(x, y) {
       if (isScrolling) return;
-      if (ptr.lastX > -9000) {
-        ptr.dx += e.clientX - ptr.lastX;
-        ptr.dy += e.clientY - ptr.lastY;
+      if (autoActive) {            // taking over from the auto-pilot: don't treat the jump as a swipe
+        autoActive = false;
+        ptr.lastX = ptr.lastY = -9999;
       }
-      ptr.x = ptr.lastX = e.clientX;
-      ptr.y = ptr.lastY = e.clientY;
+      if (ptr.lastX > -9000) {
+        ptr.dx += x - ptr.lastX;
+        ptr.dy += y - ptr.lastY;
+      }
+      ptr.x = ptr.lastX = x;
+      ptr.y = ptr.lastY = y;
       ptr.active = true;
       lastRealMove = performance.now();
-    }, { passive: true });
-
-    // Receive mouse coordinates when embedded inside an iframe (parent posts {type:'mousemove', x, y})
-    window.addEventListener('message', (event) => {
-      const d = event.data;
-      if (!d || d.type !== 'mousemove' || typeof d.x !== 'number' || typeof d.y !== 'number') return;
-      if (isScrolling) return;
-      if (ptr.lastX > -9000) {
-        ptr.dx += d.x - ptr.lastX;
-        ptr.dy += d.y - ptr.lastY;
-      }
-      ptr.x = ptr.lastX = d.x;
-      ptr.y = ptr.lastY = d.y;
-      ptr.active = true;
-      lastRealMove = performance.now();
-    });
-
-    document.documentElement.addEventListener('mouseleave', () => {
+    }
+    function onLeave() {
       ptr.active = false;
       ptr.x = ptr.y = ptr.lastX = ptr.lastY = -9999;
       ptr.dx = ptr.dy = 0;
+    }
+    function onScroll() {
+      lastScrollTime = performance.now();
+      isScrolling = true;
+      ptr.dx = ptr.dy = 0;
+    }
+    window.addEventListener('pointermove', e => onMove(e.clientX, e.clientY), { passive: true });
+    document.documentElement.addEventListener('mouseleave', onLeave);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('message', e => {
+      if (window.parent !== window && e.source !== window.parent) return;
+      const d = e.data;
+      if (!d || typeof d !== 'object') return;
+      if ((d.type === 'mousemove' || d.type === 'pointer') && isFinite(d.x) && isFinite(d.y)) onMove(d.x, d.y);
+      else if (d.type === 'leave') onLeave();
+      else if (d.type === 'scroll') onScroll();
     });
 
-    function hash2(x, y) {
-      let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263);
-      h = Math.imul(h ^ (h >>> 13), 1274126177);
-      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-    }
+    // ---- Noise helpers ---------------------------------------------------
+    // 256x256 lattice of random values (built once). A table read is far cheaper than hashing
+    // four corners per sample, and the nebula takes millions of samples.
+    const LATTICE = new Float32Array(65536);
+    (function () {
+      let a = 0x9e3779b9;
+      for (let i = 0; i < 65536; i++) {            // mulberry32
+        a = (a + 0x6d2b79f5) | 0;
+        let t = Math.imul(a ^ (a >>> 15), 1 | a);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        LATTICE[i] = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      }
+    })();
     function valueNoise(x, y) {
       const ix = Math.floor(x), iy = Math.floor(y);
       const fx = x - ix, fy = y - iy;
       const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-      const a = hash2(ix, iy), b = hash2(ix + 1, iy), c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+      const x0 = ix & 255, x1 = (ix + 1) & 255, r0 = (iy & 255) << 8, r1 = ((iy + 1) & 255) << 8;
+      const a = LATTICE[x0 | r0], b = LATTICE[x1 | r0], c = LATTICE[x0 | r1], d = LATTICE[x1 | r1];
       return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
     }
     const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
@@ -337,6 +362,12 @@
       return out;
     }
 
+    // =====================================================================
+    //  Star
+    //  Position = home + intro offset + physics offset + idle wobble.
+    //  The intro offset is a deterministic eased tween (curved flight path), fully independent
+    //  of frame rate and of the pointer physics, so the KL always forms as a smooth motion.
+    // =====================================================================
     class Star {
       constructor(hx, hy, o) {
         const halo = o.layer === 'halo';
@@ -344,13 +375,13 @@
         const ambient = o.layer !== 'letter';
         this.hx = hx;
         this.hy = hy;
+        this.born = o.born || 0;
 
         let mag = Math.pow(Math.random(), 3.2);
         if (o.kind === 'lead') mag = Math.max(mag, 0.4 + Math.random() * 0.5);
         if (o.kind === 'stray') mag *= 0.35;
 
         this.ci = pickColor();
-        // Boosted size and baseline brightness for letter stars
         this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : 0.75 + mag * 2.2;
         this.bright = dust ? 0.1 + mag * 0.3 : halo ? 0.12 + mag * 0.2 : ambient ? 0.1 + mag * 0.3 : 0.6 + mag * 0.3;
         this.glowSize = this.core * 2 / GLOW_CORE;
@@ -383,22 +414,40 @@
         this.driftX = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
         this.driftY = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
 
+        // ---- intro flight ----
         this.intro = !!o.scatter;
+        this.ix = 0; this.iy = 0;
         if (this.intro) {
-          this.ox = Math.random() * width - hx;
-          this.oy = Math.random() * height - hy;
+          this.sx = Math.random() * width - hx;     // scatter offset from home
+          this.sy = Math.random() * height - hy;
+          const nx = klBox ? clamp01((hx - klBox.x) / klBox.w) : Math.random();
+          // stars set off in a left-to-right wave, so the letters "draw in" instead of appearing at once
+          this.moveStart = 400 + nx * 1300 + Math.random() * 600;
+          this.moveDur = 2600 + Math.random() * 1400;
+          this.curve = (Math.random() - 0.5) * 0.6;   // sideways bend of the flight path
+          this.ix = this.sx; this.iy = this.sy;
         }
 
-        this.fadeStart = Math.random() * (ambient ? 800 : 1750);
-        this.fadeDur = ambient ? 800 + Math.random() * 400 : 700 + Math.random() * 560;
-        this.moveStart = this.fadeStart + this.fadeDur + Math.random() * 840;
+        // ---- fade-in (smoothstepped in update) ----
+        if (ambient) {
+          this.fadeStart = Math.random() * 800;
+          this.fadeDur = 800 + Math.random() * 400;
+        } else if (o.scatter) {
+          this.fadeStart = Math.random() * 1000;
+          this.fadeDur = 900 + Math.random() * 500;
+        } else {
+          this.fadeStart = Math.random() * 350;
+          this.fadeDur = 500 + Math.random() * 400;
+        }
         this.alpha = 0;
-        this.x = hx + this.ox;
-        this.y = hy + this.oy;
+        this.x = hx + this.ix;
+        this.y = hy + this.iy;
       }
 
-      update(dt, t, elapsed) {
-        this.alpha = elapsed < this.fadeStart ? 0 : Math.min(1, (elapsed - this.fadeStart) / this.fadeDur);
+      update(dt, t) {
+        const el = t - this.born;
+        const fp = el <= this.fadeStart ? 0 : Math.min(1, (el - this.fadeStart) / this.fadeDur);
+        this.alpha = fp * fp * (3 - 2 * fp);
 
         if (this.ambient) {
           this.hx += this.driftX * dt;
@@ -407,24 +456,29 @@
           if (this.hy < -20) this.hy = height + 20; else if (this.hy > height + 20) this.hy = -20;
         }
 
-        let w = this.w;
+        // intro flight: eased tween along a curved path, landing exactly on home
+        let ix = 0, iy = 0;
         if (this.intro) {
-          if (elapsed < this.moveStart) {
-            this.ox += this.driftX * dt;
-            this.oy += this.driftY * dt;
-            this.x = this.hx + this.ox;
-            this.y = this.hy + this.oy;
-            return;
+          if (el < this.moveStart) {
+            this.sx += this.driftX * dt;
+            this.sy += this.driftY * dt;
+            ix = this.sx; iy = this.sy;
+          } else {
+            const p = Math.min(1, (el - this.moveStart) / this.moveDur);
+            const e = easeInOutCubic(p);
+            const c = Math.sin(Math.PI * p) * this.curve;
+            ix = this.sx * (1 - e) - this.sy * c;
+            iy = this.sy * (1 - e) + this.sx * c;
+            if (p >= 1) { this.intro = false; ix = iy = 0; }
           }
-          const p = Math.min(1, (elapsed - this.moveStart) / 2200);
-          w *= 0.5 + 1.6 * p * p;
-          if (elapsed > this.moveStart + 5500) this.intro = false;
         }
 
+        // pointer physics (spring back to rest)
         let vx = this.vx, vy = this.vy;
+        const cx = this.hx + ix + this.ox, cy = this.hy + iy + this.oy;
 
         if (pushing) {
-          const dx = this.x - ptr.x, dy = this.y - ptr.y;
+          const dx = cx - ptr.x, dy = cy - ptr.y;
           const d2 = dx * dx + dy * dy, R = MOTION.radius;
           if (d2 < R * R) {
             const d = Math.sqrt(d2) + 0.001;
@@ -435,6 +489,7 @@
           }
         }
 
+        const w = this.w;
         const atRest = this.ox * this.ox + this.oy * this.oy < 1e-4 && vx * vx + vy * vy < 1e-6;
         if (atRest) {
           this.ox = this.oy = this.vx = this.vy = 0;
@@ -457,40 +512,44 @@
           this.oy += vy * dt;
         }
 
+        // idle wobble is ALWAYS on (never switched on/off), so nothing snaps when the intro ends
         const idleX = prefersReducedMotion ? 0 : Math.sin(t * this.idleFx + this.idleSx) * this.idleAx;
         const idleY = prefersReducedMotion ? 0 : Math.cos(t * this.idleFy + this.idleSy) * this.idleAy;
-        this.x = this.hx + this.ox + idleX;
-        this.y = this.hy + this.oy + idleY;
+        this.x = this.hx + ix + this.ox + idleX;
+        this.y = this.hy + iy + this.oy + idleY;
       }
     }
 
-    function initParticles(assemble) {
+    function initParticles(assemble, born) {
       ambientStars = [];
-      const count = Math.min(320, Math.round((width * height) / 6500));   // [perf] was 520 / 4000
+      const count = Math.min(320, Math.round((width * height) / 6500));
       for (let i = 0; i < count; i++) {
-        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
+        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient', born }));
       }
       letterStars = buildKLPoints().map(p =>
-        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble })
+        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble, born })
       );
-      buildHalo();
-      buildDust();
+      buildHalo(born);
+      buildDust(born);
     }
-    // ---------- Procedural Milky Way + nebula (rendered once, low-res, smoothly upscaled) ----------
+
+    // =====================================================================
+    //  Procedural Milky Way + nebula
+    //  Generated in small time-sliced chunks (never blocks a frame), then faded in.
+    // =====================================================================
     const BAND_ANG = -0.45;
     const neb = document.getElementById('nebula');
     const nebSeed = Math.random() * 100;
-    const fbm = (x, y) => {
+    // Fewer octaves = cheaper. The result is rescaled to the 5-octave mean so thresholds/colours match.
+    const FBM_NORM = Array.from({ length: 6 }, (_, o) => o ? 0.96875 / (1 - Math.pow(0.5, o)) : 0);
+    const fbm = (x, y, oct = 5) => {
       let sum = 0, a = 0.5;
-      for (let i = 0; i < 5; i++) { sum += a * valueNoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.7; a *= 0.5; }
-      return sum;
+      for (let i = 0; i < oct; i++) { sum += a * valueNoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.7; a *= 0.5; }
+      return sum * FBM_NORM[oct];
     };
     const sstep = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
-    const mix3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
-
-    // Each colour of the nebula is its own layer. Layers are blended additively ("screen") and
-    // drift / pulse independently, so the colours slowly flow into and out of each other.
-    let nebLayers = [], nebCv, nebCtx, nebDim;
+    
+    let nebLayers = [], nebCv = null, nebCtx = null, nebDim = null;
     const TAU = Math.PI * 2, per = sec => TAU / (sec * 1000);
     const LAYER_SPECS = [
       { key: 'cool',   ax: 75, ay: 50, tx: 42, ty: 55, tr: 90,  ts: 60, to: 26, rot: 0.010, op: 0.85, pulse: 0.22, par: 18 },
@@ -500,82 +559,105 @@
       { key: 'teal',   ax: 60, ay: 64, tx: 60, ty: 33, tr: 85,  ts: 48, to: 30, rot: 0.010, op: 0.85, pulse: 0.30, par: 16 },
       { key: 'dust',   ax: 45, ay: 34, tx: 70, ty: 80, tr: 110, ts: 90, to: 60, rot: 0.006, op: 0.95, pulse: 0.06, par: 12, plain: true }
     ];
+    // fixed per-layer phases so a rebuild after a resize looks identical (no colour jump)
+    const nebPhase = LAYER_SPECS.map(() => [Math.random() * TAU, Math.random() * TAU]);
 
-    function drawNebula() {
-      neb.innerHTML = '';
-      nebLayers = [];
-      const M = 160, W = width + M * 2, H = height + M * 2, sc = 4;   // [perf] was 3 (44% fewer pixels)
-      const w = Math.ceil(W / sc), h = Math.ceil(H / sc);
-
-      // static sky gradient (with faint airglow at the bottom)
+    function* nebulaGen(W, H, M, sc, w, h) {
       const bc = document.createElement('canvas');
       bc.width = 2; bc.height = 256;
       const bg = bc.getContext('2d'), gr = bg.createLinearGradient(0, 0, 0, 256);
       gr.addColorStop(0, 'rgb(6,8,13)'); gr.addColorStop(0.72, 'rgb(11,18,37)'); gr.addColorStop(1, 'rgb(16,45,60)');
       bg.fillStyle = gr; bg.fillRect(0, 0, 2, 256);
-      // (gradient is now painted into the single nebula canvas each update)
 
       const tmp = document.createElement('canvas').getContext('2d');
       const imgs = LAYER_SPECS.map(() => tmp.createImageData(w, h));
-      const D = imgs.map(im => im.data);
+      const d0 = imgs[0].data, d1 = imgs[1].data, d2 = imgs[2].data, d3 = imgs[3].data, d4 = imgs[4].data, d5 = imgs[5].data;
       const m = Math.min(W, H), ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG);
-      const COOL = [46, 104, 214], VIOLET = [140, 70, 205], WARM = [255, 140, 110], TEAL = [30, 150, 170],
-            ROSE = [225, 70, 140], GOLD = [255, 205, 150];
+      const inv = sc / m, offX = (W / m) * 0.5, offY = (H / m) * 0.5, s2 = nebSeed * 2, s3 = nebSeed * 3;
       const G = 1.15;
+      // colours as plain numbers (no per-pixel array allocation -> no GC hiccups)
+      const WR = 255, WG = 140, WB = 110, GR = 255, GG = 205, GB = 150;
       let i = 0;
       for (let y = 0; y < h; y++) {
+        const v = y * inv, py = v - offY;
         for (let x = 0; x < w; x++, i += 4) {
-          const u = (x * sc) / m, v = (y * sc) / m;
-          const px = u - (W / m) * 0.5, py = v - (H / m) * 0.5;
-          const warp = (fbm(u * 1.3 + nebSeed * 3, v * 1.3) - 0.5) * 0.24;
+          const u = x * inv, px = u - offX;
+          const warp = (fbm(u * 1.3 + s3, v * 1.3, 3) - 0.5) * 0.24;
           const dist = -px * sa + py * ca + warp, along = px * ca + py * sa;
-          let band = Math.exp(-(dist * dist) / (2 * 0.2 * 0.2));
-          const bulge = Math.exp(-(along * along) / 0.14);
-          band *= 0.6 + 0.6 * Math.exp(-(along * along) / 1.1);
+          const al2 = along * along;
+          let band = Math.exp(-(dist * dist) / 0.08);
+          const bulge = Math.exp(-al2 / 0.14);
+          band *= 0.6 + 0.6 * Math.exp(-al2 / 1.1);
 
-          const gas = fbm(u * 2.2 + nebSeed, v * 2.2);
-          const fine = fbm(u * 6 + nebSeed * 2, v * 6);
-          const hue = fbm(u * 1.6 - nebSeed, v * 1.6 + 5);
+          const gas = fbm(u * 2.2 + nebSeed, v * 2.2, 5);
+          const fine = fbm(u * 6 + s2, v * 6, 4);
+          const hue = fbm(u * 1.6 - nebSeed, v * 1.6 + 5, 3);
           const dens = band * (0.25 + gas * 1.1) * (0.75 + fine * 0.5);
-          const lane = sstep(0.48, 0.72, fbm(u * 3.5 + 40, v * 3.5 - nebSeed)) * band;
+          // dust lane is multiplied by band, so far from the band it is invisible: skip its noise
+          const lane = band > 0.004 ? sstep(0.48, 0.72, fbm(u * 3.5 + 40, v * 3.5 - nebSeed, 4)) * band : 0;
 
           const s1 = sstep(0.3, 0.6, hue);
           const wv = sstep(0.6, 0.85, fine) * 0.55 * band;
           const Ib = dens * 0.55 * G;
           const Ic = Ib * (1 - s1), Iv = Ib * s1;
-          const gk = Math.min(1, bulge * band * 1.2);
+          let gk = bulge * band * 1.2; if (gk > 1) gk = 1;
           const Iw = Ib * wv * 1.1 + bulge * band * 0.16 * G;
-          const wc = mix3(WARM, GOLD, gk);
-          const Ie = sstep(0.6, 0.84, fbm(u * 1.8 + 120 + nebSeed, v * 1.8 - 30)) * (0.25 + 0.75 * band) * 0.5 * 0.6 * G;
-          const It = sstep(0.5, 0.85, fbm(u * 1.4 + 90, v * 1.4)) * 0.11 * (1 - band * 0.5) * G;
+          const Ie = sstep(0.6, 0.84, fbm(u * 1.8 + 120 + nebSeed, v * 1.8 - 30, 3)) * (0.25 + 0.75 * band) * 0.3 * G;
+          const It = sstep(0.5, 0.85, fbm(u * 1.4 + 90, v * 1.4, 3)) * 0.11 * (1 - band * 0.5) * G;
 
-          D[0][i] = COOL[0] * Ic;   D[0][i + 1] = COOL[1] * Ic;   D[0][i + 2] = COOL[2] * Ic;   D[0][i + 3] = 255;
-          D[1][i] = VIOLET[0] * Iv; D[1][i + 1] = VIOLET[1] * Iv; D[1][i + 2] = VIOLET[2] * Iv; D[1][i + 3] = 255;
-          D[2][i] = wc[0] * Iw;     D[2][i + 1] = wc[1] * Iw;     D[2][i + 2] = wc[2] * Iw;     D[2][i + 3] = 255;
-          D[3][i] = ROSE[0] * Ie;   D[3][i + 1] = ROSE[1] * Ie;   D[3][i + 2] = ROSE[2] * Ie;   D[3][i + 3] = 255;
-          D[4][i] = TEAL[0] * It;   D[4][i + 1] = TEAL[1] * It * 0.9; D[4][i + 2] = TEAL[2] * It; D[4][i + 3] = 255;
-          D[5][i] = 2; D[5][i + 1] = 3; D[5][i + 2] = 8; D[5][i + 3] = Math.min(255, lane * 0.8 * 255);
+          d0[i] = 46 * Ic;   d0[i + 1] = 104 * Ic;  d0[i + 2] = 214 * Ic;  d0[i + 3] = 255;
+          d1[i] = 140 * Iv;  d1[i + 1] = 70 * Iv;   d1[i + 2] = 205 * Iv;  d1[i + 3] = 255;
+          d2[i] = (WR + (GR - WR) * gk) * Iw; d2[i + 1] = (WG + (GG - WG) * gk) * Iw; d2[i + 2] = (WB + (GB - WB) * gk) * Iw; d2[i + 3] = 255;
+          d3[i] = 225 * Ie;  d3[i + 1] = 70 * Ie;   d3[i + 2] = 140 * Ie;  d3[i + 3] = 255;
+          d4[i] = 30 * It;   d4[i + 1] = 135 * It;  d4[i + 2] = 170 * It;  d4[i + 3] = 255;
+          d5[i] = 2; d5[i + 1] = 3; d5[i + 2] = 8; d5[i + 3] = Math.min(255, lane * 0.8 * 255);
         }
+        if ((y & 1) === 1) yield;   // hand control back regularly so a frame is never blocked
       }
+      return { imgs, w, h, W, H, M, bc };
+    }
 
-      LAYER_SPECS.forEach((sp, k) => {
+    let nebJob = null;
+    function startNebula() {
+      const M = 160, W = width + M * 2, H = height + M * 2;
+      const sc = Math.max(4, Math.sqrt((W * H) / NEB_PIXELS));   // big screens get a coarser (still smooth) grid
+      const w = Math.ceil(W / sc), h = Math.ceil(H / sc);
+      nebJob = nebulaGen(W, H, M, sc, w, h);   // replaces any unfinished older job
+      if (STATIC_MODE) pumpNebula(Infinity);
+    }
+    function pumpNebula(budgetMs) {
+      if (!nebJob) return;
+      const t0 = performance.now();
+      do {
+        const r = nebJob.next();
+        if (r.done) { const res = r.value; nebJob = null; finishNebula(res); return; }
+      } while (performance.now() - t0 < budgetMs);
+    }
+    function finishNebula(res) {
+      const { imgs, w, h, W, H, M, bc } = res;
+      const layers = LAYER_SPECS.map((sp, k) => {
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
         c.getContext('2d').putImageData(imgs[k], 0, 0);
-        nebLayers.push({
+        return {
           el: c, plain: !!sp.plain, ax: sp.ax, ay: sp.ay, rot: sp.rot, op: sp.op, pulse: sp.pulse, par: sp.par,
           fx: per(sp.tx), fy: per(sp.ty), fr: per(sp.tr), fs: per(sp.ts), fo: per(sp.to),
-          px: Math.random() * TAU, py: Math.random() * TAU
-        });
+          px: nebPhase[k][0], py: nebPhase[k][1]
+        };
       });
       // One low-res canvas: layers are blended inside it (cheap), then the browser upscales it once
-      nebCv = document.createElement('canvas');
-      nebCv.width = w; nebCv.height = h;
-      nebCv.style.cssText = `left:${-M}px;top:${-M}px;width:${W}px;height:${H}px`;
-      neb.appendChild(nebCv);
-      nebCtx = nebCv.getContext('2d', { alpha: false });
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.style.cssText = `left:${-M}px;top:${-M}px;width:${W}px;height:${H}px`;
+      const g = cv.getContext('2d', { alpha: false });
+      nebLayers = layers;
       nebDim = { W, H, M, kx: w / W, ky: h / H, bg: bc };
-      updateNebula(0);
+      nebCtx = g;
+      updateNebula(clock);                       // paint before it becomes visible
+      if (nebCv && nebCv.parentNode) nebCv.parentNode.removeChild(nebCv);
+      nebCv = cv;
+      neb.appendChild(cv);
+      requestAnimationFrame(() => neb.classList.add('ready'));   // fade in (first build) / no-op afterwards
     }
 
     function updateNebula(t) {
@@ -599,10 +681,10 @@
       }
     }
 
-    // Dense tiny stars along the Milky Way band.
-    // [perf] Baked ONCE into a static offscreen canvas -> 1 drawImage per frame instead of ~1500.
-    let dustLayer = null;
-    function buildDust() {
+    // Dense tiny stars along the Milky Way band, baked ONCE into a static offscreen canvas.
+    let dustLayer = null, dustBorn = 0;
+    function buildDust(born) {
+      dustBorn = born || 0;
       dustLayer = document.createElement('canvas');
       dustLayer.width = width; dustLayer.height = height;
       const g = dustLayer.getContext('2d');
@@ -624,8 +706,8 @@
       }
     }
 
-    // Occasional shooting star
-    let shoot = null, nextShoot = performance.now() + 4000 + Math.random() * 6000;
+    // Occasional shooting star (fades in at the head so it never pops)
+    let shoot = null, nextShoot = 4000 + Math.random() * 6000;
     function drawShoot(t, dt) {
       if (!shoot && t > nextShoot && !prefersReducedMotion) {
         const a = 0.35 + Math.random() * 0.5;
@@ -633,8 +715,8 @@
       }
       if (!shoot) return;
       shoot.x += shoot.vx * dt; shoot.y += shoot.vy * dt; shoot.life += dt;
-      const k = 1 - shoot.life / shoot.max;
-      if (k <= 0) { shoot = null; nextShoot = t + 7000 + Math.random() * 12000; return; }
+      const k = (1 - shoot.life / shoot.max) * Math.min(1, shoot.life / 8);
+      if (shoot.life >= shoot.max) { shoot = null; nextShoot = t + 7000 + Math.random() * 12000; return; }
       const tx = shoot.x - shoot.vx * 11, ty = shoot.y - shoot.vy * 11;
       const gr = ctx.createLinearGradient(tx, ty, shoot.x, shoot.y);
       gr.addColorStop(0, 'rgba(180,210,255,0)');
@@ -644,10 +726,7 @@
       ctx.globalAlpha = k; const sg = glowRects[0][1]; ctx.drawImage(atlas, sg.x, sg.y, sg.s, sg.s, shoot.x - 9, shoot.y - 9, 18, 18);
     }
 
-    // Gentle pointer parallax for the nebula
-    const par = { x: 0, y: 0 };
-
-    function buildHalo() {
+    function buildHalo(born) {
       haloStars = [];
       if (!klBox) return;
       const m = klBox.h * 0.3, gap = klBox.h * 0.05;
@@ -659,11 +738,9 @@
         const x = x0 + Math.random() * (x1 - x0), y = y0 + Math.random() * (y1 - y0);
         const inside = x > klBox.x - gap && x < klBox.x + klBox.w + gap && y > klBox.y - gap && y < klBox.y + klBox.h + gap;
         if (inside) continue;
-        haloStars.push(new Star(x, y, { layer: 'halo' }));
+        haloStars.push(new Star(x, y, { layer: 'halo', born }));
       }
     }
-    initParticles(KL.assembleOnLoad && !prefersReducedMotion);
-    drawNebula();
 
     function drawStars(list, t) {
       for (let i = 0; i < list.length; i++) {
@@ -671,8 +748,7 @@
         if (p.alpha <= 0.01) continue;
 
         const sineWave = Math.sin(t * p.tws + p.twp);
-        // Added brightness floor so letter stars don't fade to black
-        const tw = p.ambient 
+        const tw = p.ambient
           ? Math.max(0, (sineWave + 0.15) * 1.35)
           : Math.max(0.35, (sineWave + 0.35) * 1.2);
         const a = p.alpha * p.bright * tw;
@@ -713,54 +789,96 @@
       ov.style.backgroundSize = `100% 100%, ${n}px ${n}px`;
     })();
 
-    // Wallpaper engines (e.g. Plash) don't deliver mouse events, so when no real pointer has
-    // moved for AUTO_IDLE ms a virtual cursor glides through the stars on its own.
+    // ---- Adaptive quality ------------------------------------------------
+    // If frames keep taking too long (weak GPU / busy machine) shed load in two steps instead of stuttering.
+    // Level 1: slower nebula redraw, no large haze sprites.  Level 2: also thin out the star field.
+    function applyQuality() {
+      NEB_MS = 1000 / (quality >= 1 ? 10 : NEB_FPS);
+      if (quality >= 1) for (const list of [ambientStars, letterStars, haloStars]) for (const p of list) p.hazeR = 0;
+      if (quality >= 2) {
+        ambientStars = ambientStars.filter((p, i) => i % 2 === 0);
+        haloStars = haloStars.filter((p, i) => i % 2 === 0);
+        letterStars = letterStars.filter((p, i) => p.spike || i % 3 !== 0);
+      }
+    }
+
+    // ---- Resize handling: rebuild, cross-fading the old stars out ------------
+    let resizeTimer;
+    function rebuild() {
+      const old = [...ambientStars, ...letterStars, ...haloStars];
+      if (!STATIC_MODE && old.length) {
+        old.forEach(p => { p.alpha0 = p.alpha; });
+        leaving = { stars: old, dust: dustLayer, t0: clock };
+      }
+      resize();
+      const assemble = KL.assembleOnLoad && !prefersReducedMotion && clock < INTRO_MS;
+      initParticles(assemble, STATIC_MODE ? 0 : clock);
+      applyQuality();
+      startNebula();
+      kick();
+    }
+    function checkSize() {
+      const sz = getSize();
+      if (sz.w !== width || sz.h !== height) rebuild();
+    }
+    function scheduleCheck() { clearTimeout(resizeTimer); resizeTimer = setTimeout(checkSize, 150); }
+    window.addEventListener('resize', scheduleCheck);
+    if (window.ResizeObserver) new ResizeObserver(scheduleCheck).observe(document.documentElement);
+    setInterval(checkSize, 4000); // wallpaper engines don't always fire resize (display change, wake from sleep)
+
+    // ---- Auto-pilot cursor for wallpaper engines that never deliver mouse events ----
     const AUTO_IDLE = 3500;
-    let autoT = 0, autoLast = null;
-    function autoPilot(t, dt) {
-      if (prefersReducedMotion || t - lastRealMove < AUTO_IDLE) { autoLast = null; return; }
+    const AUTO_START = 5000;   // wait until the KL has mostly formed
+    let autoT = 0, autoLast = null, autoGain = 0;
+    function autoPilot(now, dt) {
+      if (prefersReducedMotion || clock < AUTO_START || now - lastRealMove < AUTO_IDLE) {
+        autoLast = null; autoGain = 0; autoActive = false; return;
+      }
+      autoActive = true;
+      autoGain = Math.min(1, autoGain + dt * 0.02);    // ease the virtual cursor in
       autoT += 0.016 * dt;
       const cx = width * KL.centerX, cy = height * KL.centerY;
       const ax = cx + width * 0.38 * Math.sin(autoT * 0.9 + 0.6 * Math.sin(autoT * 0.37));
       const ay = cy + height * 0.30 * Math.sin(autoT * 0.61 + 1.3);
-      if (autoLast) { ptr.dx += ax - autoLast.x; ptr.dy += ay - autoLast.y; }
+      if (autoLast) { ptr.dx += (ax - autoLast.x) * autoGain; ptr.dy += (ay - autoLast.y) * autoGain; }
       ptr.x = ax; ptr.y = ay; ptr.active = true;
       autoLast = { x: ax, y: ay };
     }
 
-    let lastTime = performance.now();
-    let skipFrame = false;
-    let dirty = true;
-    const TARGET_FPS = 30, FRAME_MS = 1000 / TARGET_FPS;   // [perf] was 60. Halves all per-frame work
-    const NEB_MS = 1000 / 10;                              // [perf] nebula drifts very slowly: 10fps is plenty
-    let lastFrame = 0, lastNeb = 0;
-    function animate(now) {
-      if (STATIC_MODE) { if (!dirty) return; dirty = false; }
-      if (document.hidden) return;   // resumed by the visibilitychange handler
-      const t = STATIC_MODE ? 5000 : (now || performance.now());
-      if (!STATIC_MODE) {
-        const since = t - lastFrame;
-        if (since < FRAME_MS - 1) { requestAnimationFrame(animate); return; }
-        lastFrame = t - (since % FRAME_MS);
-      }
+    // ---- Main loop -------------------------------------------------------
+    initParticles(KL.assembleOnLoad && !prefersReducedMotion, 0);
+    startNebula();
 
-      if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
-        isScrolling = false;
-        rootEl.classList.remove('is-scrolling');
-      }
+    let skipFrame = false, lastNeb = -1e9;
+    function kick() { if (STATIC_MODE) requestAnimationFrame(frame); }
 
-      if (isScrolling) {
+    function frame(now) {
+      if (!STATIC_MODE) requestAnimationFrame(frame);
+      if (document.hidden) { lastNow = null; return; }
+
+      if (lastNow === null) lastNow = now - 16.667;
+      const delta = now - lastNow;
+      if (FPS_CAP && delta < 1000 / FPS_CAP - 2) return;
+
+      if (isScrolling && now - lastScrollTime > SCROLL_IDLE_MS) isScrolling = false;
+      if (isScrolling) {                       // half rate while the parent is scrolling
         skipFrame = !skipFrame;
-        if (skipFrame) { requestAnimationFrame(animate); return; }
-      } else {
-        skipFrame = false;
+        if (skipFrame) return;
+      } else skipFrame = false;
+
+      lastNow = now;
+      if (!STATIC_MODE && !isScrolling && clock > INTRO_MS + 1500 && !nebJob && delta < 200) {
+        emaDelta += (delta - emaDelta) * 0.04;
+        slowMs = emaDelta > 26 ? slowMs + delta : 0;          // sustained < ~38 fps
+        if (slowMs > 2500 && quality < 2) { quality++; applyQuality(); slowMs = 0; emaDelta = 16.7; }
       }
+      const step = Math.min(delta, MAX_STEP_MS);
+      if (!STATIC_MODE) clock += step;
+      const dt = Math.max(0.1, step / 16.667);
+      const t = clock;
 
-      const dt = Math.max(0.1, Math.min((t - lastTime) / 16.667, 3.0));
-      lastTime = t;
-      const elapsed = STATIC_MODE ? 1e7 : t - pageStartTime;
-
-      autoPilot(t, dt);
+      pumpNebula(STATIC_MODE ? Infinity : 4);   // build the nebula a few ms per frame
+      autoPilot(now, dt);
 
       let rawSpeed = Math.hypot(ptr.dx, ptr.dy);
       if (rawSpeed > 60) {
@@ -774,35 +892,44 @@
       ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, width, height);
 
-      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t, elapsed);
-      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t, elapsed);
-      for (let i = 0; i < haloStars.length; i++) haloStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t);
+      for (let i = 0; i < haloStars.length; i++) haloStars[i].update(dt, t);
 
       ctx.globalCompositeOperation = 'lighter';
+
+      // previous star set fading out after a resize
+      if (leaving) {
+        const k = 1 - (t - leaving.t0) / 700;
+        if (k <= 0) leaving = null;
+        else {
+          const ease = k * k * (3 - 2 * k);
+          if (leaving.dust) { ctx.globalAlpha = ease * 0.85; ctx.drawImage(leaving.dust, 0, 0); }
+          for (const p of leaving.stars) p.alpha = p.alpha0 * ease;
+          drawStars(leaving.stars, t);
+        }
+      }
+
       if (dustLayer) {
-        ctx.globalAlpha = Math.min(1, elapsed / 1200) * (0.85 + 0.15 * Math.sin(t * 0.0008));
+        ctx.globalAlpha = smooth((t - dustBorn) / 1400) * (0.85 + 0.15 * Math.sin(t * 0.0008));
         ctx.drawImage(dustLayer, 0, 0, width, height);
       }
       drawStars(ambientStars, t);
       drawStars(letterStars, t);
       drawStars(haloStars, t);
       drawShoot(t, dt);
-      par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * 0.04;
-      par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * 0.04;
-      if (!STATIC_MODE && t - lastNeb >= NEB_MS) { lastNeb = t; updateNebula(t); }
+
+      // frame-rate independent parallax smoothing
+      const pk = 1 - Math.pow(0.98, dt);
+      par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * pk;
+      par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * pk;
+
+      if (!prefersReducedMotion && t - lastNeb >= NEB_MS - 4) { lastNeb = t; updateNebula(t); }
       ctx.globalAlpha = 1;
 
       ptr.dx = ptr.dy = 0;
-      if (!STATIC_MODE) requestAnimationFrame(animate);
     }
-    requestAnimationFrame(animate);
-
-    // [perf] stop all work when the page is hidden (screen off / other space / minimised)
-    let paused = false;
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) { paused = true; }
-      else if (paused) { paused = false; lastTime = performance.now(); requestAnimationFrame(animate); }
-    });
+    requestAnimationFrame(frame);
   </script>
 </body>
 </html>
