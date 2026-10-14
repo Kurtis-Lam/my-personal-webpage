@@ -9,6 +9,19 @@ Welcome to the repository for **Kurtis Lam's Personal Portfolio Website**. This 
 
 ---
 
+## 🧩 Pages
+
+| Route | File | Description |
+| :--- | :--- | :--- |
+| `/` | `public/index.html` | Portfolio home page |
+| `/colordle-solver` | `public/colordle.html` | Colordle solver |
+| `/kahoot-hack` | `public/kahoot-hack.html` | Kahoot Hack: what it is, how it works, step-by-step setup |
+| `/monkeytyper` | `public/monkeytyper.html` | Monkeytyper: what it is, how it works, step-by-step setup |
+
+All pages share the animated star field in `public/background.html`, which adapts its quality to the device to stay smooth.
+
+---
+
 ## 📄 License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
