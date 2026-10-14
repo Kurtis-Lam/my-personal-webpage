@@ -12,7 +12,8 @@
     #nebula.ready { opacity: 1; }
     #nebula canvas { position: absolute; }
     #overlay { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
-    #bg-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
+    #bg-canvas, #dust-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
+    #dust-canvas { will-change: opacity; }
   </style>
 </head>
 <body>
@@ -27,9 +28,10 @@
     // =====================================================================
     const STATIC_MODE = false;   // true = nothing moves (single rendered frame)
     const NEB_SPEED = 1;         // speed of the drifting background colours (try 0.5 - 2)
-    const NEB_FPS = 20;          // nebula redraw rate (it drifts very slowly, so 20 looks identical to 30)
-    const NEB_PIXELS = 80000;    // nebula is computed at ~this many pixels, then smoothly upscaled
-    const FPS_CAP = 80;          // 0 = follow display refresh. 80 keeps 60/90Hz untouched but halves work on 144Hz+ screens
+    const NEB_FPS = 12;          // nebula redraw rate (it drifts so slowly that 12 looks the same as 30)
+    const NEB_PIXELS = 48000;    // nebula is computed at ~this many pixels, then smoothly upscaled (it is blurry by design)
+    const FPS_CAP = 60;          // 0 = follow display refresh. 60 halves the work on 120/144Hz screens
+    const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;   // start in a lighter mode
     const SCROLL_IDLE_MS = 150;
     const MAX_STEP_MS = 50;      // animation clock never advances more than this per frame
     const INTRO_MS = 6500;       // roughly how long the KL assembly takes
@@ -48,16 +50,16 @@
     // which is what used to make the KL "suddenly appear".
     let clock = STATIC_MODE ? 1e7 : 0;
     let lastNow = null;
-    let NEB_MS = 1000 / NEB_FPS;
-    let quality = 0, emaDelta = 16.7, slowMs = 0;   // adaptive quality governor (see applyQuality)
+    let NEB_MS = 1000 / (LOW_END ? 8 : NEB_FPS);
+    let quality = LOW_END ? 1 : 0, emaDelta = 16.7, slowMs = 0;   // adaptive quality governor (see applyQuality)
 
     const KL = {
       heightRatio: 0.55,
       centerX: 0.5,
       centerY: 0.5,
       density: 0.012,
-      minStars: 700,
-      maxStars: 1600,
+      minStars: 420,
+      maxStars: 900,
       assembleOnLoad: true
     };
 
@@ -390,7 +392,7 @@
         this.spikeSize = this.core * 26;
 
         this.hazeR = 0;
-        if (!ambient && Math.random() < 0.12) {
+        if (!ambient && Math.random() < 0.07) {
           this.hazeR = 20 + Math.random() * 30;
           this.hazeA = 0.08 + Math.random() * 0.08;
         }
@@ -522,7 +524,7 @@
 
     function initParticles(assemble, born) {
       ambientStars = [];
-      const count = Math.min(320, Math.round((width * height) / 6500));
+      const count = Math.min(200, Math.round((width * height) / 9500));
       for (let i = 0; i < count; i++) {
         ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient', born }));
       }
@@ -681,15 +683,20 @@
       }
     }
 
-    // Dense tiny stars along the Milky Way band, baked ONCE into a static offscreen canvas.
-    let dustLayer = null, dustBorn = 0;
+    // Dense tiny stars along the Milky Way band, baked ONCE into a static canvas element.
+    // The browser composites it on the GPU; per frame we only touch its CSS opacity (no full-screen redraw).
+    let dustEl = null, dustBorn = 0, dustOpacity = -1;
     function buildDust(born) {
       dustBorn = born || 0;
-      dustLayer = document.createElement('canvas');
-      dustLayer.width = width; dustLayer.height = height;
-      const g = dustLayer.getContext('2d');
+      const old = dustEl;
+      const el = document.createElement('canvas');
+      el.id = 'dust-canvas';
+      el.width = width; el.height = height;
+      el.style.width = width + 'px'; el.style.height = height + 'px';
+      el.style.opacity = '0';
+      const g = el.getContext('2d');
       g.globalCompositeOperation = 'lighter';
-      const n = Math.min(1200, Math.round((width * height) / 1800));
+      const n = Math.min(800, Math.round((width * height) / 2600));
       const ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG), diag = Math.hypot(width, height);
       const sigma = Math.min(width, height) * 0.2 * 0.85;
       let made = 0, guard = 0;
@@ -703,6 +710,14 @@
         const gr = p.glowRect;
         g.drawImage(atlas, gr.x, gr.y, gr.s, gr.s, x - s / 2, y - s / 2, s, s);
         made++;
+      }
+      document.body.insertBefore(el, canvas);
+      dustEl = el;
+      dustOpacity = -1;
+      if (old) {                                   // cross-fade the previous layer out after a resize
+        old.style.transition = 'opacity 0.7s ease';
+        old.style.opacity = '0';
+        setTimeout(() => old.remove(), 800);
       }
     }
 
@@ -785,15 +800,15 @@
       }
       g.putImageData(img, 0, 0);
       const ov = document.getElementById('overlay');
-      ov.style.backgroundImage = `radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(2,3,10,0.7) 100%), url(${c.toDataURL()})`;
-      ov.style.backgroundSize = `100% 100%, ${n}px ${n}px`;
+      ov.style.backgroundImage = `linear-gradient(rgba(3,5,12,0.2), rgba(3,5,12,0.2)), radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(2,3,10,0.7) 100%), url(${c.toDataURL()})`;
+      ov.style.backgroundSize = `100% 100%, 100% 100%, ${n}px ${n}px`;
     })();
 
     // ---- Adaptive quality ------------------------------------------------
     // If frames keep taking too long (weak GPU / busy machine) shed load in two steps instead of stuttering.
     // Level 1: slower nebula redraw, no large haze sprites.  Level 2: also thin out the star field.
     function applyQuality() {
-      NEB_MS = 1000 / (quality >= 1 ? 10 : NEB_FPS);
+      NEB_MS = 1000 / (quality >= 2 ? 6 : quality >= 1 ? 8 : NEB_FPS);
       if (quality >= 1) for (const list of [ambientStars, letterStars, haloStars]) for (const p of list) p.hazeR = 0;
       if (quality >= 2) {
         ambientStars = ambientStars.filter((p, i) => i % 2 === 0);
@@ -808,7 +823,7 @@
       const old = [...ambientStars, ...letterStars, ...haloStars];
       if (!STATIC_MODE && old.length) {
         old.forEach(p => { p.alpha0 = p.alpha; });
-        leaving = { stars: old, dust: dustLayer, t0: clock };
+        leaving = { stars: old, t0: clock };
       }
       resize();
       const assemble = KL.assembleOnLoad && !prefersReducedMotion && clock < INTRO_MS;
@@ -847,6 +862,7 @@
 
     // ---- Main loop -------------------------------------------------------
     initParticles(KL.assembleOnLoad && !prefersReducedMotion, 0);
+    applyQuality();
     startNebula();
 
     let skipFrame = false, lastNeb = -1e9;
@@ -858,7 +874,8 @@
 
       if (lastNow === null) lastNow = now - 16.667;
       const delta = now - lastNow;
-      if (FPS_CAP && delta < 1000 / FPS_CAP - 2) return;
+      const cap = quality >= 2 ? 30 : FPS_CAP;          // last-resort mode runs at half rate
+      if (cap && delta < 1000 / cap - 2) return;
 
       if (isScrolling && now - lastScrollTime > SCROLL_IDLE_MS) isScrolling = false;
       if (isScrolling) {                       // half rate while the parent is scrolling
@@ -869,8 +886,8 @@
       lastNow = now;
       if (!STATIC_MODE && !isScrolling && clock > INTRO_MS + 1500 && !nebJob && delta < 200) {
         emaDelta += (delta - emaDelta) * 0.04;
-        slowMs = emaDelta > 26 ? slowMs + delta : 0;          // sustained < ~38 fps
-        if (slowMs > 2500 && quality < 2) { quality++; applyQuality(); slowMs = 0; emaDelta = 16.7; }
+        slowMs = emaDelta > 25 ? slowMs + delta : 0;          // sustained < ~40 fps
+        if (slowMs > 1800 && quality < 2) { quality++; applyQuality(); slowMs = 0; emaDelta = 16.7; }
       }
       const step = Math.min(delta, MAX_STEP_MS);
       if (!STATIC_MODE) clock += step;
@@ -904,15 +921,14 @@
         if (k <= 0) leaving = null;
         else {
           const ease = k * k * (3 - 2 * k);
-          if (leaving.dust) { ctx.globalAlpha = ease * 0.85; ctx.drawImage(leaving.dust, 0, 0); }
           for (const p of leaving.stars) p.alpha = p.alpha0 * ease;
           drawStars(leaving.stars, t);
         }
       }
 
-      if (dustLayer) {
-        ctx.globalAlpha = smooth((t - dustBorn) / 1400) * (0.85 + 0.15 * Math.sin(t * 0.0008));
-        ctx.drawImage(dustLayer, 0, 0, width, height);
+      if (dustEl) {
+        const o = Math.round(smooth((t - dustBorn) / 1400) * (0.85 + 0.15 * Math.sin(t * 0.0008)) * 100) / 100;
+        if (o !== dustOpacity) { dustOpacity = o; dustEl.style.opacity = o; }
       }
       drawStars(ambientStars, t);
       drawStars(letterStars, t);
