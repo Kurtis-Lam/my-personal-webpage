@@ -60,11 +60,7 @@
     .text-readable { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); }
 
     .gradient-title {
-      background-image: linear-gradient(90deg, #fde68a, #fff3b0, #e2b714);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
+      color: #e2b714;
     }
 
     .body-text { font-size: 1.0625rem; line-height: 1.75; color: #e2e8f0; }
@@ -111,6 +107,13 @@
     .btn-ghost { background: rgba(8, 12, 24, 0.92); color: #f1f5f9; border: 1px solid #94a3b8; }
     .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
 
+    .nav-btn {
+      display: inline-flex; align-items: center; padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(148, 163, 184, 0.55); border-radius: 0.6rem;
+      background: transparent; transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .nav-btn:hover { border-color: var(--accent); }
+
     .data-table { width: 100%; border-collapse: collapse; font-size: 1rem; line-height: 1.55; }
     .data-table th, .data-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #334155; vertical-align: top; }
     .data-table th { color: #fff; font-weight: 700; background: #0f172a; }
@@ -134,7 +137,7 @@
     }
     .tab-btn[aria-selected="true"] { background: var(--accent); color: #0b0b14; border-color: var(--accent); }
 
-    .warn { border: 1px solid rgba(251, 191, 36, 0.65); background: rgba(40, 28, 4, 0.94); }
+    .warn { border: 1px solid rgba(248, 113, 113, 0.7); background: rgba(48, 8, 8, 0.94); }
 
     a:focus-visible, button:focus-visible, summary:focus-visible {
       outline: 2px solid #67e8f9; outline-offset: 3px;
@@ -157,17 +160,13 @@
   <!-- Top bar -->
   <header class="topbar sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
-      <a href="/" class="flex items-center gap-2 font-mono font-semibold text-slate-100 hover:text-[var(--accent)] text-sm md:text-base">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>Kurtis Lam</span>
-      </a>
-      <nav class="hidden md:flex items-center gap-6 font-mono text-sm text-slate-200" aria-label="On this page">
-        <a href="#what" class="hover:text-[var(--accent)]">What it is</a>
-        <a href="#compare" class="hover:text-[var(--accent)]">Compare</a>
-        <a href="#setup" class="hover:text-[var(--accent)]">Setup</a>
-        <a href="#troubleshooting" class="hover:text-[var(--accent)]">Help</a>
+      <nav class="hidden md:flex items-center gap-3 font-mono text-sm text-slate-200" aria-label="On this page">
+        <a href="#what" class="nav-btn hover:text-[var(--accent)]">What it is</a>
+        <a href="#compare" class="nav-btn hover:text-[var(--accent)]">Compare</a>
+        <a href="#setup" class="nav-btn hover:text-[var(--accent)]">Setup</a>
+        <a href="#troubleshooting" class="nav-btn hover:text-[var(--accent)]">Help</a>
       </nav>
-      <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
+      <a href="https://github.com/Kurtis-Lam/monkeytyper" target="_blank" rel="noopener noreferrer" class="ml-auto font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
         <i class="fa-brands fa-github text-lg"></i><span class="hidden sm:inline">GitHub</span>
       </a>
     </div>
@@ -188,15 +187,15 @@
       </p>
       <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <a href="#setup" class="btn btn-primary"><i class="fa-solid fa-list-ol"></i><span>Step-by-step setup</span></a>
-        <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
+        <a href="https://github.com/Kurtis-Lam/monkeytyper" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
       </div>
     </section>
 
     <!-- Disclaimer -->
     <section class="warn rounded-2xl p-5 md:p-6 flex gap-4" aria-labelledby="disc-h">
-      <i class="fa-solid fa-triangle-exclamation text-amber-300 text-2xl mt-1"></i>
+      <i class="fa-solid fa-triangle-exclamation text-red-400 text-2xl mt-1"></i>
       <div class="body-text">
-        <h2 id="disc-h" class="text-lg md:text-xl font-bold text-amber-200 mb-1">Educational use only, play fair</h2>
+        <h2 id="disc-h" class="text-lg md:text-xl font-bold text-red-300 mb-1">Educational use only, play fair</h2>
         <p>These scripts exist to demonstrate web automation, computer vision (CV), OCR and DOM interaction. <strong>Do not use them to compete on public leaderboards, fake benchmark scores, or disrupt typing communities.</strong> Automating a third-party site may break its Terms of Service, and you could lose your account. You use them at your own risk.</p>
       </div>
     </section>
@@ -288,7 +287,7 @@
           <span class="step-num">2</span>
           <div class="min-w-0 flex-1 body-text space-y-3">
             <h3 class="text-xl md:text-2xl font-bold text-white">Get the scripts</h3>
-            <p>Download the <span class="ic">monkeytype</span> project from <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer">my GitHub</a> and unzip it, then open a terminal inside that folder. It contains <span class="ic">dom_selenium.py</span> and <span class="ic">ocr_pyautogui.py</span>.</p>
+            <p>Download the <span class="ic">monkeytype</span> project from <a href="https://github.com/Kurtis-Lam/monkeytyper" target="_blank" rel="noopener noreferrer">my GitHub</a> and unzip it, then open a terminal inside that folder. It contains <span class="ic">dom_selenium.py</span> and <span class="ic">ocr_pyautogui.py</span>.</p>
           </div>
         </li>
 
