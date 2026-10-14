@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kahoot Hack is a Chrome extension that reads Kahoot! questions, asks an AI model through OpenRouter, and highlights or auto-clicks the answer. Setup guide and usage instructions." />
+  <meta name="theme-color" content="#07090e" />
+  <link rel="canonical" href="https://kurtis-lam.web.app/kahoot-hack" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kahoot Hack | Kurtis Lam" />
+  <meta property="og:description" content="Kahoot Hack is a Chrome extension that reads Kahoot! questions, asks an AI model through OpenRouter, and highlights or auto-clicks the answer. Setup guide and usage instructions." />
+  <meta property="og:url" content="https://kurtis-lam.web.app/kahoot-hack" />
+  <title>Kahoot Hack | Kurtis Lam</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --accent: #c4a1ff; --accent-2: #fda4af; }
+    html { scroll-padding-top: 5.5rem; }
+    body { background: #07090e; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #090a0f; }
+    ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Solid (blur-free) panels keep text readable over the star field and are cheap to paint */
+    .glass-card {
+      background: rgba(8, 12, 24, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
+    }
+    .topbar {
+      background: rgba(7, 9, 14, 0.96);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .text-readable { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); }
+
+    .gradient-title {
+      background-image: linear-gradient(90deg, #e9d5ff, #fda4af, #fde68a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .body-text { font-size: 1.0625rem; line-height: 1.75; color: #e2e8f0; }
+    .body-text a, .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .body-text a:hover, .link:hover { color: #fff; }
+    .body-text strong { color: #fff; font-weight: 600; }
+    .muted { color: #cbd5e1; }
+
+    .step-num {
+      width: 2.5rem; height: 2.5rem; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; background: var(--accent); color: #0b0b14;
+      font-weight: 700; font-size: 1.125rem;
+    }
+    .ic {
+      font-family: 'Fira Code', monospace; font-size: 0.9em;
+      background: #020617; border: 1px solid #334155; border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; color: #fde68a; word-break: break-word;
+    }
+    .code-wrap { position: relative; }
+    .code {
+      background: #020617; border: 1px solid #334155; border-radius: 0.75rem;
+      padding: 1rem 1.1rem; padding-right: 5.5rem; overflow-x: auto;
+      font-family: 'Fira Code', monospace; font-size: 0.92rem; line-height: 1.65;
+      color: #e2e8f0; white-space: pre; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 0.55rem; right: 0.55rem;
+      font-family: 'Fira Code', monospace; font-size: 0.8rem; font-weight: 600;
+      color: #e2e8f0; background: #1e293b; border: 1px solid #64748b;
+      border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: #334155; color: #fff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem;
+      border-radius: 0.75rem; padding: 0.8rem 1.4rem; text-decoration: none;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #0b0b14; }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { background: rgba(8, 12, 24, 0.92); color: #f1f5f9; border: 1px solid #94a3b8; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 1rem; line-height: 1.55; }
+    .data-table th, .data-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #334155; vertical-align: top; }
+    .data-table th { color: #fff; font-weight: 700; background: #0f172a; }
+    .data-table td { color: #e2e8f0; }
+    .data-table td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+
+    details.faq { border: 1px solid #334155; border-radius: 0.9rem; background: rgba(2, 6, 23, 0.8); }
+    details.faq + details.faq { margin-top: 0.75rem; }
+    details.faq summary {
+      cursor: pointer; list-style: none; padding: 1rem 1.2rem; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 1.05rem;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::after { content: '+'; color: var(--accent); font-size: 1.5rem; line-height: 1; font-family: 'Fira Code', monospace; }
+    details.faq[open] summary::after { content: '\2212'; }
+    details.faq .faq-body { padding: 0 1.2rem 1.1rem; }
+
+    .tab-btn {
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem; color: #e2e8f0;
+      background: #0f172a; border: 1px solid #475569; border-radius: 0.7rem; padding: 0.65rem 1.1rem; cursor: pointer;
+    }
+    .tab-btn[aria-selected="true"] { background: var(--accent); color: #0b0b14; border-color: var(--accent); }
+
+    .warn { border: 1px solid rgba(251, 191, 36, 0.65); background: rgba(40, 28, 4, 0.94); }
+
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid #67e8f9; outline-offset: 3px;
+    }
+    .skip-link { position: absolute; left: -9999px; top: 0.5rem; background: #fff; color: #000; padding: 0.5rem 1rem; border-radius: 0.5rem; z-index: 100; }
+    .skip-link:focus { left: 0.5rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- Embedded Shared Background -->
+  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1" title=""></iframe>
+
+  <!-- Top bar -->
+  <header class="topbar sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2 font-mono font-semibold text-slate-100 hover:text-[var(--accent)] text-sm md:text-base">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kurtis Lam</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 font-mono text-sm text-slate-200" aria-label="On this page">
+        <a href="#what" class="hover:text-[var(--accent)]">What it is</a>
+        <a href="#how" class="hover:text-[var(--accent)]">How it works</a>
+        <a href="#setup" class="hover:text-[var(--accent)]">Setup</a>
+        <a href="#troubleshooting" class="hover:text-[var(--accent)]">Help</a>
+      </nav>
+      <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
+        <i class="fa-brands fa-github text-lg"></i><span class="hidden sm:inline">GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 max-w-5xl mx-auto px-5 pt-12 md:pt-16 pb-16 space-y-14 md:space-y-20">
+
+    <!-- Hero -->
+    <section class="text-center flex flex-col items-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card font-mono text-sm text-[var(--accent)] mb-6 uppercase tracking-wide">
+        <i class="fa-brands fa-chrome"></i><span>Chrome Extension</span>
+      </div>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-readable mb-5">
+        <i class="fa-solid fa-bolt text-[var(--accent)]"></i> <span class="gradient-title">Kahoot Hack</span>
+      </h1>
+      <p class="max-w-2xl text-lg md:text-xl text-slate-100 leading-relaxed text-readable">
+        A Chrome extension that reads the question on a Kahoot! game, asks an AI model for the answer through OpenRouter, then highlights it and can click it for you.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a href="#setup" class="btn btn-primary"><i class="fa-solid fa-list-ol"></i><span>Step-by-step setup</span></a>
+        <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="warn rounded-2xl p-5 md:p-6 flex gap-4" aria-labelledby="disc-h">
+      <i class="fa-solid fa-triangle-exclamation text-amber-300 text-2xl mt-1"></i>
+      <div class="body-text">
+        <h2 id="disc-h" class="text-lg md:text-xl font-bold text-amber-200 mb-1">Read this first</h2>
+        <p>This project is for <strong>educational purposes only</strong>. Using automated tools on Kahoot! likely breaks its Terms of Service and can get your account or game session banned. Only try it in games you host yourself, or where everyone playing has agreed to it, and never in graded or competitive games. You use it at your own risk.</p>
+      </div>
+    </section>
+
+    <!-- What is it -->
+    <section id="what" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-circle-question text-[var(--accent)]"></i>What is it?</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <p>Kahoot Hack is a <strong>Manifest V3 Chrome extension</strong> that runs on <span class="ic">kahoot.it</span>. When a question starts, it grabs the question and the answer options, sends them to an AI model through <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter</a>, and shows you what the AI picked.</p>
+        <p>There is no sign-in, no account and no usage limit on the extension itself. You bring your <strong>own OpenRouter API key</strong>, so you control the cost and nobody else sees your usage.</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card rounded-2xl p-5"><div class="font-mono text-sm muted mb-1">Type</div><div class="text-lg font-semibold text-white">Chrome extension</div></div>
+        <div class="glass-card rounded-2xl p-5"><div class="font-mono text-sm muted mb-1">Works on</div><div class="text-lg font-semibold text-white">kahoot.it (all frames)</div></div>
+        <div class="glass-card rounded-2xl p-5"><div class="font-mono text-sm muted mb-1">AI provider</div><div class="text-lg font-semibold text-white">OpenRouter</div></div>
+        <div class="glass-card rounded-2xl p-5"><div class="font-mono text-sm muted mb-1">Cost</div><div class="text-lg font-semibold text-white">Free app, your own API credits</div></div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-sparkles text-[var(--accent)]"></i>Features</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-brain text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">AI-powered answers</h3><p class="body-text">Sends each question to a vision-capable model through OpenRouter, so image questions can work too.</p></div>
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-key text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">Multiple keys, auto failover</h3><p class="body-text">If one key fails or is rate-limited, the next key in your list is used automatically.</p></div>
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-circle-check text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">Highlight the answer</h3><p class="body-text">Draws a ✅ on the option the AI chose, so you can check it yourself.</p></div>
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-computer-mouse text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">Optional auto-click</h3><p class="body-text">Clicks the answer through the page, with a WebSocket fallback if the normal click does not register.</p></div>
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-hourglass-half text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">Delay slider</h3><p class="body-text">Wait 0 to 10 seconds before auto-clicking. A countdown shows, and you can cancel it with a click.</p></div>
+        <div class="glass-card rounded-2xl p-6"><i class="fa-solid fa-plug-circle-bolt text-2xl text-[var(--accent)] mb-3"></i><h3 class="text-xl font-bold text-white mb-1">Reconnect handling</h3><p class="body-text">If the connection drops mid-question, your pending answer is sent again (up to 2 times).</p></div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-gears text-[var(--accent)]"></i>How it works</h2>
+      <ol class="grid grid-cols-1 md:grid-cols-2 gap-5 list-none">
+        <li class="glass-card rounded-2xl p-6 flex gap-4"><span class="step-num">1</span><div><h3 class="text-xl font-bold text-white mb-1">It detects the question</h3><p class="body-text">A small script is injected into the Kahoot page and picks up the question text and its answer choices as the round begins.</p></div></li>
+        <li class="glass-card rounded-2xl p-6 flex gap-4"><span class="step-num">2</span><div><h3 class="text-xl font-bold text-white mb-1">It asks the AI</h3><p class="body-text">The extension's background worker sends them to OpenRouter, trying your keys one after another until one works.</p></div></li>
+        <li class="glass-card rounded-2xl p-6 flex gap-4"><span class="step-num">3</span><div><h3 class="text-xl font-bold text-white mb-1">It shows the answer</h3><p class="body-text">The status line moves from <span class="ic">Resolving answer...</span> to <span class="ic">Highlighting answer...</span> and a ✅ appears on the chosen option.</p></div></li>
+        <li class="glass-card rounded-2xl p-6 flex gap-4"><span class="step-num">4</span><div><h3 class="text-xl font-bold text-white mb-1">It can click for you</h3><p class="body-text">With auto-click on, it waits your chosen delay and then submits the answer. Turn it off to just see the highlight.</p></div></li>
+      </ol>
+    </section>
+
+    <!-- Setup -->
+    <section id="setup" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-list-check text-[var(--accent)]"></i>Setup: step by step</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Takes about 10 minutes. You need Google Chrome (or Edge, Brave, Opera), an <a class="link" href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter</a> account, and a Kahoot! game to join.</p>
+      </div>
+
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Get the extension folder</h3>
+            <p>Download the <span class="ic">kahoot-hack</span> folder from <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer">my GitHub</a> and unzip it somewhere permanent (Chrome loads it from that location, so do not delete it afterwards).</p>
+            <p>It should look like this once you have added your keys file in step 3:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-tree">Copy</button><pre class="code" id="code-tree">kahoot-hack/
+├── manifest.json
+├── background.js
+├── content.js
+├── keys.json          &lt;- you create this
+└── scripts/
+    └── injected.js</pre></div>
+            <p><strong>Important:</strong> <span class="ic">keys.json</span> must sit in the root of the folder, right next to <span class="ic">manifest.json</span>.</p>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Create an OpenRouter API key</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>Go to <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">openrouter.ai</a> and click <strong>Sign In</strong> (top right). Google, GitHub or email all work.</li>
+              <li>Open the keys page: <a href="https://openrouter.ai/keys" target="_blank" rel="noopener noreferrer">openrouter.ai/keys</a> (or click your avatar, then <strong>Keys</strong>).</li>
+              <li>Click <strong>Create Key</strong>, name it something like <span class="ic">kahoot-hack</span>, then click <strong>Create</strong>.</li>
+              <li><strong>Copy the key immediately.</strong> It starts with <span class="ic">sk-or-v1-</span> and is only shown once, so store it somewhere safe.</li>
+              <li><em>Recommended:</em> open <strong>Credits</strong> in the left sidebar and add a few dollars. Free models exist, but paid ones are more reliable, and vision models are cheap per request.</li>
+              <li><em>Optional:</em> repeat steps 3 and 4 to make more keys. The extension rotates through all of them if one fails.</li>
+            </ol>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Put your key(s) in keys.json</h3>
+            <p>In the extension folder, create a file named <span class="ic">keys.json</span> and paste this, replacing the placeholders with <strong>your own</strong> keys:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-keys">Copy</button><pre class="code" id="code-keys">{
+  "API_KEYS": [
+    "sk-or-v1-YOUR-FIRST-KEY-HERE",
+    "sk-or-v1-YOUR-SECOND-KEY-HERE"
+  ]
+}</pre></div>
+            <ul class="list-disc pl-6 space-y-1.5">
+              <li>It must be valid JSON: double quotes only and no trailing commas.</li>
+              <li>The array must be named exactly <span class="ic">API_KEYS</span>.</li>
+              <li>One key is enough. More keys means more protection against rate limits.</li>
+              <li><strong>Never share this file or upload it to GitHub.</strong> Anyone with a key can spend your credits.</li>
+            </ul>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-4">
+          <span class="step-num">4</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Load the extension in Chrome</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>Open a new tab and go to <span class="ic">chrome://extensions</span></li>
+              <li>Turn on <strong>Developer mode</strong> (top-right corner).</li>
+              <li>Click <strong>Load unpacked</strong> (top-left).</li>
+              <li>Select the folder that contains <span class="ic">manifest.json</span>, which is the root of <span class="ic">kahoot-hack/</span>, <em>not</em> the <span class="ic">scripts</span> folder.</li>
+              <li>Kahoot Hack now appears in the list. Make sure its toggle is <strong>ON</strong>.</li>
+            </ol>
+            <p><strong>Changed a file later?</strong> Click the ↻ refresh icon on the Kahoot Hack card, then reload any open Kahoot tabs.</p>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-5">
+          <span class="step-num">5</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Use it</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>Go to <a href="https://kahoot.it" target="_blank" rel="noopener noreferrer">kahoot.it</a> and join a game with its PIN as usual.</li>
+              <li>When a question starts, the <strong>⚡ kahoothack</strong> panel shows up in the top-right corner.</li>
+              <li>Watch the status line: <span class="ic">Question detected</span> → <span class="ic">Resolving answer...</span> → <span class="ic">Question sent</span> → <span class="ic">Highlighting answer...</span></li>
+              <li>The ✅ appears on the answer the AI picked. With auto-click on, it also selects it after your delay.</li>
+              <li>The AI can be wrong, especially on image-only questions, so treat the highlight as a suggestion.</li>
+            </ol>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Panel settings -->
+    <section id="settings" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-sliders text-[var(--accent)]"></i>Panel settings</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Setting</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><td>Highlight answer</td><td>Adds a ✅ marker to the correct option.</td></tr>
+              <tr><td>Auto-click</td><td>Automatically selects the correct answer for you.</td></tr>
+              <tr><td>Incognito mode</td><td>Hides the on-screen panel entirely.</td></tr>
+              <tr><td>Delay</td><td>Waits 0 to 10 seconds (in 0.5 s steps) before auto-clicking. A countdown overlay appears; click it to cancel.</td></tr>
+              <tr><td>− button</td><td>Collapses the panel into a small pill.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="text-base md:text-lg text-slate-100 text-readable">All settings are saved and synced across your tabs with <span class="ic">chrome.storage.sync</span>.</p>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-wrench text-[var(--accent)]"></i>Troubleshooting</h2>
+      <div class="glass-card rounded-2xl p-4 md:p-6">
+        <details class="faq">
+          <summary>"No API keys found…"</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>Make sure <span class="ic">keys.json</span> exists in the <strong>root</strong> of the extension folder, next to <span class="ic">manifest.json</span>.</p>
+            <p>Check that the JSON is valid (paste it into <a href="https://jsonlint.com" target="_blank" rel="noopener noreferrer">jsonlint.com</a>), then click the ↻ refresh icon on <span class="ic">chrome://extensions</span>.</p>
+          </div>
+        </details>
+        <details class="faq">
+          <summary>"All N API keys failed"</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>Open <span class="ic">chrome://extensions</span> → <strong>Kahoot Hack</strong> → <strong>Service worker</strong> → <em>Inspect</em>. The errors appear in the Console.</p>
+            <p>Common causes are an invalid key, no credits left, or a model that is not available on your account. Adding more keys to <span class="ic">keys.json</span> spreads the requests out.</p>
+          </div>
+        </details>
+        <details class="faq">
+          <summary>The panel doesn't appear</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>Check that the extension's toggle is ON, then reload the Kahoot tab.</p>
+            <p>Incognito mode may be enabled. Open the pill to turn it off, or clear the <span class="ic">silentMode</span> value from <span class="ic">chrome.storage</span>.</p>
+          </div>
+        </details>
+        <details class="faq">
+          <summary>The answer is wrong</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>The AI can be wrong, especially on image-only questions. You can try a different model by editing the <span class="ic">MODEL</span> constant in <span class="ic">background.js</span>, then refreshing the extension.</p>
+          </div>
+        </details>
+        <details class="faq">
+          <summary>Answers aren't submitted after a reconnect</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>The injected script keeps a pending answer in <span class="ic">sessionStorage</span> and resends it up to 2 times. If it gives up, rejoin the game.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Privacy & license -->
+    <section id="privacy" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-lock text-[var(--accent)]"></i>Security &amp; privacy</h2>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>Your keys live <strong>only</strong> in <span class="ic">keys.json</span> inside the extension and are sent nowhere except OpenRouter.</li>
+          <li>The Kahoot question text is sent to OpenRouter to get an answer. Do not use this if you are not comfortable with that.</li>
+          <li>Never publish or share the folder while <span class="ic">keys.json</span> holds real keys.</li>
+        </ul>
+      </div>
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-scale-balanced text-[var(--accent)]"></i>License</h2>
+        <p>Shared under the <strong>PolyForm Noncommercial License 1.0.0</strong>.</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>Personal &amp; educational use:</strong> free to use, modify and explore. Please give credit to the original author.</li>
+          <li><strong>Commercial use:</strong> needs a commercial license. Contact <a href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-sm text-slate-200 text-readable">
+      <div>Made with 💖 by Kurtis Lam</div>
+      <a href="/" class="link flex items-center gap-2"><i class="fa-solid fa-house"></i><span>Back to home</span></a>
+    </footer>
+  </main>
+
+  <script>
+    // --- Copy buttons ---
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.querySelector(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.textContent;
+        var done = function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+
+    // --- Forward pointer / scroll info to the shared background iframe ---
+    (function () {
+      const bgIframe = document.getElementById('bg-iframe');
+      if (!bgIframe) return;
+      const post = (msg) => {
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      };
+      let mx = 0, my = 0, movePending = false, scrollPending = false;
+      window.addEventListener('pointermove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (movePending) return;
+        movePending = true;
+        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
+      window.addEventListener('scroll', () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
