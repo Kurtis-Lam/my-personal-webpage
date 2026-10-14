@@ -12,7 +12,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -86,7 +86,7 @@
       background-size: 300% 300%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: gradientShift 6s ease infinite;
+      animation: gradientShift 8s steps(240) infinite;
     }
 
     @keyframes gradientShift {
@@ -112,12 +112,12 @@
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
     .moving-grad-svt-bg {
       background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
       background-size: 200% auto;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
 
     /* 2. kTown */
@@ -126,12 +126,12 @@
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
     .moving-grad-ktown-bg {
       background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
       background-size: 200% auto;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
 
     /* 3. DropSpot */
@@ -140,12 +140,12 @@
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
     .moving-grad-dropspot-bg {
       background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
       background-size: 200% auto;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
 
     /* 4. GTEYC SU */
@@ -154,12 +154,12 @@
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
     .moving-grad-gteyc-bg {
       background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
       background-size: 200% auto;
-      animation: shiftGrad 4s linear infinite;
+      animation: shiftGrad 4s steps(120) infinite;
     }
 
     /* 5. Solver */
@@ -177,7 +177,7 @@
       background-size: 500% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: shiftGradSpread 10s linear infinite;
+      animation: shiftGradSpread 10s steps(300) infinite;
     }
     .moving-grad-solver-bg {
       background-image: linear-gradient(
@@ -191,17 +191,63 @@
         #ff9999 100%
       );
       background-size: 500% auto;
-      animation: shiftGradSpread 10s linear infinite;
+      animation: shiftGradSpread 10s steps(300) infinite;
+    }
+
+    /* 6. Kahoot Hack */
+    .moving-grad-kahoot-text {
+      background-image: linear-gradient(to right, #d8b4fe, #fda4af, #fde68a, #d8b4fe);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+    .moving-grad-kahoot-bg {
+      background-image: linear-gradient(to right, #d8b4fe, #fda4af, #fde68a, #d8b4fe);
+      background-size: 200% auto;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+
+    /* 7. Monkeytyper */
+    .moving-grad-mtyper-text {
+      background-image: linear-gradient(to right, #f5d76e, #fff3b0, #e2b714, #f5d76e);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+    .moving-grad-mtyper-bg {
+      background-image: linear-gradient(to right, #f5d76e, #fff3b0, #e2b714, #f5d76e);
+      background-size: 200% auto;
+      animation: shiftGrad 4s steps(120) infinite;
     }
 
     /* Glassmorphism Card Style - Solid background fill to ensure text readability without lag */
     .glass-card {
-      background: rgba(11, 17, 32, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      background: rgba(8, 12, 24, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
       transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                   box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
                   border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .card-tilt {
+      transition: transform 0.18s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Text that sits directly on the star field gets a soft dark halo so it stays readable */
+    .text-readable {
+      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7);
+    }
+
+    .age-glow {
+      background: radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.18), rgba(6, 182, 212, 0) 60%);
+    }
+
+    a:focus-visible {
+      outline: 2px solid #67e8f9;
+      outline-offset: 3px;
     }
 
     /* ---------- Scroll-time performance helpers ---------- */
@@ -266,6 +312,14 @@
       box-shadow: 0 0 25px rgba(247, 202, 201, 0.4);
       border-color: rgba(247, 202, 201, 0.6);
     }
+    .glow-kahoot:hover {
+      box-shadow: 0 0 25px rgba(216, 180, 254, 0.4);
+      border-color: rgba(216, 180, 254, 0.6);
+    }
+    .glow-mtyper:hover {
+      box-shadow: 0 0 25px rgba(226, 183, 20, 0.4);
+      border-color: rgba(245, 215, 110, 0.6);
+    }
     .glow-dropspot:hover {
       box-shadow: 0 0 25px rgba(146, 184, 246, 0.4);
       border-color: rgba(146, 184, 246, 0.6);
@@ -291,18 +345,18 @@
 
     <!-- Top Badge -->
     <header class="w-full text-center flex flex-col items-center fade-in">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-cyan-500/30 text-xs font-mono text-cyan-400 mb-6 tracking-wide uppercase shadow-lg hover:scale-105 transition-transform duration-300">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-cyan-500/40 text-sm font-mono text-cyan-300 mb-6 tracking-wide uppercase shadow-lg">
         <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
         <span>Student &amp; Developer</span>
       </div>
 
       <!-- Main Profile Title -->
-      <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-2">
-        <span id="greeting-prefix" class="text-slate-200">Hey, I'm</span> <span class="animated-gradient-text ">Kurtis</span>
+      <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-2 text-readable">
+        <span id="greeting-prefix" class="text-white text-readable">Hey, I'm</span> <span class="animated-gradient-text ">Kurtis</span>
       </h1>
 
       <!-- Animated Subtitle / Typewriter -->
-      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-100 text-lg md:text-xl">
+      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-100 text-lg md:text-xl text-readable">
         <span class="text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">&gt;&nbsp;</span>
         <span id="typewriter" class="text-white font-semibold drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]"></span>
         <span class="animate-pulse text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">|</span>
@@ -313,49 +367,49 @@
     <main class="w-full my-8 space-y-12">
       
       <!-- Precise Live Age Counter Widget -->
-      <div class="glass-card fade-in rounded-2xl p-6 md:p-8 relative overflow-hidden group hover:border-cyan-500/50 transition-all">
-        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+      <div class="glass-card fade-in rounded-2xl p-6 md:p-8 relative overflow-hidden">
+        <div class="absolute inset-0 age-glow pointer-events-none"></div>
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
           <div class="text-center md:text-left">
-            <div class="flex items-center gap-2 text-slate-300 text-sm font-mono mb-1 justify-center md:justify-start">
+            <div class="flex items-center gap-2 text-slate-200 text-sm font-mono mb-1 justify-center md:justify-start">
               <i class="fa-solid fa-cake-candles text-pink-400"></i>
               <span>BIRTHDAY: OCT 22, 2010</span>
             </div>
             <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
           </div>
-          <div class="bg-slate-900/70 border border-slate-800/80 px-6 py-3 rounded-xl text-center shadow-inner">
-            <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-400 tracking-wider">15.00000000</span>
-            <span class="text-xs text-slate-400 block font-mono">YEARS OLD</span>
+          <div class="bg-slate-950 border border-slate-700 px-6 py-3 rounded-xl text-center shadow-inner">
+            <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-300 tracking-wider">15.00000000</span>
+            <span class="text-sm text-slate-300 block font-mono">YEARS OLD</span>
           </div>
         </div>
       </div>
 
       <!-- Social Links Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-globe text-cyan-400"></i>
             <span>Profiles &amp; Socials</span>
           </h2>
-          <span class="text-xs font-mono text-slate-300">Connect &amp; Follow</span>
+          <span class="text-sm font-mono text-slate-100 text-readable">Connect &amp; Follow</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           <!-- Instagram Card -->
           <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
                   <i class="fa-brands fa-instagram"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-insta transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-insta transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Instagram</h2>
-              <p class="text-sm font-mono text-slate-300">@kurtis_1022</p>
+              <p class="text-base font-mono text-slate-100">@kurtis_1022</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
               <span class="w-2 h-2 rounded-full bg-rose-500"></span>
               <span>Socials &amp; Highlights</span>
             </div>
@@ -363,18 +417,18 @@
 
           <!-- GitHub Card -->
           <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
                   <i class="fa-brands fa-github"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-cyan-400 transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">GitHub</h2>
-              <p class="text-sm font-mono text-slate-300">@Kurtis-Lam</p>
+              <p class="text-base font-mono text-slate-100">@Kurtis-Lam</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               <span>Code &amp; Repositories</span>
             </div>
@@ -382,18 +436,18 @@
 
           <!-- Monkeytype Card -->
           <a href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800/70 border border-slate-700/80 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
+                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
                   <i class="fa-solid fa-keyboard"></i>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-monkeytype transition-colors"></i>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-monkeytype transition-colors"></i>
               </div>
               <h2 class="text-xl font-bold text-white mb-1 group-hover:text-monkeytype transition-colors">Monkeytype</h2>
-              <p class="text-sm font-mono text-slate-300">kurtislam</p>
+              <p class="text-base font-mono text-slate-100">kurtislam</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center text-xs font-mono text-slate-300 gap-2">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
               <span class="w-2 h-2 rounded-full bg-monkeytype"></span>
               <span>Speed Typing Leaderboards</span>
             </div>
@@ -404,28 +458,28 @@
 
       <!-- My Currently Active Projects Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-rocket text-cyan-400"></i>
             <span>My Currently Active Projects</span>
           </h2>
-          <span class="text-xs font-mono text-slate-300">Deployed Applications</span>
+          <span class="text-sm font-mono text-slate-100 text-readable">Deployed Applications</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Project 1: gtcsu -->
           <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#95f4ee] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#95f4ee] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-gteyc-text">GTEYC 2627 SU</h3>
-              <p class="text-xs text-slate-300 line-clamp-2">Official webpage developed for GTEYC 2627 SU: Aurora</p>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">Official webpage developed for GTEYC 2627 SU: Aurora</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-gteyc-text font-semibold">gtcsu-aurora.web.app</span>
               <i class="fa-solid fa-graduation-cap"></i>
             </div>
@@ -433,16 +487,16 @@
 
           <!-- Project 2: svt match -->
           <a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#92A8D1] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#92A8D1] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-svt-text">SVT Match</h3>
-              <p class="text-xs text-slate-300 line-clamp-2">A SVT based game featuring friends, leaderboards, shops, and more...</p>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">A SVT based game featuring friends, leaderboards, shops, and more...</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-svt-text font-semibold">svt-match.web.app</span>
               <i class="fa-solid fa-gamepad"></i>
             </div>
@@ -450,16 +504,16 @@
 
           <!-- Project 3: ktown -->
           <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#fbcfe8] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fbcfe8] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-ktown-text">kTown</h3>
-              <p class="text-xs text-slate-300 line-clamp-2">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-ktown-text font-semibold">ktown-45.web.app</span>
               <i class="fa-solid fa-book-open"></i>
             </div>
@@ -467,16 +521,16 @@
 
           <!-- Project 4: dropspot -->
           <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-[#fff7d7] transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fff7d7] transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-dropspot-text">DropSpot</h3>
-              <p class="text-xs text-slate-300 line-clamp-2">Fast, light-weight web-based data &amp; file transfer application.</p>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">Fast, light-weight web-based data &amp; file transfer application.</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-dropspot-text font-semibold">dropspot-0.web.app</span>
               <i class="fa-solid fa-arrow-right-arrow-left"></i>
             </div>
@@ -487,30 +541,64 @@
 
       <!-- My Small Projects Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
-          <h2 class="text-2xl font-bold text-slate-100 flex items-center gap-3">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-cubes text-cyan-400"></i>
             <span>My Small Projects</span>
           </h2>
-          <span class="text-xs font-mono text-slate-300">Mini Tools &amp; Utilities</span>
+          <span class="text-sm font-mono text-slate-100 text-readable">Mini Tools &amp; Utilities</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Project: colordle solver -->
           <a href="https://kurtis-lam.web.app/colordle-solver" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group transform hover:-translate-y-2 transition-all duration-300">
+             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-semibold text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-cyan-400 transition-colors"></i>
               </div>
               <h3 class="text-xl font-bold mb-2 moving-grad-solver-text">Colordle Solver</h3>
-              <p class="text-xs text-slate-300 line-clamp-2">Solves colordle.ryantanen.com using mathematical formulas.</p>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">Solves colordle.ryantanen.com using mathematical formulas.</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono text-slate-300">
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-solver-text font-semibold">kurtis-lam.web.app/colordle-solver</span>
               <i class="fa-solid fa-palette"></i>
+            </div>
+          </a>
+
+          <!-- Project: kahoot hack -->
+          <a href="https://kurtis-lam.web.app/kahoot-hack" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-kahoot rounded-2xl p-6 flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kahoot-bg">EXTENSION</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#d8b4fe] transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2 moving-grad-kahoot-text">Kahoot Hack</h3>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
+              <span class="moving-grad-kahoot-text font-semibold">kurtis-lam.web.app/kahoot-hack</span>
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+          </a>
+
+          <!-- Project: monkeytyper -->
+          <a href="https://kurtis-lam.web.app/monkeytyper" target="_blank" rel="noopener noreferrer"
+             class="card-tilt fade-in glass-card glow-mtyper rounded-2xl p-6 flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-mtyper-bg">AUTOMATION</span>
+                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#f5d76e] transition-colors"></i>
+              </div>
+              <h3 class="text-xl font-bold mb-2 moving-grad-mtyper-text">Monkeytyper</h3>
+              <p class="text-sm md:text-base text-slate-100 leading-relaxed">Two Python scripts that type Monkeytype tests for you: one reads the page DOM, one uses OCR.</p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
+              <span class="moving-grad-mtyper-text font-semibold">kurtis-lam.web.app/monkeytyper</span>
+              <i class="fa-solid fa-keyboard"></i>
             </div>
           </a>
 
@@ -526,11 +614,11 @@
               <span>Get In Touch</span>
             </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
-              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/70 border border-slate-800/80 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
+              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 hover:text-cyan-300 hover:border-cyan-500/60 transition-colors group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam100@gmail.com</span>
               </a>
-              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-900/70 border border-slate-800/80 text-slate-200 hover:text-cyan-400 hover:border-cyan-500/40 transition-all group cursor-pointer">
+              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 hover:text-cyan-300 hover:border-cyan-500/60 transition-colors group cursor-pointer">
                 <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
                 <span>kurtislam200@gmail.com</span>
               </a>
@@ -542,12 +630,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full text-center pt-8 border-t border-slate-800/50 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-mono gap-4 fade-in">
+    <footer class="w-full text-center pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-200 font-mono gap-4 fade-in text-readable">
       <div>
         Made with 💖 by Kurtis Lam
       </div>
       <div class="flex items-center gap-2">
-        <i class="fa-regular fa-copyright text-slate-400"></i>
+        <i class="fa-regular fa-copyright text-slate-300"></i>
         <span>Kurtis Lam <span id="year">2026</span></span>
       </div>
     </footer>
@@ -563,14 +651,11 @@
 
     const rootEl = document.documentElement;
     const SCROLL_IDLE_MS = 150;
-    let isScrolling = false;
-    let lastScrollTime = 0;
+    let scrollTimer = 0;
     window.addEventListener('scroll', () => {
-      lastScrollTime = performance.now();
-      if (!isScrolling) {
-        isScrolling = true;
-        rootEl.classList.add('is-scrolling');
-      }
+      if (!rootEl.classList.contains('is-scrolling')) rootEl.classList.add('is-scrolling');
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => rootEl.classList.remove('is-scrolling'), SCROLL_IDLE_MS);
     }, { passive: true });
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -643,38 +728,37 @@
         liveAgeEl.textContent = text;
       }
     }
-    setInterval(updateLiveAge, 100);
+    setInterval(updateLiveAge, 200);
     updateLiveAge();
 
-    // --- Optimized Interactive Custom Cursor ---
+    // --- Optimized Interactive Custom Cursor (animation frames run only while it is moving) ---
     const cursorDot = document.getElementById('cursor-dot');
     const cursorOutline = document.getElementById('cursor-outline');
     let mouseX = -100, mouseY = -100;
     let outlineX = -100, outlineY = -100;
+    let cursorRaf = 0;
 
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    }, { passive: true });
-
-    let dotDrawnX = NaN, dotDrawnY = NaN, outlineDrawnX = NaN, outlineDrawnY = NaN;
-    function renderCursor() {
-      if (mouseX <= -90) return;
-      if (mouseX !== dotDrawnX || mouseY !== dotDrawnY) {
-        dotDrawnX = mouseX; dotDrawnY = mouseY;
-        cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-      }
+    function cursorTick() {
+      cursorRaf = 0;
+      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
       outlineX += (mouseX - outlineX) * 0.25;
       outlineY += (mouseY - outlineY) * 0.25;
-      if (Math.abs(outlineX - outlineDrawnX) > 0.05 || Math.abs(outlineY - outlineDrawnY) > 0.05 ||
-          isNaN(outlineDrawnX)) {
-        outlineDrawnX = outlineX; outlineDrawnY = outlineY;
-        cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
+      cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
+      if (Math.abs(mouseX - outlineX) > 0.1 || Math.abs(mouseY - outlineY) > 0.1) {
+        cursorRaf = requestAnimationFrame(cursorTick);
       }
     }
+    window.addEventListener('mousemove', (e) => {
+      if (mouseX <= -90) { outlineX = e.clientX; outlineY = e.clientY; }
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!cursorRaf) cursorRaf = requestAnimationFrame(cursorTick);
+    }, { passive: true });
 
     // --- 3D Interactive Card Tilt Effect ---
-    const cards = document.querySelectorAll('.card-tilt');
+    const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
+                    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cards = canTilt ? document.querySelectorAll('.card-tilt') : [];
     cards.forEach(card => {
       let raf = 0, mx = 0, my = 0;
       card.addEventListener('mousemove', (e) => {
@@ -705,17 +789,6 @@
       }, { rootMargin: '80px' });
       document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
     }
-
-    // --- Cursor + scroll-state loop (the star field now lives in background.html) ---
-    function uiLoop(t) {
-      if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
-        isScrolling = false;
-        rootEl.classList.remove('is-scrolling');
-      }
-      renderCursor();
-      requestAnimationFrame(uiLoop);
-    }
-    requestAnimationFrame(uiLoop);
 
     // --- Forward pointer / scroll info to the shared background iframe ---
     (function () {
