@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Monkeytyper is a pair of Python scripts that automate Monkeytype using Selenium: a fast DOM method and an OpenCV + Tesseract OCR method. What it is and step-by-step setup." />
+  <meta name="theme-color" content="#07090e" />
+  <link rel="canonical" href="https://kurtis-lam.web.app/monkeytyper" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Monkeytyper | Kurtis Lam" />
+  <meta property="og:description" content="Monkeytyper is a pair of Python scripts that automate Monkeytype using Selenium: a fast DOM method and an OpenCV + Tesseract OCR method. What it is and step-by-step setup." />
+  <meta property="og:url" content="https://kurtis-lam.web.app/monkeytyper" />
+  <title>Monkeytyper | Kurtis Lam</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --accent: #f5d76e; --accent-2: #e2b714; }
+    html { scroll-padding-top: 5.5rem; }
+    body { background: #07090e; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #090a0f; }
+    ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Solid (blur-free) panels keep text readable over the star field and are cheap to paint */
+    .glass-card {
+      background: rgba(8, 12, 24, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
+    }
+    .topbar {
+      background: rgba(7, 9, 14, 0.96);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .text-readable { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); }
+
+    .gradient-title {
+      background-image: linear-gradient(90deg, #fde68a, #fff3b0, #e2b714);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+
+    .body-text { font-size: 1.0625rem; line-height: 1.75; color: #e2e8f0; }
+    .body-text a, .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .body-text a:hover, .link:hover { color: #fff; }
+    .body-text strong { color: #fff; font-weight: 600; }
+    .muted { color: #cbd5e1; }
+
+    .step-num {
+      width: 2.5rem; height: 2.5rem; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; background: var(--accent); color: #0b0b14;
+      font-weight: 700; font-size: 1.125rem;
+    }
+    .ic {
+      font-family: 'Fira Code', monospace; font-size: 0.9em;
+      background: #020617; border: 1px solid #334155; border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; color: #fde68a; word-break: break-word;
+    }
+    .code-wrap { position: relative; }
+    .code {
+      background: #020617; border: 1px solid #334155; border-radius: 0.75rem;
+      padding: 1rem 1.1rem; padding-right: 5.5rem; overflow-x: auto;
+      font-family: 'Fira Code', monospace; font-size: 0.92rem; line-height: 1.65;
+      color: #e2e8f0; white-space: pre; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 0.55rem; right: 0.55rem;
+      font-family: 'Fira Code', monospace; font-size: 0.8rem; font-weight: 600;
+      color: #e2e8f0; background: #1e293b; border: 1px solid #64748b;
+      border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: #334155; color: #fff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem;
+      border-radius: 0.75rem; padding: 0.8rem 1.4rem; text-decoration: none;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #0b0b14; }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { background: rgba(8, 12, 24, 0.92); color: #f1f5f9; border: 1px solid #94a3b8; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 1rem; line-height: 1.55; }
+    .data-table th, .data-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #334155; vertical-align: top; }
+    .data-table th { color: #fff; font-weight: 700; background: #0f172a; }
+    .data-table td { color: #e2e8f0; }
+    .data-table td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+
+    details.faq { border: 1px solid #334155; border-radius: 0.9rem; background: rgba(2, 6, 23, 0.8); }
+    details.faq + details.faq { margin-top: 0.75rem; }
+    details.faq summary {
+      cursor: pointer; list-style: none; padding: 1rem 1.2rem; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 1.05rem;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::after { content: '+'; color: var(--accent); font-size: 1.5rem; line-height: 1; font-family: 'Fira Code', monospace; }
+    details.faq[open] summary::after { content: '\2212'; }
+    details.faq .faq-body { padding: 0 1.2rem 1.1rem; }
+
+    .tab-btn {
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem; color: #e2e8f0;
+      background: #0f172a; border: 1px solid #475569; border-radius: 0.7rem; padding: 0.65rem 1.1rem; cursor: pointer;
+    }
+    .tab-btn[aria-selected="true"] { background: var(--accent); color: #0b0b14; border-color: var(--accent); }
+
+    .warn { border: 1px solid rgba(251, 191, 36, 0.65); background: rgba(40, 28, 4, 0.94); }
+
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid #67e8f9; outline-offset: 3px;
+    }
+    .skip-link { position: absolute; left: -9999px; top: 0.5rem; background: #fff; color: #000; padding: 0.5rem 1rem; border-radius: 0.5rem; z-index: 100; }
+    .skip-link:focus { left: 0.5rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- Embedded Shared Background -->
+  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1" title=""></iframe>
+
+  <!-- Top bar -->
+  <header class="topbar sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="/" class="flex items-center gap-2 font-mono font-semibold text-slate-100 hover:text-[var(--accent)] text-sm md:text-base">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Kurtis Lam</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 font-mono text-sm text-slate-200" aria-label="On this page">
+        <a href="#what" class="hover:text-[var(--accent)]">What it is</a>
+        <a href="#compare" class="hover:text-[var(--accent)]">Compare</a>
+        <a href="#setup" class="hover:text-[var(--accent)]">Setup</a>
+        <a href="#troubleshooting" class="hover:text-[var(--accent)]">Help</a>
+      </nav>
+      <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
+        <i class="fa-brands fa-github text-lg"></i><span class="hidden sm:inline">GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 max-w-5xl mx-auto px-5 pt-12 md:pt-16 pb-16 space-y-14 md:space-y-20">
+
+    <!-- Hero -->
+    <section class="text-center flex flex-col items-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card font-mono text-sm text-[var(--accent)] mb-6 uppercase tracking-wide">
+        <i class="fa-brands fa-python"></i><span>Python · Selenium</span>
+      </div>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-readable mb-5">
+        <i class="fa-solid fa-keyboard text-[var(--accent)]"></i> <span class="gradient-title">Monkeytyper</span>
+      </h1>
+      <p class="max-w-2xl text-lg md:text-xl text-slate-100 leading-relaxed text-readable">
+        Two Python scripts that open Monkeytype in Chrome and type the test for you. One reads the words straight from the page, the other reads a screenshot with OCR and presses real keys.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a href="#setup" class="btn btn-primary"><i class="fa-solid fa-list-ol"></i><span>Step-by-step setup</span></a>
+        <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <section class="warn rounded-2xl p-5 md:p-6 flex gap-4" aria-labelledby="disc-h">
+      <i class="fa-solid fa-triangle-exclamation text-amber-300 text-2xl mt-1"></i>
+      <div class="body-text">
+        <h2 id="disc-h" class="text-lg md:text-xl font-bold text-amber-200 mb-1">Educational use only, play fair</h2>
+        <p>These scripts exist to demonstrate web automation, computer vision (CV), OCR and DOM interaction. <strong>Do not use them to compete on public leaderboards, fake benchmark scores, or disrupt typing communities.</strong> Automating a third-party site may break its Terms of Service, and you could lose your account. You use them at your own risk.</p>
+      </div>
+    </section>
+
+    <!-- What is it -->
+    <section id="what" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-circle-question text-[var(--accent)]"></i>What is it?</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <p>Monkeytyper is a pair of small Python programs for <a href="https://monkeytype.com" target="_blank" rel="noopener noreferrer">Monkeytype</a>. Each one launches Chrome with Selenium, finds the words on the screen, and types them. They show two very different ways to solve the same problem:</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>DOM method</strong> (<span class="ic">dom_selenium.py</span>): asks the page for the exact word it needs and sends it straight into Monkeytype's input box.</li>
+          <li><strong>OCR method</strong> (<span class="ic">ocr_pyautogui.py</span>): takes a screenshot, cleans it up with OpenCV, reads it with Tesseract OCR, then presses real keys with PyAutoGUI.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Comparison -->
+    <section id="compare" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-scale-unbalanced text-[var(--accent)]"></i>Which one should I use?</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">&nbsp;</th><th scope="col">DOM + Selenium</th><th scope="col">Vision + OCR</th></tr></thead>
+            <tbody>
+              <tr><td>File</td><td><span class="ic">dom_selenium.py</span></td><td><span class="ic">ocr_pyautogui.py</span></td></tr>
+              <tr><td>How it reads text</td><td>JavaScript DOM query (<span class="ic">querySelector</span>)</td><td>OpenCV image processing + Tesseract OCR</td></tr>
+              <tr><td>How it types</td><td>Selenium <span class="ic">send_keys</span> into the input field</td><td>OS-level keystrokes with PyAutoGUI</td></tr>
+              <tr><td>Accuracy</td><td>Perfect text extraction (read straight from the DOM)</td><td>About 90 to 98%, depending on OCR quality</td></tr>
+              <tr><td>Speed</td><td>Extremely fast (word by word)</td><td>Moderate (character by character)</td></tr>
+              <tr><td>Extra installs</td><td>Selenium, WebDriver Manager</td><td>Those plus OpenCV, PyAutoGUI, pytesseract and the Tesseract engine</td></tr>
+              <tr><td>Relies on page structure</td><td>High (specific CSS classes and IDs)</td><td>Low (only the words container)</td></tr>
+              <tr><td>Login / session</td><td>Persistent Chrome profile</td><td>Normal temporary session</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="text-base md:text-lg text-slate-100 text-readable"><strong>Short version:</strong> start with the DOM method, since it is simpler to install and more accurate. Pick the OCR method if you want to learn how a screenshot-to-keystroke pipeline works.</p>
+    </section>
+
+    <!-- How it works -->
+    <section id="how" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-gears text-[var(--accent)]"></i>How each one works</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-code text-[var(--accent)]"></i>DOM method</h3>
+          <ol class="list-decimal pl-6 space-y-2">
+            <li><strong>Persistent session.</strong> Chrome starts with a local profile folder (<span class="ic">selenium_chrome_profile</span>), so cookies and settings are remembered.</li>
+            <li><strong>Read the word.</strong> A snippet of JavaScript looks for the active word in <span class="ic">#words</span> (or the first untyped one) and returns its text.</li>
+            <li><strong>Type the word.</strong> The text plus a space is sent to the <span class="ic">#wordsInput</span> element.</li>
+            <li><strong>Repeat.</strong> It waits 0.05 s and loops until no words are left.</li>
+          </ol>
+        </div>
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-eye text-[var(--accent)]"></i>OCR method</h3>
+          <ol class="list-decimal pl-6 space-y-2">
+            <li><strong>Open the page.</strong> Chrome loads Monkeytype and the script waits 5 seconds for you to handle cookies.</li>
+            <li><strong>Capture.</strong> It clicks the words area and saves a screenshot of <span class="ic">#wordsWrapper</span>.</li>
+            <li><strong>Clean up.</strong> OpenCV upscales the image 2x, makes it grayscale and applies a threshold so the letters stand out.</li>
+            <li><strong>Read.</strong> Tesseract (<span class="ic">--psm 6</span>) turns the image into text, which is printed in the console.</li>
+            <li><strong>Type.</strong> PyAutoGUI presses each character with a 0.015 s delay, then the browser closes after 5 seconds.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Setup -->
+    <section id="setup" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-list-check text-[var(--accent)]"></i>Setup: step by step</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">You need Google Chrome and Python 3 on your computer. The OCR method is written for Windows paths, so the DOM method is the easier first run.</p>
+      </div>
+
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Install Python and Chrome</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>Install <a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer">Python 3</a>. On Windows, tick <strong>Add python.exe to PATH</strong> in the installer.</li>
+              <li>Make sure <a href="https://www.google.com/chrome/" target="_blank" rel="noopener noreferrer">Google Chrome</a> is installed and up to date.</li>
+              <li>Check Python works by running this in a terminal:</li>
+            </ol>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-pyver">Copy</button><pre class="code" id="code-pyver">python --version</pre></div>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Get the scripts</h3>
+            <p>Download the <span class="ic">monkeytype</span> project from <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer">my GitHub</a> and unzip it, then open a terminal inside that folder. It contains <span class="ic">dom_selenium.py</span> and <span class="ic">ocr_pyautogui.py</span>.</p>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-4">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Install what your method needs</h3>
+            <div role="tablist" aria-label="Choose a method" class="flex flex-wrap gap-3">
+              <button class="tab-btn" role="tab" id="tab-dom" aria-selected="true" aria-controls="panel-dom" type="button">DOM method (easier)</button>
+              <button class="tab-btn" role="tab" id="tab-ocr" aria-selected="false" aria-controls="panel-ocr" type="button">OCR method</button>
+            </div>
+
+            <div role="tabpanel" id="panel-dom" aria-labelledby="tab-dom" class="space-y-3">
+              <p>Install the two packages:</p>
+              <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-pip-dom">Copy</button><pre class="code" id="code-pip-dom">pip install selenium webdriver-manager</pre></div>
+              <p>That is all. WebDriver Manager downloads a matching ChromeDriver automatically the first time you run it.</p>
+            </div>
+
+            <div role="tabpanel" id="panel-ocr" aria-labelledby="tab-ocr" class="space-y-3" hidden>
+              <p><strong>A. Install the Python packages:</strong></p>
+              <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-pip-ocr">Copy</button><pre class="code" id="code-pip-ocr">pip install selenium webdriver-manager opencv-python pytesseract pyautogui</pre></div>
+              <p><strong>B. Install the Tesseract OCR engine.</strong> On Windows, download the installer (for example the UB-Mannheim build) and note where it installs.</p>
+              <p><strong>C. Point the script at Tesseract.</strong> Open <span class="ic">ocr_pyautogui.py</span> and edit this line near the top so it matches <em>your</em> install location and username:</p>
+              <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-tess">Copy</button><pre class="code" id="code-tess">pytesseract.pytesseract.tesseract_cmd = r"C:\Users\&lt;YourUsername&gt;\AppData\Local\Tesseract-OCR\tesseract.exe"</pre></div>
+              <p>The file currently points at the author's folder, so it will fail on your machine until you change it.</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-4">
+          <span class="step-num">4</span>
+          <div class="min-w-0 flex-1 body-text space-y-4">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Run it</h3>
+            <p>In your terminal, run the script for the method you chose:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-run">Copy</button><pre class="code" id="code-run">python dom_selenium.py
+python ocr_pyautogui.py</pre></div>
+            <p>(Run only one of them.) Here is what you will see:</p>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>A maximized Chrome window opens on <span class="ic">monkeytype.com</span>.</li>
+              <li>The console says <span class="ic">Waiting 5 seconds…</span>. Use that time to accept the cookie popup and choose your test settings.</li>
+              <li><strong>DOM method:</strong> it starts typing word by word and stops when the words run out. Chrome stays open afterwards.</li>
+              <li><strong>OCR method:</strong> it saves <span class="ic">monkeytype_words.png</span> and <span class="ic">processed_words.png</span>, prints the text it read, types it, then closes Chrome after 5 seconds. It only types the words visible on screen at that moment.</li>
+            </ol>
+          </div>
+        </li>
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-5">
+          <span class="step-num">5</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Tips while it runs</h3>
+            <ul class="list-disc pl-6 space-y-2">
+              <li><strong>OCR method:</strong> keep the Chrome window focused and do not touch the keyboard. The keystrokes go to whichever window is active.</li>
+              <li><strong>OCR method:</strong> to abort, slam the mouse into a screen corner. That triggers PyAutoGUI's built-in fail-safe.</li>
+              <li><strong>DOM method:</strong> press <span class="ic">Ctrl + C</span> in the terminal to stop it.</li>
+              <li><strong>DOM method:</strong> the saved profile can keep you logged in to Monkeytype, so results may be recorded on your account. Please read the fair-play note at the top.</li>
+            </ul>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Troubleshooting -->
+    <section id="troubleshooting" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-wrench text-[var(--accent)]"></i>Troubleshooting</h2>
+      <div class="glass-card rounded-2xl p-4 md:p-6">
+        <details class="faq">
+          <summary>ModuleNotFoundError (selenium, cv2, pyautogui…)</summary>
+          <div class="faq-body body-text"><p>A package is missing. Re-run the <span class="ic">pip install</span> line for your method from step 3, and make sure you use the same Python that runs the script.</p></div>
+        </details>
+        <details class="faq">
+          <summary>TesseractNotFoundError (OCR method)</summary>
+          <div class="faq-body body-text"><p>Tesseract is not installed, or the path in <span class="ic">ocr_pyautogui.py</span> is wrong. Install it, then update the <span class="ic">tesseract_cmd</span> line to the real location of <span class="ic">tesseract.exe</span>.</p></div>
+        </details>
+        <details class="faq">
+          <summary>NoSuchElementException (can't find wordsInput or wordsWrapper)</summary>
+          <div class="faq-body body-text space-y-2">
+            <p>The page was not ready yet, a popup was in the way, or Monkeytype changed its layout. Increase the <span class="ic">time.sleep(5)</span> near the top and accept any popups first.</p>
+            <p>The DOM method depends on specific IDs and classes, so a site update can break it until the selectors are changed.</p>
+          </div>
+        </details>
+        <details class="faq">
+          <summary>ChromeDriver or browser version errors</summary>
+          <div class="faq-body body-text"><p>Update Google Chrome and upgrade the helper with <span class="ic">pip install -U selenium webdriver-manager</span>. WebDriver Manager needs an internet connection the first time to fetch the driver.</p></div>
+        </details>
+        <details class="faq">
+          <summary>The OCR text has mistakes</summary>
+          <div class="faq-body body-text"><p>Accuracy is roughly 90 to 98% and depends on how clean the screenshot is. Try a larger browser zoom or a theme with higher contrast. For perfect text, use the DOM method.</p></div>
+        </details>
+        <details class="faq">
+          <summary>Typing lands in the wrong window (OCR method)</summary>
+          <div class="faq-body body-text"><p>PyAutoGUI sends real OS keystrokes. If you click away from Chrome during the run, the characters go to whatever you clicked. Leave the Chrome window in front until it finishes.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- License -->
+    <section id="license">
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-scale-balanced text-[var(--accent)]"></i>License</h2>
+        <p>Shared under the <strong>PolyForm Noncommercial License 1.0.0</strong>.</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>Personal &amp; educational use:</strong> free to use, modify and explore. Please give credit to the original author.</li>
+          <li><strong>Commercial use:</strong> needs a commercial license. Contact <a href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-sm text-slate-200 text-readable">
+      <div>Made with 💖 by Kurtis Lam</div>
+      <a href="/" class="link flex items-center gap-2"><i class="fa-solid fa-house"></i><span>Back to home</span></a>
+    </footer>
+  </main>
+
+  <script>
+    // --- Copy buttons ---
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.querySelector(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.textContent;
+        var done = function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+
+    // --- Method tabs ---
+    (function () {
+      var tabs = document.querySelectorAll('[role="tab"]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+          });
+        });
+      });
+    })();
+
+    // --- Forward pointer / scroll info to the shared background iframe ---
+    (function () {
+      const bgIframe = document.getElementById('bg-iframe');
+      if (!bgIframe) return;
+      const post = (msg) => {
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      };
+      let mx = 0, my = 0, movePending = false, scrollPending = false;
+      window.addEventListener('pointermove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (movePending) return;
+        movePending = true;
+        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
+      window.addEventListener('scroll', () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
