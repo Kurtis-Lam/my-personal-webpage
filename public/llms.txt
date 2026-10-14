@@ -11,10 +11,14 @@ Kurtis Lam (born October 22, 2010) builds web applications, study tools, interac
 - [kTown](https://ktown-45.web.app): An IB study and productivity web app featuring notes and citation tools.
 - [DropSpot](https://dropspot-0.web.app): Lightweight peer-to-peer data and file transfer utility.
 - [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): A color match tool that solves Colordle using CIEDE2000 ($\Delta E_{00}$) calculations in CIE Lab space.
+- [Kahoot Hack](https://kurtis-lam.web.app/kahoot-hack): A Chrome extension that reads Kahoot! questions, asks an AI model through OpenRouter, and highlights or auto-clicks the answer. Educational project; includes a step-by-step setup guide.
+- [Monkeytyper](https://kurtis-lam.web.app/monkeytyper): Two Python scripts that automate Monkeytype, one using Selenium DOM queries and one using OpenCV + Tesseract OCR with PyAutoGUI. Educational project; includes a step-by-step setup guide.
 
 ## Pages
 - [Portfolio Homepage](https://kurtis-lam.web.app/): Main portfolio showcasing projects, live age counter, and active profiles.
 - [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): Live utility for estimating mystery colors using primary similarities.
+- [Kahoot Hack](https://kurtis-lam.web.app/kahoot-hack): What the extension is, how it works, and how to install and use it.
+- [Monkeytyper](https://kurtis-lam.web.app/monkeytyper): What the two scripts are, how they differ, and how to set up and run them.
 
 ## Socials & Contact
 - GitHub: https://github.com/Kurtis-Lam
