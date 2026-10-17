@@ -10,7 +10,7 @@
       { "source": "/home", "destination": "/index.html" },
       { "source": "/colordle-solver", "destination": "/colordle.html" },
       { "source": "/gggrinder", "destination": "/grinder.html" },
-      { "source": "/to-my-hg", "destination": "/birthday.html" },
+      { "source": "/hbd-twin", "destination": "/birthday.html" },
       { "source": "/kahoot-hack", "destination": "/kahoot-hack.html" },
       { "source": "/monkeytyper", "destination": "/monkeytyper.html" }
     ]
