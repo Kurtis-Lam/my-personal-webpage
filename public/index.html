@@ -365,6 +365,52 @@
       font-family: cursive; 
     }
 
+    /* ---------- Hover-only descriptions ---------- */
+    .card-desc {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    .card-desc > div { overflow: hidden; min-height: 0; }
+    .group:hover .card-desc,
+    .group:focus-within .card-desc {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+    @media (hover: none) {
+      .card-desc { grid-template-rows: 1fr; opacity: 1; }
+    }
+
+    /* ---------- Collapsible categories ---------- */
+    .collapse-body {
+      display: grid;
+      grid-template-rows: 1fr;
+      transition: grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .collapse-inner { min-height: 0; overflow: hidden; padding: 12px; margin: -12px; }
+    section.is-collapsed .collapse-body { grid-template-rows: 0fr; }
+    section.is-collapsed .collapse-inner { pointer-events: none; }
+    section.is-collapsed .section-chevron { transform: rotate(-90deg); }
+
+    /* ---------- Scroll fade (hides above while scrolling down, returns on scroll up) ---------- */
+    .fade-in.is-hidden {
+      opacity: 0;
+      translate: 0 28px;
+    }
+    .fade-in {
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), translate 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-tilt.fade-in {
+      transition: transform 0.18s ease-out, box-shadow 0.3s ease, border-color 0.3s ease,
+                  opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), translate 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fade-in.is-hidden.from-above { translate: 0 -28px; }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-in.is-hidden { opacity: 1 !important; translate: none !important; }
+      .collapse-body, .card-desc { transition: none !important; }
+    }
+
   </style>
 </head>
 <body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
@@ -422,15 +468,15 @@
 
       <!-- Social Links Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
           <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-globe text-cyan-400"></i>
             <span>Profiles &amp; Socials</span>
           </h2>
-          <span class="text-sm font-mono text-slate-100 text-readable">Connect &amp; Follow</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Connect &amp; Follow</span>
+        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
+        <div class="collapse-body"><div class="collapse-inner">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           <!-- Instagram Card -->
           <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
@@ -490,19 +536,20 @@
           </a>
 
         </div>
+        </div></div>
       </section>
 
       <!-- My Currently Active Projects Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
           <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-rocket text-cyan-400"></i>
             <span>My Currently Active Projects</span>
           </h2>
-          <span class="text-sm font-mono text-slate-100 text-readable">Deployed Applications</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Deployed Applications</span>
+        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
+        <div class="collapse-body"><div class="collapse-inner">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Project 1: gtcsu -->
           <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
@@ -512,8 +559,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#95f4ee] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-gteyc-text">GTEYC 2627 SU</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Official webpage developed for GTEYC 2627 SU: Aurora</p>
+              <div class="flex items-center gap-3"><img src="/assets/gtcsu-aurora.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-gteyc-text">GTEYC 2627 SU</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Official webpage developed for GTEYC 2627 SU: Aurora</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-gteyc-text font-semibold">gtcsu-aurora.web.app</span>
@@ -529,8 +576,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#92A8D1] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-svt-text">SVT Match</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">A SVT based game featuring friends, leaderboards, shops, and more...</p>
+              <div class="flex items-center gap-3"><img src="/assets/svt-match.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-svt-text">SVT Match</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A SVT based game featuring friends, leaderboards, shops, and more...</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-svt-text font-semibold">svt-match.web.app</span>
@@ -546,8 +593,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fbcfe8] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-ktown-text">kTown</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p>
+              <div class="flex items-center gap-3"><img src="/assets/ktown.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-ktown-text">kTown</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-ktown-text font-semibold">ktown-45.web.app</span>
@@ -563,8 +610,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fff7d7] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-dropspot-text">DropSpot</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Fast, light-weight web-based data &amp; file transfer application.</p>
+              <div class="flex items-center gap-3"><img src="/assets/dropspot.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-dropspot-text">DropSpot</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Fast, light-weight web-based data &amp; file transfer application.</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-dropspot-text font-semibold">dropspot-0.web.app</span>
@@ -573,19 +620,20 @@
           </a>
 
         </div>
+        </div></div>
       </section>
 
       <!-- My Small Projects Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
           <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-cubes text-cyan-400"></i>
             <span>My Small Projects</span>
           </h2>
-          <span class="text-sm font-mono text-slate-100 text-readable">Mini Tools &amp; Utilities</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Mini Tools &amp; Utilities</span>
+        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
+        <div class="collapse-body"><div class="collapse-inner">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Project: colordle solver -->
           <a href="https://kurtis-lam.web.app/colordle-solver" target="_blank" rel="noopener noreferrer"
@@ -595,8 +643,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-cyan-400 transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-solver-text">Colordle Solver</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Solves colordle.ryantanen.com using mathematical formulas.</p>
+              <div class="flex items-center gap-3"><img src="/assets/colordle-solver.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-solver-text">Colordle Solver</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Solves colordle.ryantanen.com using mathematical formulas.</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-solver-text font-semibold">kurtis-lam.web.app/colordle-solver</span>
@@ -612,8 +660,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kahoot-bg">EXTENSION</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#d8b4fe] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-kahoot-text">Kahoot Hack</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer.</p>
+              <div class="flex items-center gap-3"><img src="/assets/kahoot-hack.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-kahoot-text">Kahoot Hack</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer.</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-kahoot-text font-semibold">kurtis-lam.web.app/kahoot-hack</span>
@@ -629,8 +677,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-mtyper-bg">AUTOMATION</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#f5d76e] transition-colors"></i>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-mtyper-text">Monkeytyper</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Two Python scripts that type Monkeytype tests for you: one reads the page DOM, one uses OCR.</p>
+              <div class="flex items-center gap-3"><img src="/assets/monkeytyper.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-mtyper-text">Monkeytyper</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Two Python scripts that type Monkeytype tests for you: one reads the page DOM, one uses OCR.</p></div></div>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-mtyper-text font-semibold">kurtis-lam.web.app/monkeytyper</span>
@@ -639,19 +687,20 @@
           </a>
 
         </div>
+        </div></div>
       </section>
 
       <!-- Utilities I Developed Section -->
       <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
           <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
             <i class="fa-solid fa-screwdriver-wrench text-cyan-400"></i>
             <span>Utilities I developed:</span>
           </h2>
-          <span class="text-sm font-mono text-slate-100 text-readable">Apps &amp; CLI Tools</span>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Apps &amp; CLI Tools</span>
+        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
+        <div class="collapse-body"><div class="collapse-inner">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           <!-- Utility: fluxbg -->
           <div class="card-tilt fade-in glass-card glow-fluxbg rounded-2xl p-6 flex flex-col justify-between group relative">
@@ -661,8 +710,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-fluxbg-bg">ANDROID APP</span>
                 <a href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-fluxbg-text">fluxbg</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Android wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p>
+              <div class="flex items-center gap-3"><img src="/assets/fluxbg.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-fluxbg-text">fluxbg</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Android wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p></div></div>
             </div>
             <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-fluxbg-text font-semibold">kurtis-lam.web.app/fluxbg</span>
@@ -678,8 +727,8 @@
                 <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kurt-bg">CLI TOOL</span>
                 <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
               </div>
-              <h3 class="text-xl font-bold mb-2 moving-grad-kurt-text">kurt</h3>
-              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">A terminal coding assistant that runs free open-source Hugging Face models locally through Ollama. You approve every edit.</p>
+              <div class="flex items-center gap-3"><img src="/assets/kurt.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-kurt-text">kurt</h3></div>
+              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A terminal coding assistant that runs free open-source Hugging Face models locally through Ollama. You approve every edit.</p></div></div>
             </div>
             <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
               <span class="moving-grad-kurt-text font-semibold">kurtis-lam.web.app/kurt</span>
@@ -688,6 +737,7 @@
           </div>
 
         </div>
+        </div></div>
       </section>
 
       <!-- Contact Info Section -->
@@ -874,6 +924,69 @@
       }, { rootMargin: '80px' });
       document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
     }
+
+
+    // --- Collapsible categories ---
+    document.querySelectorAll('.section-toggle').forEach(h => {
+      const sec = h.closest('section');
+      const toggle = () => {
+        const collapsed = sec.classList.toggle('is-collapsed');
+        h.setAttribute('aria-expanded', String(!collapsed));
+        const t0 = performance.now();
+        const tick = () => { updateReveal(); if (performance.now() - t0 < 600) requestAnimationFrame(tick); };
+        requestAnimationFrame(tick);
+      };
+      h.addEventListener('click', toggle);
+      h.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    });
+
+    // --- Scroll reveal: fade in while scrolling down, fade out the ones that leave the top,
+    //     bring them back only when scrolling up ---
+    const revealEls = Array.from(document.querySelectorAll('.fade-in'));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let lastScrollY = window.scrollY, scrollDir = 'down', revealRaf = 0;
+    revealEls.forEach((el) => {
+      const sibs = el.parentElement ? Array.from(el.parentElement.children).filter(c => c.classList.contains('fade-in')) : [];
+      const idx = Math.max(0, sibs.indexOf(el));
+      el.dataset.delay = String(Math.min(idx, 4) * 80);
+    });
+    function setVisible(el, visible, fromAbove) {
+      const hidden = el.classList.contains('is-hidden');
+      if (visible === !hidden) return;
+      el.style.transitionDelay = visible ? el.dataset.delay + 'ms' : '0ms';
+      el.classList.toggle('from-above', !!fromAbove);
+      el.classList.toggle('is-hidden', !visible);
+    }
+    function updateReveal() {
+      revealRaf = 0;
+      if (reduceMotion) return;
+      const vh = window.innerHeight;
+      for (const el of revealEls) {
+        if (el.offsetParent === null && !el.closest('.collapse-body')) continue;
+        const r = el.getBoundingClientRect();
+        const collapsed = r.height < 2;
+        const aboveLimit = scrollDir === 'down' ? 70 : 0;
+        const above = r.bottom < aboveLimit;
+        const below = r.top > vh * 0.92;
+        if (collapsed) { setVisible(el, false, false); continue; }
+        if (above) setVisible(el, false, true);
+        else if (below) setVisible(el, false, false);
+        else setVisible(el, true, false);
+      }
+    }
+    function onRevealScroll() {
+      const y = window.scrollY;
+      if (y > lastScrollY) scrollDir = 'down';
+      else if (y < lastScrollY) scrollDir = 'up';
+      lastScrollY = y;
+      if (!revealRaf) revealRaf = requestAnimationFrame(updateReveal);
+    }
+    window.addEventListener('scroll', onRevealScroll, { passive: true });
+    window.addEventListener('resize', () => { if (!revealRaf) revealRaf = requestAnimationFrame(updateReveal); });
+    window.addEventListener('load', updateReveal);
+    updateReveal();
 
     // --- Forward pointer / scroll info to the shared background iframe ---
     (function () {
