@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kurt is a local terminal coding assistant that aggregates free open-source Hugging Face models through Ollama. Chat in plain English, review diffs, and approve every edit." />
+  <meta name="theme-color" content="#07090e" />
+  <link rel="canonical" href="https://kurtis-lam.web.app/kurt" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kurt | Kurtis Lam" />
+  <meta property="og:description" content="Kurt is a local terminal coding assistant that aggregates free open-source Hugging Face models through Ollama. Chat in plain English, review diffs, and approve every edit." />
+  <meta property="og:url" content="https://kurtis-lam.web.app/kurt" />
+  <title>Kurt | Kurtis Lam</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --accent: #86efac; --accent-2: #4ade80; }
+    html { scroll-padding-top: 5.5rem; }
+    body { background: #07090e; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #090a0f; }
+    ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Solid (blur-free) panels keep text readable over the star field and are cheap to paint */
+    .glass-card {
+      background: rgba(8, 12, 24, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
+    }
+    .topbar {
+      background: rgba(7, 9, 14, 0.96);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .text-readable { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); }
+
+    .gradient-title {
+      color: #4ade80;
+    }
+
+    .body-text { font-size: 1.0625rem; line-height: 1.75; color: #e2e8f0; }
+    .body-text a, .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .body-text a:hover, .link:hover { color: #fff; }
+    .body-text strong { color: #fff; font-weight: 600; }
+    .muted { color: #cbd5e1; }
+
+    .step-num {
+      width: 2.5rem; height: 2.5rem; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; background: var(--accent); color: #0b0b14;
+      font-weight: 700; font-size: 1.125rem;
+    }
+    .ic {
+      font-family: 'Fira Code', monospace; font-size: 0.9em;
+      background: #020617; border: 1px solid #334155; border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; color: #bbf7d0; word-break: break-word;
+    }
+    .code-wrap { position: relative; }
+    .code {
+      background: #020617; border: 1px solid #334155; border-radius: 0.75rem;
+      padding: 1rem 1.1rem; padding-right: 5.5rem; overflow-x: auto;
+      font-family: 'Fira Code', monospace; font-size: 0.92rem; line-height: 1.65;
+      color: #e2e8f0; white-space: pre; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 0.55rem; right: 0.55rem;
+      font-family: 'Fira Code', monospace; font-size: 0.8rem; font-weight: 600;
+      color: #e2e8f0; background: #1e293b; border: 1px solid #64748b;
+      border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: #334155; color: #fff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem;
+      border-radius: 0.75rem; padding: 0.8rem 1.4rem; text-decoration: none;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #0b0b14; }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { background: rgba(8, 12, 24, 0.92); color: #f1f5f9; border: 1px solid #94a3b8; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .nav-btn {
+      display: inline-flex; align-items: center; padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(148, 163, 184, 0.55); border-radius: 0.6rem;
+      background: transparent; transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .nav-btn:hover { border-color: var(--accent); }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 1rem; line-height: 1.55; }
+    .data-table th, .data-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #334155; vertical-align: top; }
+    .data-table th { color: #fff; font-weight: 700; background: #0f172a; }
+    .data-table td { color: #e2e8f0; }
+    .data-table td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+
+    details.faq { border: 1px solid #334155; border-radius: 0.9rem; background: rgba(2, 6, 23, 0.8); }
+    details.faq + details.faq { margin-top: 0.75rem; }
+    details.faq summary {
+      cursor: pointer; list-style: none; padding: 1rem 1.2rem; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 1.05rem;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::after { content: '+'; color: var(--accent); font-size: 1.5rem; line-height: 1; font-family: 'Fira Code', monospace; }
+    details.faq[open] summary::after { content: '\2212'; }
+    details.faq .faq-body { padding: 0 1.2rem 1.1rem; }
+
+    .tab-btn {
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem; color: #e2e8f0;
+      background: #0f172a; border: 1px solid #475569; border-radius: 0.7rem; padding: 0.65rem 1.1rem; cursor: pointer;
+    }
+    .tab-btn[aria-selected="true"] { background: var(--accent); color: #0b0b14; border-color: var(--accent); }
+
+    .warn { border: 1px solid rgba(248, 113, 113, 0.7); background: rgba(48, 8, 8, 0.94); }
+
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid #67e8f9; outline-offset: 3px;
+    }
+    .skip-link { position: absolute; left: -9999px; top: 0.5rem; background: #fff; color: #000; padding: 0.5rem 1rem; border-radius: 0.5rem; z-index: 100; }
+    .skip-link:focus { left: 0.5rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1" title=""></iframe>
+
+  <header class="topbar sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <nav class="hidden md:flex items-center gap-3 font-mono text-sm text-slate-200" aria-label="On this page">
+        <a href="#what" class="nav-btn hover:text-[var(--accent)]">What it is</a>
+        <a href="#setup" class="nav-btn hover:text-[var(--accent)]">Setup</a>
+        <a href="#using" class="nav-btn hover:text-[var(--accent)]">Using</a>
+        <a href="#commands" class="nav-btn hover:text-[var(--accent)]">Commands</a>
+        <a href="#troubleshooting" class="nav-btn hover:text-[var(--accent)]">Help</a>
+      </nav>
+      <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" class="ml-auto font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
+        <i class="fa-brands fa-github text-lg"></i><span class="hidden sm:inline">GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 max-w-5xl mx-auto px-5 pt-12 md:pt-16 pb-16 space-y-14 md:space-y-20">
+
+    <section class="text-center flex flex-col items-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card font-mono text-sm text-[var(--accent)] mb-6 uppercase tracking-wide">
+        <i class="fa-brands fa-python"></i><span>Python · Ollama · Local AI</span>
+      </div>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-readable mb-5">
+        <i class="fa-solid fa-terminal text-[var(--accent)]"></i> <span class="gradient-title">Kurt</span>
+      </h1>
+      <p class="max-w-2xl text-lg md:text-xl text-slate-100 leading-relaxed text-readable">
+        A CLI app that aggregates free open-source models from Hugging Face to work for you. Type <span class="ic">kurt</span> in any project folder, chat in plain English, and it can read your code and propose edits, new files and shell commands.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a href="#setup" class="btn btn-primary"><i class="fa-solid fa-list-ol"></i><span>Step-by-step setup</span></a>
+        <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
+      </div>
+    </section>
+
+    <section id="what" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-circle-question text-[var(--accent)]"></i>What is it?</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <p>Kurt is a terminal coding assistant powered by <strong>Qwythos</strong>, running locally through <a href="https://ollama.com" target="_blank" rel="noopener noreferrer">Ollama</a>. <strong>Nothing changes until you confirm it.</strong></p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>100% local:</strong> your code never leaves your computer.</li>
+          <li><strong>Works on macOS</strong> (Intel and Apple Silicon) <strong>and Windows.</strong></li>
+          <li><strong>Tunes itself:</strong> it detects your hardware and picks the fastest safe settings.</li>
+          <li><strong>Safe edits:</strong> a colored diff before every edit, with <span class="ic">/undo</span> to revert.</li>
+          <li><strong>Any model:</strong> add other models from Hugging Face, a link, or an Ollama name.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="requirements" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-clipboard-check text-[var(--accent)]"></i>Requirements</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Thing</th><th scope="col">Where to get it</th></tr></thead>
+            <tbody>
+              <tr><td>Ollama</td><td><a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer">ollama.com/download</a></td></tr>
+              <tr><td>Python 3.9 or newer</td><td><a href="https://www.python.org/downloads/" target="_blank" rel="noopener noreferrer">python.org/downloads</a> (Windows: tick <strong>Add python.exe to PATH</strong>)</td></tr>
+              <tr><td>Disk space and RAM</td><td>Several GB free for the model</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="setup" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-list-check text-[var(--accent)]"></i>Setup: step by step</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">You only do this once.</p>
+      </div>
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Install Ollama and download the model</h3>
+            <p>Install Ollama, then run this once in a terminal:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-model">Copy</button><pre class="code" id="code-model">ollama run hf.co/empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF:Q4_K_M</pre></div>
+            <p>When you see the <span class="ic">&gt;&gt;&gt;</span> prompt, type <span class="ic">/bye</span> to exit. The model is now downloaded. If you skip this step, Kurt offers to download it the first time you run it.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Download Kurt from GitHub</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+              <li>Open the <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer">repository page</a> on GitHub.</li>
+              <li>Click the green <strong>Code</strong> button, then <strong>Download ZIP</strong>.</li>
+              <li>Unzip it. You get a folder such as <span class="ic">kurt-main</span>. Remember where it is.</li>
+            </ol>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Install</h3>
+            <div role="tablist" aria-label="Choose your system" class="flex flex-wrap gap-3">
+              <button class="tab-btn" role="tab" id="tab-os-a" aria-selected="true" aria-controls="panel-os-a" type="button">macOS</button>
+              <button class="tab-btn" role="tab" id="tab-os-b" aria-selected="false" aria-controls="panel-os-b" type="button">Windows</button>
+            </div>
+            <div role="tabpanel" id="panel-os-a" aria-labelledby="tab-os-a" class="space-y-3">
+              <p>Open Terminal and run:</p>
+              <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-mac">Copy</button><pre class="code" id="code-mac">cd ~/Downloads/kurt-main
+bash install.sh</pre></div>
+            </div>
+            <div role="tabpanel" id="panel-os-b" aria-labelledby="tab-os-b" class="space-y-3" hidden>
+              <p>Open the unzipped folder and <strong>double-click <span class="ic">install.bat</span></strong>, or run it from PowerShell:</p>
+              <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-win">Copy</button><pre class="code" id="code-win">.\install.bat</pre></div>
+            </div>
+            <p>The installer creates a private Python environment in <span class="ic">~/.kurt</span> (Windows: <span class="ic">%USERPROFILE%\.kurt</span>) and adds the <span class="ic">kurt</span> command to your PATH. It does not touch your system Python.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-4">
+          <span class="step-num">4</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Open a new terminal window</h3>
+            <p>The PATH change only applies to terminals opened after installing. Check it worked:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-ver">Copy</button><pre class="code" id="code-ver">kurt --version</pre></div>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+    <section id="using" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-terminal text-[var(--accent)]"></i>Using Kurt</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Go to any project folder and start it.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-start">Copy</button><pre class="code" id="code-start">cd ~/projects/my-app
+kurt</pre></div>
+        <p>On start, Kurt will:</p>
+        <ol class="list-decimal pl-6 space-y-2">
+          <li>Start Ollama if it is not running.</li>
+          <li>Load Qwythos into memory (the first load can take a little while).</li>
+          <li>Show a green K mascot and a bottom-pinned <span class="ic">kurt</span> input box.</li>
+        </ol>
+        <p>Now just talk to it. The input box stays pinned to the bottom of the terminal with <span class="ic">/help</span>, <span class="ic">/models</span> and <span class="ic">@file</span> hints inside. While Kurt works, thinking text and responses appear above it. Press <strong>Esc</strong> (or <strong>Ctrl+C</strong>) to stop generation.</p>
+        <p>Examples:</p>
+        <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-examples">Copy</button><pre class="code" id="code-examples">kurt ❯ add input validation to the signup function in @auth.py
+kurt ❯ write a unit test for utils/dates.py
+kurt ❯ why does main.js throw "undefined is not a function"?</pre></div>
+      </div>
+    </section>
+
+    <section id="edits" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-code-compare text-[var(--accent)]"></i>How edits are confirmed</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <p>When Kurt wants to change something, you see a diff and a question:</p>
+        <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-diff">Copy</button><pre class="code" id="code-diff">╭──────────────╮
+│ Edit auth.py │
+╰──────────────╯
+- def signup(email):
++ def signup(email: str):
++     if "@" not in email:
++         raise ValueError("invalid email")
+Apply this edit? (y=yes, n=no, a=yes to all) [y/n/a] (y):</pre></div>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><span class="ic">y</span> applies this change.</li>
+          <li><span class="ic">n</span> rejects it. Kurt is told, and you can explain what you want instead.</li>
+          <li><span class="ic">a</span> applies this and all further <strong>file edits</strong> this session.</li>
+          <li>Shell commands (<span class="ic">RUN</span>) <strong>always</strong> ask, defaulting to <em>no</em>, even in auto mode.</li>
+        </ul>
+        <p>Kurt can only read and write inside the folder you launched it from.</p>
+      </div>
+    </section>
+
+    <section id="commands" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-slash text-[var(--accent)]"></i>Commands</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ic">/help</span></td><td>Show help</td></tr>
+              <tr><td><span class="ic">/speed</span></td><td>Show the detected hardware and the speed settings in use (<span class="ic">/speed refresh</span> re-detects)</td></tr>
+              <tr><td><span class="ic">/think [on|off|auto]</span></td><td>Turn thinking on or off. Off is much faster on computers without a GPU</td></tr>
+              <tr><td><span class="ic">/fast [model]</span></td><td>Switch to a small, much faster model (default <span class="ic">qwen2.5-coder:3b</span>, about 2 GB)</td></tr>
+              <tr><td><span class="ic">/files</span></td><td>List the project's files</td></tr>
+              <tr><td><span class="ic">/add &lt;path&gt;</span></td><td>Load a file into the conversation (or write <span class="ic">@path</span> inside any message)</td></tr>
+              <tr><td><span class="ic">/auto</span></td><td>Toggle auto-accept for file edits</td></tr>
+              <tr><td><span class="ic">/undo</span></td><td>Revert the last applied change (can be repeated)</td></tr>
+              <tr><td><span class="ic">/clear</span></td><td>Forget the conversation and start fresh</td></tr>
+              <tr><td><span class="ic">/exit</span></td><td>Quit (Ctrl+D also works)</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-lightbulb text-[var(--accent)]"></i>Tips for good results with a 9B model</h3>
+        <ul class="list-disc pl-6 space-y-2">
+          <li>Be specific and point at files, for example <span class="ic">fix the bug in @src/api.py line ~40</span>.</li>
+          <li>Ask for <strong>one change at a time</strong>. Small models do much better on focused tasks.</li>
+          <li>If an edit fails to match, Kurt re-reads the file and retries. If it keeps failing, say <em>rewrite the whole file</em> and it uses a full-file write.</li>
+          <li>Use <span class="ic">/clear</span> when switching tasks so the context does not fill up.</li>
+          <li>Commit to git before big changes, as a second safety net next to <span class="ic">/undo</span>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="speed" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-gauge-high text-[var(--accent)]"></i>Speed</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Kurt checks your computer the first time it runs (cached in <span class="ic">~/.kurt/hardware.json</span>) and prints one line at startup, such as <span class="ic">Intel Mac · CPU only, 6 cores, 16 GB RAM → ctx 8192 · 6 threads · thinking off</span>.</p>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Your computer</th><th scope="col">What Kurt does</th></tr></thead>
+            <tbody>
+              <tr><td>Intel Mac (no GPU support in Ollama)</td><td>CPU inference with one thread per physical core, a shorter context (4096-8192 depending on RAM), thinking off</td></tr>
+              <tr><td>Apple Silicon Mac</td><td>Metal GPU, context sized to your unified memory, larger prompt batches on 16 GB or more, thinking on, Flash Attention</td></tr>
+              <tr><td>Windows with an NVIDIA GPU</td><td>Context sized to your VRAM so the model never spills onto the CPU, larger batches on 8 GB or more, thinking on, Flash Attention</td></tr>
+              <tr><td>Windows without a supported GPU</td><td>Same as an Intel Mac: CPU threads, short context, thinking off</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="text-base md:text-lg text-slate-100 text-readable">Type <span class="ic">/speed</span> to see what was detected and applied.</p>
+    </section>
+
+    <section id="config" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-sliders text-[var(--accent)]"></i>Configuration (optional)</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Set these environment variables before running <span class="ic">kurt</span>.</p>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ic">KURT_MODEL</span></td><td>the Qwythos model above</td><td>Any other Ollama model name</td></tr>
+              <tr><td><span class="ic">KURT_CTX</span></td><td>auto (4096-16384)</td><td>Context window in tokens (bigger = more memory use)</td></tr>
+              <tr><td><span class="ic">KURT_THREADS</span></td><td>auto</td><td>CPU threads used for inference</td></tr>
+              <tr><td><span class="ic">KURT_BATCH</span></td><td>auto</td><td>Prompt batch size</td></tr>
+              <tr><td><span class="ic">KURT_THINK</span></td><td>auto</td><td><span class="ic">on</span> or <span class="ic">off</span>: whether the model thinks before answering</td></tr>
+              <tr><td><span class="ic">KURT_TUNE</span></td><td>on</td><td><span class="ic">off</span> disables all hardware auto-tuning</td></tr>
+              <tr><td><span class="ic">OLLAMA_HOST</span></td><td><span class="ic">http://127.0.0.1:11434</span></td><td>Use a remote or custom Ollama server</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <p>Examples:</p>
+        <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-env-mac">Copy</button><pre class="code" id="code-env-mac"># macOS
+KURT_CTX=32768 kurt</pre></div>
+        <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-env-win">Copy</button><pre class="code" id="code-env-win"># Windows PowerShell
+$env:KURT_CTX = "32768"; kurt</pre></div>
+      </div>
+    </section>
+
+    <section id="models" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-cubes text-[var(--accent)]"></i>Adding models (any format)</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Type <span class="ic">/models</span> then <span class="ic">+</span> and give it a Hugging Face repo, a link, an Ollama name (<span class="ic">llama3.2:3b</span>), or search words. Ollama only runs GGUF, so for other formats Kurt works through these steps automatically.</p>
+      </div>
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">GGUF repo</h3>
+            <p>Pulled directly. Use <span class="ic">user/name:Q4_K_M</span> to pick a quantization.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Not GGUF (safetensors, FP8, ...)</h3>
+            <p>Kurt looks for a ready-made GGUF conversion and offers it.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">No conversion available</h3>
+            <p>Kurt downloads the original weights (resumable) and imports them with <span class="ic">ollama create</span>, quantizing to Q4_K_M by default.</p>
+            <ul class="list-disc pl-6 space-y-2">
+              <li>Pre-quantized repos (FP8 / AWQ / GPTQ) cannot be imported by Ollama directly. Kurt offers the full-precision original instead, or converts them if llama.cpp is available (<span class="ic">export KURT_LLAMA_CPP=~/llama.cpp</span>, needs <span class="ic">pip install torch transformers gguf</span>).</li>
+              <li>Gated repos: accept the terms on huggingface.co and set <span class="ic">HF_TOKEN</span>.</li>
+            </ul>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+    <section id="troubleshooting" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-wrench text-[var(--accent)]"></i>Troubleshooting</h2>
+      <div class="glass-card rounded-2xl p-4 md:p-6">
+        <details class="faq">
+          <summary>kurt: command not found / 'kurt' is not recognized</summary>
+          <div class="faq-body body-text"><p>Open a brand-new terminal window. On macOS you can also run <span class="ic">source ~/.zshrc</span>. If it still fails, re-run the installer.</p></div>
+        </details>
+        <details class="faq">
+          <summary>Ollama isn't installed or isn't on PATH</summary>
+          <div class="faq-body body-text"><p>Install Ollama from <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer">ollama.com/download</a>, then open a new terminal.</p></div>
+        </details>
+        <details class="faq">
+          <summary>Windows: "Python not found"</summary>
+          <div class="faq-body body-text"><p>Install Python from python.org and tick <strong>Add python.exe to PATH</strong>. If Windows opens the Microsoft Store instead, turn off the <span class="ic">python.exe</span> app execution alias in Settings → Apps → Advanced app settings → App execution aliases.</p></div>
+        </details>
+        <details class="faq">
+          <summary>It's slow or the Mac gets hot</summary>
+          <div class="faq-body body-text"><p>A 9B model is heavy. Close other big apps and run <span class="ic">/speed</span> to see the settings Kurt picked. You can lower <span class="ic">KURT_CTX</span> further (for example <span class="ic">4096</span>) or pick a smaller model with <span class="ic">/models</span>. Intel Macs have no GPU acceleration for Ollama, so expect slower responses than on Apple Silicon.</p></div>
+        </details>
+        <details class="faq">
+          <summary>Edits don't apply ("SEARCH not found")</summary>
+          <div class="faq-body body-text"><p>The model sometimes misquotes your code. It retries automatically, so keep requests small and mention the file with <span class="ic">@file</span>.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <section id="safety" class="warn rounded-2xl p-5 md:p-6 flex gap-4" aria-labelledby="safe-h">
+      <i class="fa-solid fa-triangle-exclamation text-red-400 text-2xl mt-1"></i>
+      <div class="body-text">
+        <h2 id="safe-h" class="text-lg md:text-xl font-bold text-red-300 mb-1">Safety notes</h2>
+        <p>Kurt is a small local model and can be wrong. <strong>Read every diff before pressing <span class="ic">y</span>, and read every shell command before running it.</strong> Do not use <span class="ic">a</span> (accept all) on code you cannot easily restore.</p>
+      </div>
+    </section>
+
+    <section id="updating" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-arrows-rotate text-[var(--accent)]"></i>Updating and uninstalling</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white">Updating</h3>
+          <p>Download the new ZIP from GitHub, unzip it, and run the installer again (<span class="ic">bash install.sh</span> or double-click <span class="ic">install.bat</span>).</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white">Uninstalling</h3>
+          <p>macOS: <span class="ic">bash uninstall.sh</span>. Windows: double-click <span class="ic">uninstall.bat</span>. This removes Kurt only. Remove the model with:</p>
+          <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-rm">Copy</button><pre class="code" id="code-rm">ollama rm hf.co/empero-ai/Qwythos-9B-Claude-Mythos-5-1M-GGUF:Q4_K_M</pre></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="repo" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-folder-tree text-[var(--accent)]"></i>What's in the repo</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">File</th><th scope="col">Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ic">kurt.py</span></td><td>The CLI, green K mascot, pinned prompt and coding-agent logic</td></tr>
+              <tr><td><span class="ic">pyproject.toml</span></td><td>Package definition (creates the <span class="ic">kurt</span> command)</td></tr>
+              <tr><td><span class="ic">install.sh</span> / <span class="ic">install.bat</span></td><td>One-step installers for macOS / Windows</td></tr>
+              <tr><td><span class="ic">uninstall.sh</span> / <span class="ic">uninstall.bat</span></td><td>Removal scripts</td></tr>
+              <tr><td><span class="ic">LICENSE</span></td><td>MIT</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="license">
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-scale-balanced text-[var(--accent)]"></i>License</h2>
+        <p>Released under the <strong>MIT License</strong>. See the <a href="https://github.com/Kurtis-Lam/kurt/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE</a> file in the repo.</p>
+      </div>
+    </section>
+
+    <footer class="pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-sm text-slate-200 text-readable">
+      <div>Made with 💖 by Kurtis Lam</div>
+      <a href="/" class="link flex items-center gap-2"><i class="fa-solid fa-house"></i><span>Back to home</span></a>
+    </footer>
+  </main>
+
+  <script>
+    // --- Copy buttons ---
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.querySelector(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.textContent;
+        var done = function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+
+    // --- Method tabs ---
+    (function () {
+      var tabs = document.querySelectorAll('[role="tab"]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+          });
+        });
+      });
+    })();
+
+    // --- Forward pointer / scroll info to the shared background iframe ---
+    (function () {
+      const bgIframe = document.getElementById('bg-iframe');
+      if (!bgIframe) return;
+      const post = (msg) => {
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      };
+      let mx = 0, my = 0, movePending = false, scrollPending = false;
+      window.addEventListener('pointermove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (movePending) return;
+        movePending = true;
+        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
+      window.addEventListener('scroll', () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
