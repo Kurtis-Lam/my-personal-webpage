@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="fluxbg is an Android wallpaper app for Huawei phones. Add images or videos, crop them, trim videos on a timeline and set them as your home and lock screen wallpaper." />
+  <meta name="theme-color" content="#07090e" />
+  <link rel="canonical" href="https://kurtis-lam.web.app/fluxbg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="fluxbg | Kurtis Lam" />
+  <meta property="og:description" content="fluxbg is an Android wallpaper app for Huawei phones. Add images or videos, crop them, trim videos on a timeline and set them as your home and lock screen wallpaper." />
+  <meta property="og:url" content="https://kurtis-lam.web.app/fluxbg" />
+  <title>fluxbg | Kurtis Lam</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['Fira Code', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --accent: #7dd3fc; --accent-2: #38bdf8; }
+    html { scroll-padding-top: 5.5rem; }
+    body { background: #07090e; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #090a0f; }
+    ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    /* Solid (blur-free) panels keep text readable over the star field and are cheap to paint */
+    .glass-card {
+      background: rgba(8, 12, 24, 0.92);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
+    }
+    .topbar {
+      background: rgba(7, 9, 14, 0.96);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .text-readable { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7); }
+
+    .gradient-title {
+      color: #38bdf8;
+    }
+
+    .body-text { font-size: 1.0625rem; line-height: 1.75; color: #e2e8f0; }
+    .body-text a, .link { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .body-text a:hover, .link:hover { color: #fff; }
+    .body-text strong { color: #fff; font-weight: 600; }
+    .muted { color: #cbd5e1; }
+
+    .step-num {
+      width: 2.5rem; height: 2.5rem; flex: none;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 9999px; background: var(--accent); color: #0b0b14;
+      font-weight: 700; font-size: 1.125rem;
+    }
+    .ic {
+      font-family: 'Fira Code', monospace; font-size: 0.9em;
+      background: #020617; border: 1px solid #334155; border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; color: #bae6fd; word-break: break-word;
+    }
+    .code-wrap { position: relative; }
+    .code {
+      background: #020617; border: 1px solid #334155; border-radius: 0.75rem;
+      padding: 1rem 1.1rem; padding-right: 5.5rem; overflow-x: auto;
+      font-family: 'Fira Code', monospace; font-size: 0.92rem; line-height: 1.65;
+      color: #e2e8f0; white-space: pre; margin: 0;
+    }
+    .copy-btn {
+      position: absolute; top: 0.55rem; right: 0.55rem;
+      font-family: 'Fira Code', monospace; font-size: 0.8rem; font-weight: 600;
+      color: #e2e8f0; background: #1e293b; border: 1px solid #64748b;
+      border-radius: 0.5rem; padding: 0.3rem 0.7rem; cursor: pointer;
+    }
+    .copy-btn:hover { background: #334155; color: #fff; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem;
+      border-radius: 0.75rem; padding: 0.8rem 1.4rem; text-decoration: none;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--accent); color: #0b0b14; }
+    .btn-primary:hover { background: #fff; }
+    .btn-ghost { background: rgba(8, 12, 24, 0.92); color: #f1f5f9; border: 1px solid #94a3b8; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .nav-btn {
+      display: inline-flex; align-items: center; padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(148, 163, 184, 0.55); border-radius: 0.6rem;
+      background: transparent; transition: border-color 0.2s ease, color 0.2s ease;
+    }
+    .nav-btn:hover { border-color: var(--accent); }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 1rem; line-height: 1.55; }
+    .data-table th, .data-table td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid #334155; vertical-align: top; }
+    .data-table th { color: #fff; font-weight: 700; background: #0f172a; }
+    .data-table td { color: #e2e8f0; }
+    .data-table td:first-child { color: #fff; font-weight: 600; white-space: nowrap; }
+
+    details.faq { border: 1px solid #334155; border-radius: 0.9rem; background: rgba(2, 6, 23, 0.8); }
+    details.faq + details.faq { margin-top: 0.75rem; }
+    details.faq summary {
+      cursor: pointer; list-style: none; padding: 1rem 1.2rem; font-weight: 600; color: #fff;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 1.05rem;
+    }
+    details.faq summary::-webkit-details-marker { display: none; }
+    details.faq summary::after { content: '+'; color: var(--accent); font-size: 1.5rem; line-height: 1; font-family: 'Fira Code', monospace; }
+    details.faq[open] summary::after { content: '\2212'; }
+    details.faq .faq-body { padding: 0 1.2rem 1.1rem; }
+
+    .tab-btn {
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 0.95rem; color: #e2e8f0;
+      background: #0f172a; border: 1px solid #475569; border-radius: 0.7rem; padding: 0.65rem 1.1rem; cursor: pointer;
+    }
+    .tab-btn[aria-selected="true"] { background: var(--accent); color: #0b0b14; border-color: var(--accent); }
+
+    .warn { border: 1px solid rgba(248, 113, 113, 0.7); background: rgba(48, 8, 8, 0.94); }
+
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid #67e8f9; outline-offset: 3px;
+    }
+    .skip-link { position: absolute; left: -9999px; top: 0.5rem; background: #fff; color: #000; padding: 0.5rem 1rem; border-radius: 0.5rem; z-index: 100; }
+    .skip-link:focus { left: 0.5rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto !important; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    </style>
+</head>
+<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1" title=""></iframe>
+
+  <header class="topbar sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <nav class="hidden md:flex items-center gap-3 font-mono text-sm text-slate-200" aria-label="On this page">
+        <a href="#what" class="nav-btn hover:text-[var(--accent)]">What it is</a>
+        <a href="#features" class="nav-btn hover:text-[var(--accent)]">Features</a>
+        <a href="#get" class="nav-btn hover:text-[var(--accent)]">Get the APK</a>
+        <a href="#usage" class="nav-btn hover:text-[var(--accent)]">Usage</a>
+        <a href="#limits" class="nav-btn hover:text-[var(--accent)]">Limits</a>
+      </nav>
+      <a href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" class="ml-auto font-mono text-sm text-slate-100 hover:text-[var(--accent)] flex items-center gap-2">
+        <i class="fa-brands fa-github text-lg"></i><span class="hidden sm:inline">GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 max-w-5xl mx-auto px-5 pt-12 md:pt-16 pb-16 space-y-14 md:space-y-20">
+
+    <section class="text-center flex flex-col items-center">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card font-mono text-sm text-[var(--accent)] mb-6 uppercase tracking-wide">
+        <i class="fa-brands fa-android"></i><span>Android · Huawei</span>
+      </div>
+      <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-readable mb-5">
+        <i class="fa-solid fa-film text-[var(--accent)]"></i> <span class="gradient-title">fluxbg</span>
+      </h1>
+      <p class="max-w-2xl text-lg md:text-xl text-slate-100 leading-relaxed text-readable">
+        An Android wallpaper app built for Huawei phones. Add a static image or a dynamic video from your gallery, crop it, trim videos on a video-editor style timeline, and use it as your home screen and/or lock screen wallpaper.
+      </p>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <a href="#get" class="btn btn-primary"><i class="fa-solid fa-download"></i><span>Get the APK</span></a>
+        <a href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" class="btn btn-ghost"><i class="fa-brands fa-github"></i><span>Source on GitHub</span></a>
+      </div>
+    </section>
+
+    <section id="what" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-circle-question text-[var(--accent)]"></i>What is it?</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text space-y-4">
+        <p>fluxbg lets you use your own videos and animations as a live wallpaper, something Huawei's stock tools make hard. Pick a clip, frame it with the crop window, trim the part you want, and apply it to the home screen, the lock screen, or both.</p>
+        <p>It is designed for Huawei phones (<strong>EMUI 8+</strong> and the HarmonyOS versions that run Android APKs, <strong>HarmonyOS 2 to 4.x</strong>). It targets <strong>Android 8.0+ (API 26)</strong> and works on all Huawei phone lines: Pura, Mate, nova, P, Y and the foldables. It should also work on other Android devices.</p>
+      </div>
+    </section>
+
+    <section id="features" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-wand-magic-sparkles text-[var(--accent)]"></i>Features</h2>
+      <div class="glass-card rounded-2xl p-6 md:p-8 body-text">
+        <ul class="list-disc pl-6 space-y-3">
+          <li>Home screen is <strong>My library</strong>, with <strong>Images</strong> and <strong>Videos</strong> buttons to switch between everything you have added.</li>
+          <li><strong>Add wallpaper</strong> asks for <strong>Static</strong> (upload an image) or <strong>Dynamic</strong> (pick a video), then goes straight to the editor.</li>
+          <li>Crop with a fixed-aspect window matched to your screen: drag the sides or corners to resize, drag inside to move, or pinch.</li>
+          <li>Trim videos on a timeline bar with a thumbnail strip, draggable in/out handles and a scrub playhead. Long videos show 10 seconds at a time and the timeline scrolls sideways.</li>
+          <li>Preview playback that loops only the trimmed range.</li>
+          <li>Separate settings for the home screen, the lock screen, or both.</li>
+          <li>Applying always asks before overwriting your current wallpaper, then returns you to the library.</li>
+          <li>Static images are set directly, with no system preview.</li>
+          <li>Lock screen option that sets the frame at the playhead (or the cropped image), checks that the phone really changed it, and falls back to the system <em>Set as</em> sheet.</li>
+          <li>Asks for storage access when the fallback needs it (Android 9 and older).</li>
+          <li>Crop adapts automatically to each screen's aspect ratio, including foldables.</li>
+          <li>Muted, GPU-rendered playback that pauses when the screen is off to save battery.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="get" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-download text-[var(--accent)]"></i>Get the APK</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-box-archive text-[var(--accent)]"></i>Download a prebuilt APK</h3>
+          <p>Open the <a href="https://github.com/Kurtis-Lam/fluxbg/blob/main/apks" target="_blank" rel="noopener noreferrer"><span class="ic">apks/</span> folder</a> in the repo and download the newest file. It is the quickest option, but prebuilt APKs are not rebuilt on every commit, so they <strong>might not include the latest updates</strong>.</p>
+        </div>
+        <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-hammer text-[var(--accent)]"></i>Build it yourself</h3>
+          <p>Build from source to get the latest code changes. The steps are in the <a href="#build">build section</a> below.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="usage" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-list-check text-[var(--accent)]"></i>How to use it</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Install the APK (downloaded or built yourself), open <strong>fluxbg</strong>, then follow these steps.</p>
+      </div>
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Add a wallpaper</h3>
+            <p>Tap <strong>Add wallpaper</strong> and choose <strong>Static</strong> to upload an image or <strong>Dynamic</strong> to pick a video. Or open <strong>My library</strong>, use <strong>Images</strong> / <strong>Videos</strong> to switch, and tap an item you added earlier. Hold an item to delete it.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Crop it</h3>
+            <p>In the editor, drag the sides or corners of the crop window (or pinch) to frame the shot, and drag inside it to move it.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Trim videos</h3>
+            <p>Drag the handles on the timeline to set the in and out points, tap the bar to seek, and swipe the timeline to scroll through long clips. Tap the play button to preview the loop.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-4">
+          <span class="step-num">4</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Choose where it goes</h3>
+            <p>Under <strong>Apply to</strong>, choose <strong>Home screen</strong>, <strong>Lock screen</strong> or <strong>Both</strong>, then tap the main button. fluxbg warns that it will overwrite your current wallpaper. Confirm to apply and return to the library.</p>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-5">
+          <span class="step-num">5</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Confirm the preview</h3>
+            <ul class="list-disc pl-6 space-y-2">
+              <li>Images are applied immediately.</li>
+              <li>Dynamic videos open the system live wallpaper preview. Confirm it there.</li>
+              <li>For the lock screen, the main button sets a still picture (the frame at the playhead for videos). If your phone does not confirm the change, fluxbg offers the system <strong>Set as</strong> sheet so you can pick Lock screen. <strong>Try live video on lock screen</strong> opens the live wallpaper preview instead.</li>
+            </ul>
+            <p>To change the file, crop or range later, open it from the library and apply it again.</p>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+    <section id="build" class="space-y-6">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-hammer text-[var(--accent)]"></i>Build from source</h2>
+        <p class="mt-3 text-lg text-slate-100 text-readable">You need <strong>Android Studio</strong>, <strong>JDK 17 or newer</strong> and <strong>Android SDK Platform 34</strong>.</p>
+      </div>
+      <ol class="space-y-5 list-none">
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-1">
+          <span class="step-num">1</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Clone and open</h3>
+            <p>Clone the repo and open it in Android Studio, then let Gradle sync.</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-clone">Copy</button><pre class="code" id="code-clone">git clone https://github.com/Kurtis-Lam/fluxbg.git</pre></div>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-2">
+          <span class="step-num">2</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">Build the APK</h3>
+            <p>Choose <strong>Build &gt; Build APK(s)</strong>. The APK is written to:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-out">Copy</button><pre class="code" id="code-out">app/build/outputs/apk/debug/app-debug.apk</pre></div>
+          </div>
+        </li>
+
+
+        <li class="glass-card rounded-2xl p-6 md:p-7 flex gap-4 md:gap-5" id="step-3">
+          <span class="step-num">3</span>
+          <div class="min-w-0 flex-1 body-text space-y-3">
+            <h3 class="text-xl md:text-2xl font-bold text-white">If the Kotlin compiler daemon crashes</h3>
+            <p>Add this to <span class="ic">gradle.properties</span>:</p>
+            <div class="code-wrap"><button class="copy-btn" type="button" data-copy="#code-gradle">Copy</button><pre class="code" id="code-gradle">kotlin.compiler.execution.strategy=in-process
+org.gradle.jvmargs=-Xmx2048m</pre></div>
+            <p>Also keep the project outside cloud-synced folders (Synology Drive, iCloud, Dropbox), which can lock build files.</p>
+          </div>
+        </li>
+
+      </ol>
+    </section>
+
+    <section id="limits" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-triangle-exclamation text-[var(--accent)]"></i>Known limitations</h2>
+      <div class="glass-card rounded-2xl p-4 md:p-6">
+        <details class="faq">
+          <summary>Live lock screen support varies by EMUI / HarmonyOS version</summary>
+          <div class="faq-body body-text"><p>Huawei's Themes app may override third-party live wallpapers on the lock screen. Separate home and lock videos need Android 14 level support (HarmonyOS 4.2 and later). On older systems the lock screen uses the home screen settings.</p></div>
+        </details>
+        <details class="faq">
+          <summary>HarmonyOS NEXT (5.0 and later) is not supported</summary>
+          <div class="faq-body body-text"><p>HarmonyOS NEXT does not run Android APKs, so fluxbg cannot be installed on it.</p></div>
+        </details>
+        <details class="faq">
+          <summary>A brief hitch at the loop point</summary>
+          <div class="faq-body body-text"><p>Looping uses <span class="ic">MediaPlayer</span> seeking, so there may be a short hitch where the clip restarts, especially with long keyframe intervals. Re-encoding the clip with frequent keyframes helps.</p></div>
+        </details>
+        <details class="faq">
+          <summary>Very high-resolution or long videos</summary>
+          <div class="faq-body body-text"><p>They use more battery and storage. Selected videos and images are copied into the app's private storage.</p></div>
+        </details>
+        <details class="faq">
+          <summary>HTML-based animated backgrounds</summary>
+          <div class="faq-body body-text"><p>Not supported yet.</p></div>
+        </details>
+        <details class="faq">
+          <summary>The prebuilt APKs may be out of date</summary>
+          <div class="faq-body body-text"><p>The APKs in <span class="ic">apks/</span> may be older than the current source code. Build from source for the latest changes.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <section id="structure" class="space-y-6">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-folder-tree text-[var(--accent)]"></i>Project structure</h2>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="data-table">
+            <thead><tr><th scope="col">File</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ic">MainActivity.kt</span></td><td>Home screen: My library (Images / Videos), add, delete</td></tr>
+              <tr><td><span class="ic">EditorActivity.kt</span></td><td>Editor: preview, crop, timeline trim, apply actions</td></tr>
+              <tr><td><span class="ic">FluxDialog.kt</span></td><td>App-styled pop-ups (confirm, info, option sheet)</td></tr>
+              <tr><td><span class="ic">Images.kt</span></td><td>Image decoding, EXIF rotation and cropping</td></tr>
+              <tr><td><span class="ic">Ui.kt</span></td><td>Shared colors and view helpers</td></tr>
+              <tr><td><span class="ic">Thumbs.kt</span></td><td>Cached previews and durations for the library</td></tr>
+              <tr><td><span class="ic">PreviewFrame.kt</span></td><td>Keeps the preview and crop overlay on the same rectangle</td></tr>
+              <tr><td><span class="ic">CropOverlayView.kt</span></td><td>Crop window: drag sides and corners, move, pinch</td></tr>
+              <tr><td><span class="ic">TrimBarView.kt</span></td><td>Scrollable timeline with thumbnails, trim handles and playhead</td></tr>
+              <tr><td><span class="ic">FluxWallpaperService.kt</span></td><td>Live wallpaper service (home / lock aware)</td></tr>
+              <tr><td><span class="ic">VideoRenderer.kt</span></td><td>OpenGL ES renderer for the cropped, trimmed video</td></tr>
+              <tr><td><span class="ic">Store.kt</span></td><td>Per-screen settings storage and crop fitting</td></tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="license">
+      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-scale-balanced text-[var(--accent)]"></i>License</h2>
+        <p>Shared under the <strong>PolyForm Noncommercial License 1.0.0</strong>.</p>
+        <ul class="list-disc pl-6 space-y-2">
+          <li><strong>Personal &amp; educational use:</strong> free to use, modify and explore. Please give credit to the original author.</li>
+          <li><strong>Commercial use:</strong> needs a commercial license. Contact <a href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-sm text-slate-200 text-readable">
+      <div>Made with 💖 by Kurtis Lam</div>
+      <a href="/" class="link flex items-center gap-2"><i class="fa-solid fa-house"></i><span>Back to home</span></a>
+    </footer>
+  </main>
+
+  <script>
+    // --- Copy buttons ---
+    document.querySelectorAll('.copy-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = document.querySelector(btn.getAttribute('data-copy'));
+        if (!target) return;
+        var text = target.textContent;
+        var done = function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (_) {}
+          document.body.removeChild(ta);
+        }
+      });
+    });
+
+    // --- Method tabs ---
+    (function () {
+      var tabs = document.querySelectorAll('[role="tab"]');
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+          });
+        });
+      });
+    })();
+
+    // --- Forward pointer / scroll info to the shared background iframe ---
+    (function () {
+      const bgIframe = document.getElementById('bg-iframe');
+      if (!bgIframe) return;
+      const post = (msg) => {
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
+      };
+      let mx = 0, my = 0, movePending = false, scrollPending = false;
+      window.addEventListener('pointermove', (e) => {
+        mx = e.clientX; my = e.clientY;
+        if (movePending) return;
+        movePending = true;
+        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
+      }, { passive: true });
+      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
+      window.addEventListener('scroll', () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
