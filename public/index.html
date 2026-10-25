@@ -222,6 +222,34 @@
       animation: shiftGrad 4s steps(120) infinite;
     }
 
+    /* 8. fluxbg */
+    .moving-grad-fluxbg-text {
+      background-image: linear-gradient(to right, #7dd3fc, #c4b5fd, #7dd3fc);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+    .moving-grad-fluxbg-bg {
+      background-image: linear-gradient(to right, #7dd3fc, #c4b5fd, #7dd3fc);
+      background-size: 200% auto;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+
+    /* 9. kurt */
+    .moving-grad-kurt-text {
+      background-image: linear-gradient(to right, #4ade80, #bef264, #4ade80);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+    .moving-grad-kurt-bg {
+      background-image: linear-gradient(to right, #4ade80, #bef264, #4ade80);
+      background-size: 200% auto;
+      animation: shiftGrad 4s steps(120) infinite;
+    }
+
     /* Glassmorphism Card Style - Solid background fill to ensure text readability without lag */
     .glass-card {
       background: rgba(8, 12, 24, 0.9);
@@ -319,6 +347,14 @@
     .glow-mtyper:hover {
       box-shadow: 0 0 25px rgba(226, 183, 20, 0.4);
       border-color: rgba(245, 215, 110, 0.6);
+    }
+    .glow-fluxbg:hover {
+      box-shadow: 0 0 25px rgba(125, 211, 252, 0.4);
+      border-color: rgba(196, 181, 253, 0.6);
+    }
+    .glow-kurt:hover {
+      box-shadow: 0 0 25px rgba(74, 222, 128, 0.4);
+      border-color: rgba(190, 242, 100, 0.6);
     }
     .glow-dropspot:hover {
       box-shadow: 0 0 25px rgba(146, 184, 246, 0.4);
@@ -601,6 +637,55 @@
               <i class="fa-solid fa-keyboard"></i>
             </div>
           </a>
+
+        </div>
+      </section>
+
+      <!-- Utilities I Developed Section -->
+      <section class="space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4">
+          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
+            <i class="fa-solid fa-screwdriver-wrench text-cyan-400"></i>
+            <span>Utilities I developed:</span>
+          </h2>
+          <span class="text-sm font-mono text-slate-100 text-readable">Apps &amp; CLI Tools</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+          <!-- Utility: fluxbg -->
+          <div class="card-tilt fade-in glass-card glow-fluxbg rounded-2xl p-6 flex flex-col justify-between group relative">
+            <a href="https://kurtis-lam.web.app/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg page" class="absolute inset-0 rounded-2xl z-0"></a>
+            <div class="relative z-10 pointer-events-none">
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-fluxbg-bg">ANDROID APP</span>
+                <a href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
+              </div>
+              <h3 class="text-xl font-bold mb-2 moving-grad-fluxbg-text">fluxbg</h3>
+              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">Android wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p>
+            </div>
+            <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
+              <span class="moving-grad-fluxbg-text font-semibold">kurtis-lam.web.app/fluxbg</span>
+              <i class="fa-solid fa-film"></i>
+            </div>
+          </div>
+
+          <!-- Utility: kurt -->
+          <div class="card-tilt fade-in glass-card glow-kurt rounded-2xl p-6 flex flex-col justify-between group relative">
+            <a href="https://kurtis-lam.web.app/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt page" class="absolute inset-0 rounded-2xl z-0"></a>
+            <div class="relative z-10 pointer-events-none">
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kurt-bg">CLI TOOL</span>
+                <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
+              </div>
+              <h3 class="text-xl font-bold mb-2 moving-grad-kurt-text">kurt</h3>
+              <p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed">A terminal coding assistant that runs free open-source Hugging Face models locally through Ollama. You approve every edit.</p>
+            </div>
+            <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
+              <span class="moving-grad-kurt-text font-semibold">kurtis-lam.web.app/kurt</span>
+              <i class="fa-solid fa-terminal"></i>
+            </div>
+          </div>
 
         </div>
       </section>
