@@ -13,12 +13,16 @@ Kurtis Lam (born October 22, 2010) builds web applications, study tools, interac
 - [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): A color match tool that solves Colordle using CIEDE2000 ($\Delta E_{00}$) calculations in CIE Lab space.
 - [Kahoot Hack](https://kurtis-lam.web.app/kahoot-hack): A Chrome extension that reads Kahoot! questions, asks an AI model through OpenRouter, and highlights or auto-clicks the answer. Educational project; includes a step-by-step setup guide.
 - [Monkeytyper](https://kurtis-lam.web.app/monkeytyper): Two Python scripts that automate Monkeytype, one using Selenium DOM queries and one using OpenCV + Tesseract OCR with PyAutoGUI. Educational project; includes a step-by-step setup guide.
+- [fluxbg](https://kurtis-lam.web.app/fluxbg): An Android wallpaper app for Huawei phones. Add a static image or a dynamic video, crop it, trim videos on a timeline, and set it as the home and/or lock screen wallpaper. Source: https://github.com/Kurtis-Lam/fluxbg
+- [Kurt](https://kurtis-lam.web.app/kurt): A terminal coding assistant that runs free open-source Hugging Face models locally through Ollama, with diffs and confirmation before every edit. Source: https://github.com/Kurtis-Lam/kurt
 
 ## Pages
 - [Portfolio Homepage](https://kurtis-lam.web.app/): Main portfolio showcasing projects, live age counter, and active profiles.
 - [Colordle Solver](https://kurtis-lam.web.app/colordle-solver): Live utility for estimating mystery colors using primary similarities.
 - [Kahoot Hack](https://kurtis-lam.web.app/kahoot-hack): What the extension is, how it works, and how to install and use it.
 - [Monkeytyper](https://kurtis-lam.web.app/monkeytyper): What the two scripts are, how they differ, and how to set up and run them.
+- [fluxbg](https://kurtis-lam.web.app/fluxbg): What the app does, how to get the APK, build it, and use it.
+- [Kurt](https://kurtis-lam.web.app/kurt): What the CLI is, how to install it on macOS and Windows, commands, and troubleshooting.
 
 ## Socials & Contact
 - GitHub: https://github.com/Kurtis-Lam
