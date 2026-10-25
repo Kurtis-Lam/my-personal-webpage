@@ -12,7 +12,9 @@
       { "source": "/gggrinder", "destination": "/grinder.html" },
       { "source": "/hbd-twin", "destination": "/birthday.html" },
       { "source": "/kahoot-hack", "destination": "/kahoot-hack.html" },
-      { "source": "/monkeytyper", "destination": "/monkeytyper.html" }
+      { "source": "/monkeytyper", "destination": "/monkeytyper.html" },
+      { "source": "/fluxbg", "destination": "/fluxbg.html" },
+      { "source": "/kurt", "destination": "/kurt.html" }
     ]
   }
 }
