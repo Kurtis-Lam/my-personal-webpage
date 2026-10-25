@@ -175,7 +175,7 @@
         <i class="fa-brands fa-android"></i><span>Android · Huawei</span>
       </div>
       <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-readable mb-5">
-        <i class="fa-solid fa-film text-[var(--accent)]"></i> <span class="gradient-title">fluxbg</span>
+        <img src="/assets/fluxbg.png" alt="" class="inline-block align-middle w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-xl object-cover mr-1" style="display:none" onload="this.style.display='inline-block';var i=this.parentNode.querySelector('i.fa-solid');if(i)i.style.display='none'" onerror="this.remove()"> <i class="fa-solid fa-film text-[var(--accent)]"></i> <span class="gradient-title">fluxbg</span>
       </h1>
       <p class="max-w-2xl text-lg md:text-xl text-slate-100 leading-relaxed text-readable">
         An Android wallpaper app built for Huawei phones. Add a static image or a dynamic video from your gallery, crop it, trim videos on a video-editor style timeline, and use it as your home screen and/or lock screen wallpaper.
@@ -218,8 +218,8 @@
       <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-download text-[var(--accent)]"></i>Get the APK</h2>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
-          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-box-archive text-[var(--accent)]"></i>Download a prebuilt APK</h3>
-          <p>Open the <a href="https://github.com/Kurtis-Lam/fluxbg/blob/main/apks" target="_blank" rel="noopener noreferrer"><span class="ic">apks/</span> folder</a> in the repo and download the newest file. It is the quickest option, but prebuilt APKs are not rebuilt on every commit, so they <strong>might not include the latest updates</strong>.</p>
+          <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-box-archive text-[var(--accent)]"></i>Download from Releases</h3>
+          <p>Open the <a href="https://github.com/Kurtis-Lam/fluxbg/releases" target="_blank" rel="noopener noreferrer">Releases page</a> on GitHub and download the newest APK. It is the quickest option, but releases are not rebuilt on every commit, so they <strong>might not include the latest updates</strong>.</p>
         </div>
         <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
           <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-hammer text-[var(--accent)]"></i>Build it yourself</h3>
@@ -231,7 +231,7 @@
     <section id="usage" class="space-y-6">
       <div>
         <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-list-check text-[var(--accent)]"></i>How to use it</h2>
-        <p class="mt-3 text-lg text-slate-100 text-readable">Install the APK (downloaded or built yourself), open <strong>fluxbg</strong>, then follow these steps.</p>
+        <p class="mt-3 text-lg text-slate-100 text-readable">Install the APK (from Releases or built yourself), open <strong>fluxbg</strong>, then follow these steps.</p>
       </div>
       <ol class="space-y-5 list-none">
 
@@ -352,47 +352,13 @@ org.gradle.jvmargs=-Xmx2048m</pre></div>
           <div class="faq-body body-text"><p>Not supported yet.</p></div>
         </details>
         <details class="faq">
-          <summary>The prebuilt APKs may be out of date</summary>
-          <div class="faq-body body-text"><p>The APKs in <span class="ic">apks/</span> may be older than the current source code. Build from source for the latest changes.</p></div>
+          <summary>The released APK may be out of date</summary>
+          <div class="faq-body body-text"><p>The APK on the Releases page may be older than the current source code. Build from source for the latest changes.</p></div>
         </details>
       </div>
     </section>
 
-    <section id="structure" class="space-y-6">
-      <h2 class="text-3xl md:text-4xl font-bold text-white text-readable flex items-center gap-3"><i class="fa-solid fa-folder-tree text-[var(--accent)]"></i>Project structure</h2>
-      <div class="glass-card rounded-2xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="data-table">
-            <thead><tr><th scope="col">File</th><th scope="col">What it does</th></tr></thead>
-            <tbody>
-              <tr><td><span class="ic">MainActivity.kt</span></td><td>Home screen: My library (Images / Videos), add, delete</td></tr>
-              <tr><td><span class="ic">EditorActivity.kt</span></td><td>Editor: preview, crop, timeline trim, apply actions</td></tr>
-              <tr><td><span class="ic">FluxDialog.kt</span></td><td>App-styled pop-ups (confirm, info, option sheet)</td></tr>
-              <tr><td><span class="ic">Images.kt</span></td><td>Image decoding, EXIF rotation and cropping</td></tr>
-              <tr><td><span class="ic">Ui.kt</span></td><td>Shared colors and view helpers</td></tr>
-              <tr><td><span class="ic">Thumbs.kt</span></td><td>Cached previews and durations for the library</td></tr>
-              <tr><td><span class="ic">PreviewFrame.kt</span></td><td>Keeps the preview and crop overlay on the same rectangle</td></tr>
-              <tr><td><span class="ic">CropOverlayView.kt</span></td><td>Crop window: drag sides and corners, move, pinch</td></tr>
-              <tr><td><span class="ic">TrimBarView.kt</span></td><td>Scrollable timeline with thumbnails, trim handles and playhead</td></tr>
-              <tr><td><span class="ic">FluxWallpaperService.kt</span></td><td>Live wallpaper service (home / lock aware)</td></tr>
-              <tr><td><span class="ic">VideoRenderer.kt</span></td><td>OpenGL ES renderer for the cropped, trimmed video</td></tr>
-              <tr><td><span class="ic">Store.kt</span></td><td>Per-screen settings storage and crop fitting</td></tr>
-              </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
 
-    <section id="license">
-      <div class="glass-card rounded-2xl p-6 md:p-7 body-text space-y-3">
-        <h2 class="text-2xl font-bold text-white flex items-center gap-3"><i class="fa-solid fa-scale-balanced text-[var(--accent)]"></i>License</h2>
-        <p>Shared under the <strong>PolyForm Noncommercial License 1.0.0</strong>.</p>
-        <ul class="list-disc pl-6 space-y-2">
-          <li><strong>Personal &amp; educational use:</strong> free to use, modify and explore. Please give credit to the original author.</li>
-          <li><strong>Commercial use:</strong> needs a commercial license. Contact <a href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a>.</li>
-        </ul>
-      </div>
-    </section>
 
     <footer class="pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-sm text-slate-200 text-readable">
       <div>Made with 💖 by Kurtis Lam</div>
