@@ -364,21 +364,75 @@
       font-family: cursive; 
     }
 
-    /* ---------- Hover-only descriptions ---------- */
-    .card-desc {
-      display: grid;
-      grid-template-rows: 0fr;
-      opacity: 0;
-      transition: grid-template-rows 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
-    }
-    .card-desc > div { overflow: hidden; min-height: 0; }
-    .group:hover .card-desc,
-    .group:focus-within .card-desc {
-      grid-template-rows: 1fr;
-      opacity: 1;
-    }
+    /* ---------- Cursor popup for descriptions ---------- */
+    .card-desc { display: none; }
     @media (hover: none) {
-      .card-desc { grid-template-rows: 1fr; opacity: 1; }
+      .card-desc { display: block; }
+    }
+    #desc-popup {
+      --accent: 56, 189, 248;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9990;
+      width: max-content;
+      max-width: 300px;
+      padding: 14px 16px 14px 18px;
+      border-radius: 14px;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      background: linear-gradient(145deg, rgba(10, 16, 32, 0.97), rgba(4, 7, 16, 0.97));
+      border: 1px solid rgba(var(--accent), 0.55);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+                  0 0 28px rgba(var(--accent), 0.35),
+                  0 14px 36px rgba(0, 0, 0, 0.65);
+      transition: opacity 0.12s ease, visibility 0s 0.12s;
+      will-change: transform;
+      overflow: hidden;
+    }
+    #desc-popup.show { opacity: 1; visibility: visible; transition: opacity 0.12s ease; }
+    #desc-popup::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, rgb(var(--accent)), rgba(var(--accent), 0.15));
+    }
+    #desc-popup::after {
+      content: "";
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(var(--accent), 0.28), transparent 70%);
+      pointer-events: none;
+    }
+    #desc-popup .dp-title {
+      position: relative;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgb(var(--accent));
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #desc-popup .dp-title::before {
+      content: "";
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgb(var(--accent));
+      box-shadow: 0 0 10px rgb(var(--accent));
+    }
+    #desc-popup .dp-text {
+      position: relative;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+      color: #e5e9ec;
     }
 
     /* ---------- Collapsible categories ---------- */
@@ -399,7 +453,7 @@
     section.is-collapsed .section-chevron { transform: rotate(-90deg); }
 
     @media (prefers-reduced-motion: reduce) {
-      .collapse-body, .card-desc { transition: none !important; }
+      .collapse-body, #desc-popup { transition: none !important; }
     }
 
   </style>
@@ -768,6 +822,8 @@
 
   </div>
 
+  <div id="desc-popup" aria-hidden="true"><div class="dp-title"></div><div class="dp-text"></div></div>
+
   <!-- JavaScript Logic -->
   <script>
     // --- Page Initialization & Scroll Tracking ---
@@ -916,6 +972,47 @@
       document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
     }
 
+
+    // --- Description popup that follows the cursor ---
+    (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      const pop = document.getElementById('desc-popup');
+      const pTitle = pop.querySelector('.dp-title');
+      const pText = pop.querySelector('.dp-text');
+      const ACCENTS = {
+        'glow-gteyc': '149,244,238', 'glow-svt': '247,202,201', 'glow-ktown': '192,132,252',
+        'glow-dropspot': '146,184,246', 'glow-cyan': '6,182,212', 'glow-kahoot': '216,180,254',
+        'glow-mtyper': '245,215,110', 'glow-fluxbg': '125,211,252', 'glow-kurt': '74,222,128'
+      };
+      let px = 0, py = 0, raf = 0, active = null;
+      function place() {
+        raf = 0;
+        const w = pop.offsetWidth, h = pop.offsetHeight, gap = 18;
+        let x = px + gap, y = py + gap;
+        if (x + w > window.innerWidth - 8) x = px - w - gap;
+        if (y + h > window.innerHeight - 8) y = py - h - gap;
+        pop.style.transform = `translate3d(${Math.max(8, x)}px, ${Math.max(8, y)}px, 0)`;
+      }
+      function queue() { if (!raf) raf = requestAnimationFrame(place); }
+      document.querySelectorAll('.card-desc').forEach(desc => {
+        const card = desc.closest('.group');
+        if (!card) return;
+        card.addEventListener('mouseenter', (e) => {
+          active = card;
+          const h = card.querySelector('h2');
+          pTitle.textContent = h ? h.textContent : '';
+          pText.textContent = desc.textContent.trim();
+          const cls = Object.keys(ACCENTS).find(k => card.classList.contains(k));
+          pop.style.setProperty('--accent', cls ? ACCENTS[cls] : '56,189,248');
+          px = e.clientX; py = e.clientY;
+          place();
+          pop.classList.add('show');
+        });
+        card.addEventListener('mousemove', (e) => { px = e.clientX; py = e.clientY; queue(); }, { passive: true });
+        card.addEventListener('mouseleave', () => { if (active === card) { pop.classList.remove('show'); active = null; } });
+      });
+      window.addEventListener('scroll', () => { pop.classList.remove('show'); active = null; }, { passive: true });
+    })();
 
     // --- Collapsible categories ---
     document.querySelectorAll('.section-toggle').forEach(h => {
