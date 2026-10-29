@@ -1,8 +1,6 @@
 .firebase/
 .firebaserc
-node_modules/
-
-backgrounds/
+node_modules/p
 
 index.html
 public/grinder.html
