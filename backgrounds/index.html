@@ -115,7 +115,7 @@
 
     // --- Text state (persisted between visits) ---
     const STORAGE_KEY = 'starTextValue';
-    const DEFAULT_TEXT = 'KL';
+    const DEFAULT_TEXT = '';
     let currentText = DEFAULT_TEXT;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -381,7 +381,7 @@
       const layout = text ? fitText(text, width * KL.widthRatio, height * KL.heightRatio) : null;
       if (!layout) { klBox = null; return []; }
       const { lines, size } = layout;
-      textScale = Math.min(1.15, Math.max(0.6, 0.5 + size / 700));
+      textScale = Math.min(1.1, Math.max(0.5, 0.3 + size / 600));
 
       measureCtx.font = TEXT_FONT(size);
       let maxLineW = 0;
@@ -400,7 +400,7 @@
       c.fillStyle = '#fff';
       c.strokeStyle = '#fff';
       c.lineJoin = 'round';
-      c.lineWidth = size * 0.07;
+      c.lineWidth = size * 0.02;
       lines.forEach((l, i) => {
         const y = pad + (i + 0.5) * size * TEXT_LH;
         c.strokeText(l, cw / 2, y);
@@ -437,7 +437,7 @@
       const seed = (Math.random() * 1000) | 0;
       const density = (x, y) => {
         const n = valueNoise(x / noiseSize + seed, y / noiseSize + seed * 0.37);
-        return 0.55 + 0.45 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
+        return 0.8 + 0.2 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
       };
       const pickSample = () => {
         const i = (Math.random() * samples) | 0;
@@ -447,13 +447,13 @@
       const out = [];
       const nField = Math.round(target * 0.62);
       const nClump = Math.round(target * 0.30);
-      const nStray = Math.round(target * 0.04);
+      const nStray = Math.round(target * 0.02);
 
       let guard = 0;
       while (out.length < nField && guard++ < nField * 20) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        out.push({ x: x + gauss() * 1.3 * sc, y: y + gauss() * 1.3 * sc, kind: 'field' });
+        out.push({ x: x + gauss() * 0.6 * sc, y: y + gauss() * 0.6 * sc, kind: 'field' });
       }
 
       let made = 0;
@@ -461,8 +461,8 @@
       while (made < nClump && guard++ < nClump * 10) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        const members = 4 + ((Math.random() * 7) | 0);
-        const sigma = (2 + Math.random() * 2.5) * sc;
+        const members = 3 + ((Math.random() * 4) | 0);
+        const sigma = (0.8 + Math.random() * 1.2) * sc;
         out.push({ x, y, kind: 'lead' });
         for (let m = 1; m < members; m++) {
           out.push({ x: x + gauss() * sigma, y: y + gauss() * sigma, kind: 'field' });
@@ -473,7 +473,7 @@
       for (let s = 0; s < nStray; s++) {
         const [x, y] = pickSample();
         const ang = Math.random() * Math.PI * 2;
-        const dist = (10 + Math.random() * 34) * sc;
+        const dist = (5 + Math.random() * 12) * sc;
         out.push({ x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist, kind: 'stray' });
       }
 
@@ -500,15 +500,15 @@
 
         this.ci = pickColor();
         // Boosted size and baseline brightness for letter stars
-        this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : (0.75 + mag * 2.2) * sc;
+        this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : (0.5 + mag * 1.5) * sc;
         this.bright = dust ? 0.1 + mag * 0.3 : halo ? 0.12 + mag * 0.2 : ambient ? 0.1 + mag * 0.3 : 0.8 + mag * 0.2;
         this.glowSize = this.core * 2 / GLOW_CORE;
         this.glowRect = glowRects[this.ci][pickGlowLevel(this.glowSize)];
-        this.spike = !halo && !dust && mag > 0.85;
-        this.spikeSize = this.core * 26;
+        this.spike = !halo && !dust && mag > (ambient ? 0.85 : 0.93);
+        this.spikeSize = this.core * (ambient ? 26 : 16);
 
         this.hazeR = 0;
-        if (!ambient && Math.random() < 0.12) {
+        if (!ambient && Math.random() < 0.03) {
           this.hazeR = (20 + Math.random() * 30) * sc;
           this.hazeA = 0.08 + Math.random() * 0.08;
         }
@@ -525,8 +525,8 @@
         this.idleFy = 0.0007 + Math.random() * 0.0011;
         this.idleSx = Math.random() * 1000;
         this.idleSy = Math.random() * 1000;
-        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : (3.0 + Math.random() * 4.0) * Math.max(0.5, sc);
-        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : (3.0 + Math.random() * 4.0) * Math.max(0.5, sc);
+        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : (0.8 + Math.random() * 1.4) * sc;
+        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : (0.8 + Math.random() * 1.4) * sc;
 
         this.ambient = ambient;
         this.driftX = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
