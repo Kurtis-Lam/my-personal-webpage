@@ -1,1053 +1,1318 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Kurtis Lam's personal portfolio showcasing web development projects, interactive web applications, software repositories, and developer profiles." />
-  <title>Kurtis Lam</title>
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome Icons -->
+  <title>Kurtis Lam — Student &amp; Developer in Hong Kong · Available for hire</title>
+  <meta name="description" content="Kurtis Lam is a student and developer in Hong Kong (UTC+8) who builds websites, web apps, Discord bots, Chrome extensions, Android apps and CLI tools. Available for freelance work." />
+  <meta name="theme-color" content="#07090e" />
+  <link rel="icon" type="image/png" href="/assets/logo.png" />
+  <link rel="apple-touch-icon" href="/assets/logo.png" />
+  <link rel="canonical" href="https://kurtis-lam.web.app/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Kurtis Lam — Student &amp; Developer · Available for hire" />
+  <meta property="og:description" content="Websites, web apps, Discord bots, Chrome extensions, Android apps and CLI tools, built in Hong Kong." />
+  <meta property="og:url" content="https://kurtis-lam.web.app/" />
+  <meta name="twitter:card" content="summary" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Space Grotesk', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
-          },
-          colors: {
-            monkeytype: '#e2b714',
-            github: '#2ea44f',
-            insta: '#e1306c',
-          }
-        }
-      }
-    }
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Kurtis Lam",
+    "url": "https://kurtis-lam.web.app/",
+    "jobTitle": "Student & Developer",
+    "birthDate": "2010-10-22",
+    "homeLocation": { "@type": "Place", "name": "Hong Kong" },
+    "email": "mailto:kurtislam100@gmail.com",
+    "knowsAbout": ["Web development", "Discord bots", "Chrome extensions", "Android apps", "Command-line tools", "Security testing"],
+    "sameAs": ["https://github.com/Kurtis-Lam", "https://www.instagram.com/kurtis_1022/", "https://monkeytype.com/profile/kurtislam"]
+  }
   </script>
 
+  <script>document.documentElement.className = 'js';</script>
+
   <style>
-    /* ---------- Preloader & Initial Fade-In States ---------- */
-    #preloader {
-      display: none !important;
+    /* =====================================================================
+       Design tokens
+       ===================================================================== */
+    :root {
+      --bg: #07090e;
+      --surface: rgba(10, 14, 26, 0.88);
+      --surface-2: rgba(18, 25, 44, 0.92);
+      --line: rgba(148, 163, 184, 0.22);
+      --line-strong: rgba(148, 163, 184, 0.42);
+      --text: #e8edf7;
+      --muted: #a3b0c7;
+      --cyan: #67e8f9;
+      --blue: #60a5fa;
+      --violet: #a78bfa;
+      --pink: #f472b6;
+      --amber: #fbbf24;
+      --green: #4ade80;
+      --r: 18px;
+      --font: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --mono: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --serif: 'Instrument Serif', Georgia, serif;
+      color-scheme: dark;
     }
-
-    .page-content {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font-family: var(--font); line-height: 1.6; font-size: 1.02rem;
+      -webkit-font-smoothing: antialiased; overflow-x: hidden;
     }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, p { margin: 0; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    ::selection { background: #22d3ee; color: #04101c; }
+    :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+    [hidden] { display: none !important; }
 
-    /* ---------- Scroll Reveal Effect ---------- */
-    .fade-in {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
+    ::-webkit-scrollbar { width: 9px; }
+    ::-webkit-scrollbar-track { background: #090a0f; }
+    ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 5px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    #bg-iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; z-index: 0; pointer-events: none; }
+    #page { position: relative; z-index: 1; }
+    .wrap { width: 100%; max-width: 1120px; margin-inline: auto; padding-inline: 20px; }
+    .skip { position: absolute; left: 12px; top: -60px; z-index: 200; background: #fff; color: #000; padding: 10px 14px; border-radius: 8px; font-weight: 600; }
+    .skip:focus { top: 12px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    .mono { font-family: var(--mono); }
+    .grad { background: linear-gradient(90deg, #67e8f9, #a78bfa 55%, #f472b6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+    .serif { font-family: var(--serif); font-style: italic; font-weight: 400; }
+
+    /* =====================================================================
+       Buttons / chips / cards
+       ===================================================================== */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      padding: 12px 20px; border-radius: 12px; border: 1px solid transparent;
+      font-weight: 600; cursor: pointer; line-height: 1.2; white-space: nowrap;
+      transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
     }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: linear-gradient(135deg, #22d3ee, #818cf8); color: #04101c; }
+    .btn-ghost { background: rgba(255, 255, 255, 0.04); border-color: var(--line-strong); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--cyan); background: rgba(103, 232, 249, 0.08); }
+    .btn-sm { padding: 8px 14px; font-size: .92rem; border-radius: 10px; }
 
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px; border-radius: 999px;
+      background: var(--surface); border: 1px solid var(--line); font-family: var(--mono); font-size: .8rem; color: var(--muted);
+    }
+    .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; flex: none; }
+    .dot.live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: rgba(74, 222, 128, .6); animation: pulse 2.4s ease-out infinite; will-change: transform, opacity; }
+    .dot.off { background: var(--amber); }
+    .dot.off::after { display: none; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3.2); opacity: 0; } }
+
+    .card {
+      position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+      transition: transform .25s ease, border-color .25s ease;
+    }
+    .card.hoverable:hover { transform: translateY(-4px); border-color: var(--a, var(--cyan)); }
+
+    .reveal { opacity: 1; }
+    .js .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    /* =====================================================================
+       Header
+       ===================================================================== */
+    .site-header { position: sticky; top: 0; z-index: 60; background: #07090e; border-bottom: 1px solid var(--line); }
+    .bar { display: flex; align-items: center; gap: 16px; height: 66px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 700; letter-spacing: -.01em; }
+    .mark { width: 36px; height: 36px; border-radius: 11px; display: block; flex: none; object-fit: cover; }
+    .nav { display: flex; gap: 2px; margin-inline: auto; }
+    .nav a { padding: 8px 12px; border-radius: 10px; color: var(--muted); font-size: .93rem; font-weight: 500; transition: color .2s, background-color .2s; }
+    .nav a:hover, .nav a.active { color: #fff; background: rgba(255, 255, 255, 0.07); }
+    .bar-right { display: flex; align-items: center; gap: 10px; }
+    .hk {
+      display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px; border-radius: 999px;
+      border: 1px solid var(--line-strong); background: rgba(255, 255, 255, 0.04); font-family: var(--mono); font-size: .82rem; line-height: 1.15;
+    }
+    .hk small { display: block; color: var(--muted); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; }
+    .hk time { display: block; color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .kbd-btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 10px; cursor: pointer;
+      border: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: .78rem;
+    }
+    .kbd-btn:hover { color: #fff; border-color: var(--line-strong); }
+    kbd { font-family: var(--mono); font-size: .72rem; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--line-strong); background: rgba(255, 255, 255, .05); color: var(--muted); }
+    .menu-btn { display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line-strong); background: transparent; cursor: pointer; font-size: 1.05rem; }
+    .progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; transform-origin: 0 50%; transform: scaleX(0); background: linear-gradient(90deg, #22d3ee, #a78bfa, #f472b6); }
+
+    /* =====================================================================
+       Sections
+       ===================================================================== */
+    section { scroll-margin-top: 80px; }
+    .sec { padding: 84px 0 8px; }
+    .sec-head { max-width: 680px; margin-bottom: 36px; }
+    .eyebrow { font-family: var(--mono); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+    .sec-head h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); line-height: 1.08; letter-spacing: -.025em; margin: 10px 0 12px; }
+    .lede { color: var(--muted); font-size: 1.08rem; }
+
+    /* ---------- Hero ---------- */
+    .hero { padding: 64px 0 24px; }
+    .hero-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 40px; align-items: center; }
+    .hero h1 { font-size: clamp(2.9rem, 8vw, 5.6rem); line-height: .98; letter-spacing: -.04em; font-weight: 700; margin: 20px 0 18px; }
+    .hero h1 .serif { font-size: 1.06em; letter-spacing: -.01em; }
+    .role-line { font-family: var(--mono); font-size: clamp(1rem, 2.2vw, 1.28rem); min-height: 1.9em; color: var(--text); }
+    .role-line .caret { color: var(--cyan); animation: blink 1s steps(2) infinite; }
+    .role-line .prompt { color: var(--cyan); }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero p.bio { color: var(--muted); font-size: 1.12rem; max-width: 56ch; margin: 14px 0 26px; }
+    .hero p.bio strong { color: var(--text); font-weight: 500; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 26px; }
+    .socials { display: flex; gap: 10px; flex-wrap: wrap; }
+    .social { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 1.2rem; transition: transform .2s, border-color .2s, color .2s; }
+    .social:hover { transform: translateY(-3px); border-color: var(--c, var(--cyan)); color: var(--c, var(--cyan)); }
+
+    .hero-side { display: grid; gap: 18px; width: 100%; max-width: 420px; margin-inline: auto; }
+    .hero-side .widget { padding: 24px; }
+    .hero-side .age-num { font-size: clamp(1.7rem, 4.2vw, 2.4rem); }
+    .hero-side .tz b { font-size: 1.3rem; }
+
+    .scroll-cue { display: flex; justify-content: center; margin-top: 36px; color: var(--muted); font-family: var(--mono); font-size: .78rem; gap: 10px; align-items: center; }
+    .scroll-cue i { animation: bob 2s ease-in-out infinite; }
+    @keyframes bob { 50% { transform: translateY(5px); } }
+
+    /* ---------- About ---------- */
+    .about-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; }
+    .about-text { padding: 30px; display: grid; gap: 16px; font-size: 1.07rem; }
+    .about-text p { color: var(--muted); }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+    .facts { padding: 26px 28px; }
+    .facts h3 { font-size: 1rem; font-family: var(--mono); font-weight: 600; color: var(--cyan); margin-bottom: 14px; letter-spacing: .04em; }
+    .facts li { display: flex; justify-content: space-between; gap: 18px; padding: 11px 0; border-top: 1px solid var(--line); font-size: .95rem; }
+    .facts li span:first-child { color: var(--muted); }
+    .facts li span:last-child { text-align: right; }
+    .tools { margin-top: 22px; padding: 24px 28px; }
+    .tools h3 { font-size: 1rem; font-family: var(--mono); color: var(--cyan); font-weight: 600; letter-spacing: .04em; margin-bottom: 14px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tag { display: inline-flex; align-items: center; gap: 8px; padding: 7px 13px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, .035); font-size: .9rem; }
+    .tag i { color: var(--cyan); }
+
+    /* ---------- Services ---------- */
+    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .svc { padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+    .svc .ico { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 1.3rem; background: color-mix(in srgb, var(--a) 16%, transparent); color: var(--a); border: 1px solid color-mix(in srgb, var(--a) 40%, transparent); }
+    .svc h3 { font-size: 1.28rem; letter-spacing: -.01em; }
+    .svc p { color: var(--muted); font-size: .98rem; flex: 1; }
+    .svc .ask { align-self: flex-start; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--a); font-weight: 600; font-size: .95rem; display: inline-flex; gap: 8px; align-items: center; }
+    .svc .ask:hover i { transform: translateX(4px); }
+    .svc .ask i { transition: transform .2s; }
+    .notice { margin-top: 18px; padding: 18px 22px; display: flex; gap: 16px; align-items: flex-start; border-style: dashed; border-color: var(--line-strong); }
+    .notice i { color: var(--amber); font-size: 1.2rem; margin-top: 3px; }
+    .notice p { color: var(--muted); }
+    .notice strong { color: var(--text); font-weight: 500; }
+
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px; counter-reset: step; }
+    .step { padding: 20px 22px; }
+    .step::before { counter-increment: step; content: "0" counter(step); font-family: var(--mono); color: var(--cyan); font-size: .85rem; }
+    .step h3 { font-size: 1.1rem; margin: 6px 0 4px; }
+    .step p { color: var(--muted); font-size: .92rem; }
+
+    /* ---------- Work ---------- */
+    .filters { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+    .filter { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: .92rem; transition: border-color .2s, background-color .2s, color .2s; }
+    .filter:hover { border-color: var(--line-strong); }
+    .filter[aria-pressed="true"] { background: linear-gradient(135deg, #22d3ee, #818cf8); color: #04101c; border-color: transparent; font-weight: 600; }
+    .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .proj { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+    .proj-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .pill { font-family: var(--mono); font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 8px; color: #06101a; background: var(--a); }
+    .pill.new { background: transparent; color: var(--a); border: 1px solid var(--a); }
+    .proj-title { display: flex; align-items: center; gap: 12px; }
+    .proj-title img { width: 44px; height: 44px; border-radius: 11px; object-fit: cover; flex: none; background: rgba(255, 255, 255, .05); }
+    .proj-title h3 { font-size: 1.28rem; letter-spacing: -.01em; }
+    .proj-title h3 a::after { content: ""; position: absolute; inset: 0; border-radius: var(--r); }
+    .proj p { color: var(--muted); font-size: .96rem; flex: 1; }
+    .proj-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .8rem; color: var(--a); }
+    .proj-foot .url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .proj-foot .gh { position: relative; z-index: 2; font-size: 1.2rem; color: var(--muted); }
+    .proj-foot .gh:hover { color: #fff; }
+    .proj-more { text-align: center; margin-top: 26px; color: var(--muted); }
+    .proj-more a { color: var(--cyan); border-bottom: 1px solid currentColor; }
+
+    /* ---------- Story ---------- */
+    .timeline { position: relative; display: grid; gap: 16px; padding-left: 34px; }
+    .timeline::before { content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, #22d3ee, #a78bfa, rgba(167, 139, 250, 0)); }
+    .tl { padding: 20px 24px; }
+    .tl::before { content: ""; position: absolute; left: -31px; top: 28px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); border: 3px solid var(--cyan); }
+    .tl.now::before { background: var(--green); border-color: var(--green); box-shadow: 0 0 0 6px rgba(74, 222, 128, .18); }
+    .tl time { font-family: var(--mono); font-size: .8rem; color: var(--cyan); letter-spacing: .06em; text-transform: uppercase; }
+    .tl h3 { font-size: 1.2rem; margin: 4px 0 4px; letter-spacing: -.01em; }
+    .tl p { color: var(--muted); font-size: .97rem; }
+
+    /* ---------- Extras / play ---------- */
+    .play-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .widget { padding: 26px; }
+    .widget h3 { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; margin-bottom: 4px; }
+    .widget h3 i { color: var(--cyan); }
+    .widget .sub { color: var(--muted); font-size: .93rem; margin-bottom: 18px; }
+    .widget.wide { grid-column: 1 / -1; }
+    .age-num { font-family: var(--mono); font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 600; color: var(--cyan); letter-spacing: .03em; font-variant-numeric: tabular-nums; contain: content; }
+    .age-unit { font-family: var(--mono); font-size: .8rem; color: var(--muted); letter-spacing: .14em; }
+
+    .tz { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .tz > div { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
+    .tz small { display: block; font-family: var(--mono); color: var(--muted); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+    .tz b { font-family: var(--mono); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+    .tz-note { margin-top: 14px; color: var(--muted); font-size: .95rem; }
+    .tz-note strong { color: var(--text); font-weight: 500; }
+
+    .piano-wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    .piano { position: relative; height: 190px; max-width: 640px; margin-inline: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+    .pk { position: absolute; border: 0; cursor: pointer; padding: 0; display: flex; align-items: flex-end; justify-content: center; transition: background-color .08s, transform .08s; }
+    .pk.w { top: 0; height: 100%; width: calc(12.5% - 3px); background: linear-gradient(#f4f7ff, #cfd8ee); border-radius: 0 0 10px 10px; color: #334; z-index: 1; padding-bottom: 10px; font-family: var(--mono); font-size: .75rem; }
+    .pk.b { top: 0; height: 62%; width: 7%; background: linear-gradient(#262e45, #0b0f1c); border-radius: 0 0 7px 7px; z-index: 2; color: #9aa8c8; padding-bottom: 8px; font-family: var(--mono); font-size: .65rem; border: 1px solid #000; }
+    .pk.w.on { background: linear-gradient(#a5f3fc, #67e8f9); transform: translateY(2px); }
+    .pk.b.on { background: linear-gradient(#6d5bd0, #3b2f9a); transform: translateY(2px); }
+    .piano-hint { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 12px; font-family: var(--mono); }
+
+    /* ---------- Hire ---------- */
+    .hire-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 22px; align-items: start; }
+    .hire-info { display: grid; gap: 16px; }
+    .contact-card { padding: 20px 22px; display: flex; gap: 16px; align-items: center; }
+    .contact-card .ico { width: 46px; height: 46px; flex: none; border-radius: 13px; display: grid; place-items: center; background: rgba(103, 232, 249, .12); color: var(--cyan); font-size: 1.15rem; }
+    .contact-card .meta { min-width: 0; flex: 1; }
+    .contact-card small { display: block; color: var(--muted); font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    .contact-card .val { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+    .icon-btn { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line-strong); background: transparent; cursor: pointer; flex: none; transition: border-color .2s, color .2s; }
+    .icon-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .avail { padding: 20px 22px; display: grid; gap: 10px; }
+    .avail li { display: flex; gap: 12px; align-items: flex-start; color: var(--muted); font-size: .96rem; }
+    .avail li i { color: var(--green); margin-top: 5px; }
+    .avail li strong { color: var(--text); font-weight: 500; }
+
+    form { padding: 28px; display: grid; gap: 16px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    label { display: grid; gap: 7px; font-size: .9rem; font-weight: 500; }
+    label .req { color: var(--pink); }
+    input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-strong); background: rgba(5, 8, 16, .9); transition: border-color .2s, box-shadow .2s; }
+    input::placeholder, textarea::placeholder { color: #6d7b96; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(103, 232, 249, .18); }
+    textarea { min-height: 140px; resize: vertical; }
+    select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #a3b0c7 50%), linear-gradient(135deg, #a3b0c7 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+    .field-err { color: #fda4af; font-size: .82rem; min-height: 1em; }
+    input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #fb7185; }
+    .form-foot { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+    .form-foot small { color: var(--muted); max-width: 34ch; }
+    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .done { padding: 30px; display: grid; gap: 16px; text-align: left; }
+    .done .big { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; color: #04101c; background: var(--green); }
+    .done h3 { font-size: 1.5rem; letter-spacing: -.01em; }
+    .done p { color: var(--muted); }
+    .done .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* ---------- FAQ ---------- */
+    .faq { display: grid; gap: 12px; max-width: 820px; }
+    details { padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); transition: border-color .2s; }
+    details[open] { border-color: var(--line-strong); }
+    summary { cursor: pointer; list-style: none; padding: 18px 22px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; font-family: var(--mono); font-size: 1.4rem; color: var(--cyan); transition: transform .2s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p { padding: 0 22px 20px; color: var(--muted); }
+
+    /* ---------- Footer ---------- */
+    footer { margin-top: 96px; border-top: 1px solid var(--line); background: rgba(7, 9, 14, .92); }
+    .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; padding: 44px 0 26px; }
+    .foot-grid h4 { margin: 0 0 12px; font-family: var(--mono); font-size: .78rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+    .foot-grid li { margin: 6px 0; }
+    .foot-grid a { color: var(--muted); }
+    .foot-grid a:hover { color: #fff; }
+    .foot-grid p { color: var(--muted); max-width: 38ch; font-size: .95rem; }
+    .foot-bottom { display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; align-items: center; padding: 18px 0 30px; border-top: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: .8rem; }
+    .foot-bottom button { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; cursor: pointer; color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+    .foot-bottom button:hover { color: #fff; border-color: var(--line-strong); }
+    .to-top { position: fixed; right: 18px; bottom: 18px; z-index: 55; width: 46px; height: 46px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--surface-2); cursor: pointer; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity .25s, transform .25s, visibility .25s; }
+    .to-top.show { opacity: 1; visibility: visible; transform: none; }
+    .to-top:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ---------- Toast ---------- */
+    .toast { position: fixed; left: 50%; bottom: 26px; z-index: 300; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 18px; border-radius: 12px; background: #101a30; border: 1px solid var(--cyan); font-size: .93rem; display: flex; gap: 10px; align-items: center; transition: opacity .25s, transform .25s; max-width: calc(100vw - 32px); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .toast i { color: var(--green); }
+
+    /* ---------- Command palette ---------- */
+    .palette { position: fixed; inset: 0; z-index: 400; display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px; background: rgba(3, 5, 10, .78); }
+    .palette-box { width: 100%; max-width: 580px; border-radius: 18px; border: 1px solid var(--line-strong); background: #0b1122; overflow: hidden; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+    .palette-input { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--line); }
+    .palette-input i { color: var(--muted); }
+    .palette-input input { border: 0; background: transparent; padding: 4px 0; border-radius: 0; box-shadow: none !important; font-size: 1.05rem; }
+    #pal-list { max-height: 52vh; overflow: auto; padding: 8px; }
+    #pal-list li { display: flex; align-items: center; gap: 14px; padding: 11px 12px; border-radius: 11px; cursor: pointer; }
+    #pal-list li i { width: 20px; text-align: center; color: var(--cyan); }
+    #pal-list li .hint { margin-left: auto; color: var(--muted); font-family: var(--mono); font-size: .75rem; }
+    #pal-list li[aria-selected="true"] { background: rgba(103, 232, 249, .12); }
+    .pal-group { padding: 10px 12px 4px; color: var(--muted); font-family: var(--mono); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; cursor: default !important; }
+    .pal-empty { padding: 22px; text-align: center; color: var(--muted); }
+    .palette-foot { padding: 10px 18px; border-top: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: .72rem; }
+
+    /* ---------- Easter egg ---------- */
+    .spark { position: fixed; z-index: 350; pointer-events: none; font-size: 1.4rem; top: -30px; animation: fall var(--t) linear forwards; will-change: transform; }
+    @keyframes fall { to { transform: translate3d(var(--dx), 110vh, 0) rotate(var(--rot)); } }
+
+    /* ---------- "Calm" mode (effects off) ---------- */
+    html.calm *, html.calm *::before, html.calm *::after { animation: none !important; }
+    html.calm .js .reveal, html.calm.js .reveal { opacity: 1; transform: none; transition: none; }
+
+    /* =====================================================================
+       Responsive
+       ===================================================================== */
+    @media (max-width: 960px) {
+      .nav { position: absolute; left: 0; right: 0; top: 66px; flex-direction: column; margin: 0; padding: 12px 20px 18px; background: rgba(7, 9, 14, .98); border-bottom: 1px solid var(--line); display: none; }
+      .nav.open { display: flex; }
+      .nav a { padding: 12px 10px; font-size: 1rem; }
+      .menu-btn { display: inline-grid; place-items: center; }
+      .bar-right { margin-left: auto; }
+      .kbd-btn, .bar-right .btn { display: none; }
+      .hero-grid, .about-grid, .hire-grid { grid-template-columns: 1fr; }
+      .hero-side { max-width: none; grid-template-columns: 1fr 1fr; }
+      .svc-grid, .proj-grid { grid-template-columns: repeat(2, 1fr); }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-grid > :first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 640px) {
+      body { font-size: 1rem; }
+      .sec { padding-top: 64px; }
+      .svc-grid, .proj-grid, .play-grid, .row2 { grid-template-columns: 1fr; }
+      .hero-side { grid-template-columns: 1fr; }
+      .hk small { display: none; }
+      .brand-name { display: none; }
+      form, .widget, .about-text { padding: 22px; }
+      .piano { height: 150px; }
+      .pk.w { font-size: .62rem; }
+      .pk.b { font-size: 0; }
+      .cta .btn { flex: 1 1 100%; }
+    }
     @media (prefers-reduced-motion: reduce) {
-      #preloader { display: none !important; }
-      .page-content, .fade-in { 
-        transition: none !important; 
-        opacity: 1 !important; 
-        transform: none !important; 
-      }
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .js .reveal { opacity: 1; transform: none; }
     }
-
-    /* Custom Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #090a0f;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1f293d;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #3b82f6;
-    }
-
-    /* Custom Animated Gradient Text for Header */
-    .animated-gradient-text {
-      background: linear-gradient(-45deg, #00f2fe, #4facfe, #00c6ff, #0072ff, #a855f7);
-      background-size: 300% 300%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: gradientShift 8s steps(240) infinite;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* ---------- Moving Gradient Animations for Cards & Badges ---------- */
-    @keyframes shiftGrad {
-      0% { background-position: 0% center; }
-      100% { background-position: -200% center; }
-    }
-
-    @keyframes shiftGradSpread {
-      0% { background-position: 0% center; }
-      100% { background-position: -500% center; }
-    }
-
-    /* 1. SVT Match */
-    .moving-grad-svt-text {
-      background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-svt-bg {
-      background-image: linear-gradient(to right, #F7CAC9, #92A8D1, #F7CAC9);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 2. kTown */
-    .moving-grad-ktown-text {
-      background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-ktown-bg {
-      background-image: linear-gradient(to right, #70e7f6, #c084fc, #fbcfe8, #70e7f6);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 3. DropSpot */
-    .moving-grad-dropspot-text {
-      background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-dropspot-bg {
-      background-image: linear-gradient(to right, #92b8f6, #fff7d7, #92b8f6);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 4. GTEYC SU */
-    .moving-grad-gteyc-text {
-      background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-gteyc-bg {
-      background-image: linear-gradient(to right, #95f4ee, #eafffb, #95f4ee);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 5. Solver */
-    .moving-grad-solver-text {
-      background-image: linear-gradient(
-        to right,
-        #ff9999 0%,
-        #ffc078 16%,
-        #fef08a 33%,
-        #86efac 50%,
-        #93c5fd 66%,
-        #d8b4fe 83%,
-        #ff9999 100%
-      );
-      background-size: 500% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGradSpread 10s steps(300) infinite;
-    }
-    .moving-grad-solver-bg {
-      background-image: linear-gradient(
-        to right,
-        #ff9999 0%,
-        #ffc078 16%,
-        #fef08a 33%,
-        #86efac 50%,
-        #93c5fd 66%,
-        #d8b4fe 83%,
-        #ff9999 100%
-      );
-      background-size: 500% auto;
-      animation: shiftGradSpread 10s steps(300) infinite;
-    }
-
-    /* 6. Kahoot Hack */
-    .moving-grad-kahoot-text {
-      background-image: linear-gradient(to right, #46178F, #b57bff, #46178F);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-kahoot-bg {
-      background-image: linear-gradient(to right, #46178F, #b57bff, #46178F);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 7. Monkeytyper */
-    .moving-grad-mtyper-text {
-      background-image: linear-gradient(to right, #f5d76e, #fff3b0, #e2b714, #f5d76e);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-mtyper-bg {
-      background-image: linear-gradient(to right, #f5d76e, #fff3b0, #e2b714, #f5d76e);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 8. fluxbg */
-    .moving-grad-fluxbg-text {
-      background-image: linear-gradient(to right, #7dd3fc, #c4b5fd, #7dd3fc);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-fluxbg-bg {
-      background-image: linear-gradient(to right, #7dd3fc, #c4b5fd, #7dd3fc);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* 9. kurt */
-    .moving-grad-kurt-text {
-      background-image: linear-gradient(to right, #4ade80, #bef264, #4ade80);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-    .moving-grad-kurt-bg {
-      background-image: linear-gradient(to right, #4ade80, #bef264, #4ade80);
-      background-size: 200% auto;
-      animation: shiftGrad 4s steps(120) infinite;
-    }
-
-    /* Glassmorphism Card Style - Solid background fill to ensure text readability without lag */
-    .glass-card {
-      background: rgba(8, 12, 24, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 8px 28px 0 rgba(0, 0, 0, 0.5);
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                  box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                  border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .card-tilt {
-      transition: transform 0.18s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-
-    /* Text that sits directly on the star field gets a soft dark halo so it stays readable */
-    .text-readable {
-      text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7);
-    }
-
-    .age-glow {
-      background: radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.18), rgba(6, 182, 212, 0) 60%);
-    }
-
-    a:focus-visible {
-      outline: 2px solid #67e8f9;
-      outline-offset: 3px;
-    }
-
-    /* ---------- Scroll-time performance helpers ---------- */
-    html.is-scrolling .animated-gradient-text,
-    html.is-scrolling [class*="moving-grad-"],
-    .anim-paused {
-      animation-play-state: paused !important;
-    }
-    html.is-scrolling .page-content {
-      pointer-events: none;
-    }
-
-    /* Interactive Cursor */
-    .cursor-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #38bdf8;
-      position: fixed;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9999;
-      will-change: transform;
-    }
-
-    .cursor-outline {
-      width: 36px;
-      height: 36px;
-      border: 2px solid rgba(56, 189, 248, 0.5);
-      position: fixed;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 9998;
-      will-change: transform;
-    }
-
-    /* Glow utility */
-    .glow-cyan:hover {
-      box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
-      border-color: rgba(6, 182, 212, 0.6);
-    }
-    .glow-yellow:hover {
-      box-shadow: 0 0 25px rgba(226, 183, 20, 0.4);
-      border-color: rgba(226, 183, 20, 0.6);
-    }
-    .glow-pink:hover {
-      box-shadow: 0 0 25px rgba(225, 48, 108, 0.4);
-      border-color: rgba(225, 48, 108, 0.6);
-    }
-    .glow-gteyc:hover {
-      box-shadow: 0 0 25px rgba(149, 244, 238, 0.4);
-      border-color: rgba(149, 244, 238, 0.6);
-    }
-    .glow-ktown:hover {
-      box-shadow: 0 0 25px rgba(192, 132, 252, 0.4);
-      border-color: rgba(112, 231, 246, 0.6);
-    }
-    .glow-svt:hover {
-      box-shadow: 0 0 25px rgba(247, 202, 201, 0.4);
-      border-color: rgba(247, 202, 201, 0.6);
-    }
-    .glow-kahoot:hover {
-      box-shadow: 0 0 25px rgba(216, 180, 254, 0.4);
-      border-color: rgba(216, 180, 254, 0.6);
-    }
-    .glow-mtyper:hover {
-      box-shadow: 0 0 25px rgba(226, 183, 20, 0.4);
-      border-color: rgba(245, 215, 110, 0.6);
-    }
-    .glow-fluxbg:hover {
-      box-shadow: 0 0 25px rgba(125, 211, 252, 0.4);
-      border-color: rgba(196, 181, 253, 0.6);
-    }
-    .glow-kurt:hover {
-      box-shadow: 0 0 25px rgba(74, 222, 128, 0.4);
-      border-color: rgba(190, 242, 100, 0.6);
-    }
-    .glow-dropspot:hover {
-      box-shadow: 0 0 25px rgba(146, 184, 246, 0.4);
-      border-color: rgba(146, 184, 246, 0.6);
-    }
-
-    .animated-gradient-text {
-      font-family: cursive; 
-    }
-
-    /* ---------- Cursor popup for descriptions ---------- */
-    .card-desc { display: none; }
-    @media (hover: none) {
-      .card-desc { display: block; }
-    }
-    #desc-popup {
-      --accent: 56, 189, 248;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 9990;
-      width: max-content;
-      max-width: 300px;
-      padding: 14px 16px 14px 18px;
-      border-radius: 14px;
-      pointer-events: none;
-      opacity: 0;
-      visibility: hidden;
-      background: linear-gradient(145deg, rgba(10, 16, 32, 0.97), rgba(4, 7, 16, 0.97));
-      border: 1px solid rgba(var(--accent), 0.55);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                  0 0 28px rgba(var(--accent), 0.35),
-                  0 14px 36px rgba(0, 0, 0, 0.65);
-      transition: opacity 0.12s ease, visibility 0s 0.12s;
-      will-change: transform;
-      overflow: hidden;
-    }
-    #desc-popup.show { opacity: 1; visibility: visible; transition: opacity 0.12s ease; }
-    #desc-popup::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4px;
-      background: linear-gradient(180deg, rgb(var(--accent)), rgba(var(--accent), 0.15));
-    }
-    #desc-popup::after {
-      content: "";
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 120px; height: 120px;
-      background: radial-gradient(circle, rgba(var(--accent), 0.28), transparent 70%);
-      pointer-events: none;
-    }
-    #desc-popup .dp-title {
-      position: relative;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgb(var(--accent));
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    #desc-popup .dp-title::before {
-      content: "";
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: rgb(var(--accent));
-      box-shadow: 0 0 10px rgb(var(--accent));
-    }
-    #desc-popup .dp-text {
-      position: relative;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 13px;
-      line-height: 1.55;
-      color: #e5e9ec;
-    }
-
-    /* ---------- Collapsible categories ---------- */
-    .collapse-body {
-      display: grid;
-      grid-template-rows: 1fr;
-      transition: grid-template-rows 0.3s ease, margin-top 0.3s ease;
-    }
-    .collapse-inner { min-height: 0; overflow: hidden; padding: 12px; margin: -12px; }
-    section.is-collapsed .collapse-body { grid-template-rows: 0fr; margin-top: 0 !important; }
-    section.is-collapsed .collapse-inner {
-      pointer-events: none;
-      visibility: hidden;
-      padding: 0;
-      margin: 0;
-      transition: visibility 0s 0.3s;
-    }
-    section.is-collapsed .section-chevron { transform: rotate(-90deg); }
-
-    @media (prefers-reduced-motion: reduce) {
-      .collapse-body, #desc-popup { transition: none !important; }
-    }
-
   </style>
 </head>
-<body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
+<body>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <!-- Embedded Shared Background -->
-  <iframe id="bg-iframe" src="background.html" class="fixed inset-0 w-full h-full border-0 z-0 pointer-events-none" aria-hidden="true" tabindex="-1"></iframe>
+  <!-- Lightweight shared night sky -->
+  <iframe id="bg-iframe" src="background.html" title="" aria-hidden="true" tabindex="-1"></iframe>
 
-  <!-- Custom Glowing Cursor -->
-  <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
-  <div class="cursor-outline hidden md:block" id="cursor-outline"></div>
+  <div id="page">
 
-  <!-- Content Container -->
-  <div class="page-content relative z-10 max-w-5xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center min-h-screen justify-between">
+    <!-- ===================== Header ===================== -->
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="#home" aria-label="Kurtis Lam, home"><img class="mark" src="/assets/icon.png" alt="" width="36" height="36" decoding="async" /><span class="brand-name">Kurtis Lam</span></a>
 
-    <!-- Top Badge -->
-    <header class="w-full text-center flex flex-col items-center fade-in">
-      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-cyan-500/40 text-sm font-mono text-cyan-300 mb-6 tracking-wide uppercase shadow-lg">
-        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-        <span>Student &amp; Developer</span>
+        <nav class="nav" id="nav" aria-label="Primary">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#services">Services</a>
+          <a href="#work">Work</a>
+          <a href="#story">Story</a>
+          <a href="#extras">Extras</a>
+          <a href="#hire">Hire me</a>
+        </nav>
+
+        <div class="bar-right">
+          <button class="kbd-btn" id="open-palette" type="button" aria-label="Open command palette"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span><kbd id="kbd-hint">Ctrl K</kbd></button>
+          <div class="hk" title="Hong Kong time (UTC+8)">
+            <span class="dot live" id="hk-dot"></span>
+            <div><small>Hong Kong · UTC+8</small><time id="hk-time" aria-label="Current time in Hong Kong">--:--:--</time></div>
+          </div>
+          <a class="btn btn-primary btn-sm" href="#hire">Hire me</a>
+          <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav"><i class="fa-solid fa-bars"></i></button>
+        </div>
       </div>
-
-      <!-- Main Profile Title -->
-      <h1 class="text-5xl sm:text-6xl md:text-8xl font-extrabold tracking-tight mb-2">
-        <span id="greeting-prefix" class="text-white text-readable">Hey, I'm</span> <span class="animated-gradient-text">Kurtis</span>
-      </h1>
-
-      <!-- Animated Subtitle / Typewriter -->
-      <div class="h-8 mb-6 flex items-center justify-center font-mono text-slate-100 text-lg md:text-xl text-readable">
-        <span class="text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">&gt;&nbsp;</span>
-        <span id="typewriter" class="text-white font-semibold drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]"></span>
-        <span class="animate-pulse text-cyan-300 drop-shadow-[0_0_8px_rgba(103,232,249,0.8)]">|</span>
-      </div>
+      <div class="progress" id="progress"></div>
     </header>
 
-    <!-- Main Content Body -->
-    <main class="w-full my-8 space-y-12">
-      
-      <!-- Precise Live Age Counter Widget -->
-      <div class="glass-card fade-in rounded-2xl p-6 md:p-8 relative overflow-hidden">
-        <div class="absolute inset-0 age-glow pointer-events-none"></div>
-        <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
-          <div class="text-center md:text-left">
-            <div class="flex items-center gap-2 text-slate-200 text-sm font-mono mb-1 justify-center md:justify-start">
-              <i class="fa-solid fa-cake-candles text-pink-400"></i>
-              <span>BIRTHDAY: OCT 22, 2010</span>
-            </div>
-            <h3 class="text-xl md:text-2xl font-bold text-slate-100">Live Precision Age</h3>
-          </div>
-          <div class="bg-slate-950 border border-slate-700 px-6 py-3 rounded-xl text-center shadow-inner">
-            <span id="live-age" class="text-2xl md:text-3xl font-mono font-bold text-cyan-300 tracking-wider">15.00000000</span>
-            <span class="text-sm text-slate-300 block font-mono">YEARS OLD</span>
-          </div>
-        </div>
-      </div>
+    <main id="main">
 
-      <!-- Social Links Section -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
-          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
-            <i class="fa-solid fa-globe text-cyan-400"></i>
-            <span>Profiles &amp; Socials</span>
-          </h2>
-          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Connect &amp; Follow</span>
-        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
-        <div class="collapse-body"><div class="collapse-inner">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <!-- Instagram Card -->
-          <a href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-pink rounded-2xl p-6 flex flex-col justify-between group">
+      <!-- ===================== Hero ===================== -->
+      <section class="hero" id="home">
+        <div class="wrap">
+          <div class="hero-grid">
             <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-insta group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-amber-500 group-hover:via-rose-500 group-hover:to-purple-600 group-hover:text-white transition-all">
-                  <i class="fa-brands fa-instagram"></i>
+              <div class="chip"><span class="dot live"></span><span>Available for freelance work · Remote</span></div>
+              <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
+              <div class="role-line" aria-live="off"><span class="prompt">&gt;&nbsp;</span>I build <span id="typed"></span><span class="caret">|</span></div>
+              <p class="bio">A <strong>student and developer in Hong Kong</strong> who turns ideas into small, fast things people actually use: web apps, study tools, bots, browser extensions and the odd Android app. Off the clock I'm chasing speed-typing records and playing piano.</p>
+              <div class="cta">
+                <a class="btn btn-primary" href="#hire"><i class="fa-solid fa-paper-plane"></i>Hire me</a>
+                <a class="btn btn-ghost" href="#work">See my work <i class="fa-solid fa-arrow-down"></i></a>
+              </div>
+              <div class="socials" aria-label="Profiles">
+                <a class="social" style="--c:#4ade80" href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a class="social" style="--c:#f472b6" href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a class="social" style="--c:#e2b714" href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" aria-label="Monkeytype profile"><i class="fa-solid fa-keyboard"></i></a>
+                <a class="social" href="mailto:kurtislam100@gmail.com" aria-label="Email Kurtis"><i class="fa-solid fa-envelope"></i></a>
+              </div>
+            </div>
+
+            <div class="hero-side">
+              <div class="card widget reveal">
+                <h3><i class="fa-solid fa-cake-candles"></i>Live age</h3>
+                <p class="sub">Born 22 Oct 2010, counted live.</p>
+                <div class="age-num" id="live-age">15.00000000</div>
+                <div class="age-unit">YEARS OLD</div>
+              </div>
+
+              <div class="card widget reveal">
+                <h3><i class="fa-solid fa-earth-asia"></i>My time vs yours</h3>
+                <p class="sub">Handy for planning a call.</p>
+                <div class="tz">
+                  <div><small>Me · Hong Kong</small><b id="tz-hk">--:--</b></div>
+                  <div><small id="tz-you-label">You</small><b id="tz-you">--:--</b></div>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-insta transition-colors"></i>
+                <p class="tz-note" id="tz-note"></p>
               </div>
-              <h2 class="text-xl font-bold text-white mb-1 group-hover:text-pink-400 transition-colors">Instagram</h2>
-              <p class="text-base font-mono text-slate-100">@kurtis_1022</p>
             </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
-              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-              <span>Socials &amp; Highlights</span>
-            </div>
-          </a>
+          </div>
 
-          <!-- GitHub Card -->
-          <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-white group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-black transition-all">
-                  <i class="fa-brands fa-github"></i>
+          <div class="scroll-cue"><i class="fa-solid fa-chevron-down"></i><span>scroll</span></div>
+        </div>
+      </section>
+
+      <!-- ===================== About ===================== -->
+      <section class="sec" id="about">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">01 · About</span>
+            <h2>A bit about <span class="serif grad">me</span></h2>
+            <p class="lede">The short version of who's behind the keyboard.</p>
+          </div>
+
+          <div class="about-grid">
+            <div class="card about-text reveal">
+              <p>Hey, I'm <strong>Kurtis</strong>. I live in <strong>Hong Kong</strong>, I'm still a student, and I build software because I can't help myself. I like projects where the result is something you can open, use, and send to a friend.</p>
+              <p>I've shipped a <strong>school-event website</strong>, a <strong>multiplayer-style game</strong>, an <strong>IB study app</strong>, a <strong>peer-to-peer file sender</strong>, a <strong>colour-matching solver</strong>, a <strong>wallpaper app for Huawei phones</strong> and a <strong>terminal coding assistant</strong> that runs open-source models on your own machine.</p>
+              <p>I also test things for weak spots, play piano, and race people on Monkeytype. If you have a problem that can be solved with code, I'd love to hear it.</p>
+            </div>
+
+            <div class="card facts reveal">
+              <h3>QUICK FACTS</h3>
+              <ul>
+                <li><span>Name</span><span>Kurtis Lam</span></li>
+                <li><span>Based in</span><span>Hong Kong (HKT, UTC+8)</span></li>
+                <li><span>Born</span><span>22 Oct 2010</span></li>
+                <li><span>Role</span><span>Student &amp; developer</span></li>
+                <li><span>Languages</span><span>English · 中文 (Cantonese)</span></li>
+                <li><span>Off the clock</span><span>Speed typing · Piano · Security testing</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card tools reveal">
+            <h3>WHAT I BUILD WITH</h3>
+            <div class="tags">
+              <span class="tag"><i class="fa-brands fa-html5"></i>HTML &amp; CSS</span>
+              <span class="tag"><i class="fa-brands fa-js"></i>JavaScript</span>
+              <span class="tag"><i class="fa-brands fa-python"></i>Python</span>
+              <span class="tag"><i class="fa-solid fa-fire"></i>Firebase</span>
+              <span class="tag"><i class="fa-brands fa-android"></i>Android</span>
+              <span class="tag"><i class="fa-brands fa-discord"></i>Discord API</span>
+              <span class="tag"><i class="fa-brands fa-chrome"></i>Chrome extensions</span>
+              <span class="tag"><i class="fa-solid fa-terminal"></i>CLI tools</span>
+              <span class="tag"><i class="fa-brands fa-git-alt"></i>Git &amp; GitHub</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Services ===================== -->
+      <section class="sec" id="services">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">02 · Services</span>
+            <h2>Need something <span class="serif grad">built?</span></h2>
+            <p class="lede">Pick a door. If your idea doesn't fit any of them, tell me anyway.</p>
+          </div>
+
+          <div class="svc-grid">
+            <article class="card svc hoverable reveal" style="--a:#67e8f9">
+              <div class="ico"><i class="fa-solid fa-code"></i></div>
+              <h3>Websites &amp; web apps</h3>
+              <p>Portfolios, event pages, landing pages, dashboards and small web apps. Fast, mobile-friendly and easy to update.</p>
+              <button class="ask" type="button" data-ask="web">Start a web project <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+            <article class="card svc hoverable reveal" style="--a:#a78bfa">
+              <div class="ico"><i class="fa-brands fa-discord"></i></div>
+              <h3>Discord bots</h3>
+              <p>Moderation, utilities, games, leaderboards and custom commands to keep your community running smoothly.</p>
+              <button class="ask" type="button" data-ask="discord">Start a bot project <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+            <article class="card svc hoverable reveal" style="--a:#fbbf24">
+              <div class="ico"><i class="fa-solid fa-puzzle-piece"></i></div>
+              <h3>Extensions &amp; scripts</h3>
+              <p>Chrome extensions, userscripts and Python automation that save you from repeating the same clicks all day.</p>
+              <button class="ask" type="button" data-ask="extension">Start an automation <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+            <article class="card svc hoverable reveal" style="--a:#4ade80">
+              <div class="ico"><i class="fa-solid fa-mobile-screen"></i></div>
+              <h3>Android apps &amp; CLI tools</h3>
+              <p>Small, focused apps and terminal tools in the spirit of fluxbg and kurt: do one thing and do it well.</p>
+              <button class="ask" type="button" data-ask="app">Start an app project <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+            <article class="card svc hoverable reveal" style="--a:#f472b6">
+              <div class="ico"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>Basic security checks</h3>
+              <p>A friendly look at your site or app for common weak spots, with a plain-English summary of what to fix.</p>
+              <button class="ask" type="button" data-ask="security">Ask about a check <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+            <article class="card svc hoverable reveal" style="--a:#60a5fa">
+              <div class="ico"><i class="fa-solid fa-lightbulb"></i></div>
+              <h3>Something else</h3>
+              <p>Bug fixes, quick tweaks, turning a design into code, a one-off tool. If it's code, send it over.</p>
+              <button class="ask" type="button" data-ask="other">Tell me your idea <i class="fa-solid fa-arrow-right"></i></button>
+            </article>
+          </div>
+
+          <div class="card notice reveal">
+            <i class="fa-solid fa-circle-info"></i>
+            <p><strong>What I'm not taking on:</strong> projects that need lots of paid GPU or compute, such as training or hosting large AI/LLM models. Connecting to a ready-made API is fine; running the heavy stuff is a no from me.</p>
+          </div>
+
+          <div class="steps">
+            <div class="card step reveal"><h3>Say hi</h3><p>Tell me what you need using the form below. Rough ideas are welcome.</p></div>
+            <div class="card step reveal"><h3>Plan &amp; quote</h3><p>I reply with questions, a plan, a timeline and a price.</p></div>
+            <div class="card step reveal"><h3>Build</h3><p>I build it and share progress, so there are no surprises at the end.</p></div>
+            <div class="card step reveal"><h3>Launch</h3><p>We go live together and I hand over the code and a short guide.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Work ===================== -->
+      <section class="sec" id="work">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">03 · Work</span>
+            <h2>Things I've <span class="serif grad">made</span></h2>
+            <p class="lede">Live projects, tools and apps. Click any card to open it.</p>
+          </div>
+
+          <div class="filters reveal" role="group" aria-label="Filter projects">
+            <button class="filter" type="button" data-filter="all" aria-pressed="true">All <span class="mono" id="count-all">9</span></button>
+            <button class="filter" type="button" data-filter="web" aria-pressed="false">Web</button>
+            <button class="filter" type="button" data-filter="tools" aria-pressed="false">Tools &amp; extensions</button>
+            <button class="filter" type="button" data-filter="apps" aria-pressed="false">Apps &amp; CLI</button>
+          </div>
+
+          <div class="proj-grid" id="proj-grid">
+
+            <article class="card proj hoverable reveal" data-cat="apps" style="--a:#7dd3fc">
+              <div class="proj-top"><span class="pill new">New · Android</span></div>
+              <div class="proj-title"><img src="/assets/fluxbg.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/fluxbg">fluxbg</a></h3></div>
+              <p>Wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p>
+              <div class="proj-foot"><span class="url">kurtis-lam.web.app/fluxbg</span><a class="gh" href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg on GitHub"><i class="fa-brands fa-github"></i></a></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="apps" style="--a:#4ade80">
+              <div class="proj-top"><span class="pill new">New · CLI</span></div>
+              <div class="proj-title"><img src="/assets/kurt.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kurt">kurt</a></h3></div>
+              <p>A terminal coding assistant that runs free open-source models locally through Ollama. You approve every edit.</p>
+              <div class="proj-foot"><span class="url">kurtis-lam.web.app/kurt</span><a class="gh" href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt on GitHub"><i class="fa-brands fa-github"></i></a></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="web" style="--a:#c084fc">
+              <div class="proj-top"><span class="pill">Productivity</span></div>
+              <div class="proj-title"><img src="/assets/ktown.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer">kTown</a></h3></div>
+              <p>The study app for IB students: notes, a citation maker, and more on the way.</p>
+              <div class="proj-foot"><span class="url">ktown-45.web.app</span><i class="fa-solid fa-book-open"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="web" style="--a:#f7cac9">
+              <div class="proj-top"><span class="pill">First game</span></div>
+              <div class="proj-title"><img src="/assets/svt-match.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer">SVT Match</a></h3></div>
+              <p>A SVT-themed matching game with friends, leaderboards, a shop and more.</p>
+              <div class="proj-foot"><span class="url">svt-match.web.app</span><i class="fa-solid fa-gamepad"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="web" style="--a:#95f4ee">
+              <div class="proj-top"><span class="pill">SU webpage</span></div>
+              <div class="proj-title"><img src="/assets/gtcsu-aurora.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer">GTEYC 2627 SU</a></h3></div>
+              <p>The official webpage I built for the GTEYC 2627 student union: Aurora.</p>
+              <div class="proj-foot"><span class="url">gtcsu-aurora.web.app</span><i class="fa-solid fa-graduation-cap"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="web tools" style="--a:#92b8f6">
+              <div class="proj-top"><span class="pill">Utility</span></div>
+              <div class="proj-title"><img src="/assets/dropspot.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer">DropSpot</a></h3></div>
+              <p>Fast, lightweight, peer-to-peer data and file transfer in the browser.</p>
+              <div class="proj-foot"><span class="url">dropspot-0.web.app</span><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#fef08a">
+              <div class="proj-top"><span class="pill">Solver</span></div>
+              <div class="proj-title"><img src="/assets/colordle-solver.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/colordle-solver">Colordle Solver</a></h3></div>
+              <p>Solves colordle.ryantanen.com using CIEDE2000 colour maths in CIE Lab space.</p>
+              <div class="proj-foot"><span class="url">kurtis-lam.web.app/colordle-solver</span><i class="fa-solid fa-palette"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#b57bff">
+              <div class="proj-top"><span class="pill">Extension</span></div>
+              <div class="proj-title"><img src="/assets/kahoot-hack.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kahoot-hack">Kahoot Hack</a></h3></div>
+              <p>A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer. Educational project.</p>
+              <div class="proj-foot"><span class="url">kurtis-lam.web.app/kahoot-hack</span><i class="fa-solid fa-bolt"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#e2b714">
+              <div class="proj-top"><span class="pill">Automation</span></div>
+              <div class="proj-title"><img src="/assets/monkeytyper.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/monkeytyper">Monkeytyper</a></h3></div>
+              <p>Two Python scripts that type Monkeytype tests: one reads the page DOM, one uses OCR. Educational project.</p>
+              <div class="proj-foot"><span class="url">kurtis-lam.web.app/monkeytyper</span><i class="fa-solid fa-keyboard"></i></div>
+            </article>
+          </div>
+
+          <p class="proj-more">More on my <a href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+        </div>
+      </section>
+
+      <!-- ===================== Story ===================== -->
+      <section class="sec" id="story">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">04 · My story</span>
+            <h2>How I got <span class="serif grad">here</span></h2>
+            <p class="lede">Newest first. The story is still being written.</p>
+          </div>
+
+          <div class="timeline">
+            <article class="card tl now reveal">
+              <time datetime="2026-10">Oct 2026 · Now</time>
+              <h3>Open for freelance work</h3>
+              <p>I'm taking on websites, bots, extensions, apps and tools for people and teams around the world.</p>
+            </article>
+            <article class="card tl reveal">
+              <time datetime="2026-10">Oct 2026</time>
+              <h3>Shipped fluxbg &amp; kurt</h3>
+              <p>An Android wallpaper app for Huawei phones and a terminal coding assistant powered by local open-source models.</p>
+            </article>
+            <article class="card tl reveal">
+              <time datetime="2026-10">Oct 2026</time>
+              <h3>Kahoot Hack &amp; Monkeytyper, written up</h3>
+              <p>Two automation projects, each with a step-by-step setup guide so anyone can try them.</p>
+            </article>
+            <article class="card tl reveal">
+              <time datetime="2026-09">Sep 2026</time>
+              <h3>Colordle Solver</h3>
+              <p>Taught a page to guess colours with CIEDE2000 distance in Lab space. Maths turned into a tool.</p>
+            </article>
+            <article class="card tl reveal">
+              <time>Before that</time>
+              <h3>Games, study tools &amp; a student-union site</h3>
+              <p>SVT Match, kTown, DropSpot and the GTEYC 2627 SU: Aurora website, the projects that taught me how to ship.</p>
+            </article>
+            <article class="card tl reveal">
+              <time datetime="2010-10-22">22 Oct 2010</time>
+              <h3>Hello, world</h3>
+              <p>Born in Hong Kong, and apparently destined to spend a lot of time at a keyboard.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== Extras ===================== -->
+      <section class="sec" id="extras">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">05 · Extras</span>
+            <h2>Little things for <span class="serif grad">fun</span></h2>
+            <p class="lede">A piano I actually play and a few hidden things. Try <kbd>Ctrl</kbd> + <kbd>K</kbd> too.</p>
+          </div>
+
+          <div class="play-grid">
+            <div class="card widget wide reveal">
+              <div class="piano-wrap">
+                <div>
+                  <h3><i class="fa-solid fa-music"></i>Play me a tune</h3>
+                  <p class="sub" style="margin:0">One octave. Click or tap the keys, or use your keyboard.</p>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-cyan-400 transition-colors"></i>
-              </div>
-              <h2 class="text-xl font-bold text-white mb-1 group-hover:text-cyan-400 transition-colors">GitHub</h2>
-              <p class="text-base font-mono text-slate-100">@Kurtis-Lam</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
-              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-              <span>Code &amp; Repositories</span>
-            </div>
-          </a>
-
-          <!-- Monkeytype Card -->
-          <a href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" 
-             class="card-tilt fade-in glass-card glow-yellow rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-600 flex items-center justify-center text-2xl text-monkeytype group-hover:scale-110 group-hover:bg-monkeytype group-hover:text-black transition-all">
-                  <i class="fa-solid fa-keyboard"></i>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                  <button class="btn btn-ghost btn-sm" id="play-song" type="button"><i class="fa-solid fa-play"></i><span>Play a song</span></button>
                 </div>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-monkeytype transition-colors"></i>
               </div>
-              <h2 class="text-xl font-bold text-white mb-1 group-hover:text-monkeytype transition-colors">Monkeytype</h2>
-              <p class="text-base font-mono text-slate-100">kurtislam</p>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center text-sm font-mono text-slate-100 gap-2">
-              <span class="w-2 h-2 rounded-full bg-monkeytype"></span>
-              <span>Speed Typing Leaderboards</span>
-            </div>
-          </a>
-
-        </div>
-        </div></div>
-      </section>
-
-      <!-- My Currently Active Projects Section -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
-          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
-            <i class="fa-solid fa-rocket text-cyan-400"></i>
-            <span>My Currently Active Projects</span>
-          </h2>
-          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Deployed Applications</span>
-        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
-        <div class="collapse-body"><div class="collapse-inner">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          <!-- Project 1: gtcsu -->
-          <a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-gteyc rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-gteyc-bg">SU WEBPAGE</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#95f4ee] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/gtcsu-aurora.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-gteyc-text">GTEYC 2627 SU</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Official webpage developed for GTEYC 2627 SU: Aurora</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-gteyc-text font-semibold">gtcsu-aurora.web.app</span>
-              <i class="fa-solid fa-graduation-cap"></i>
-            </div>
-          </a>
-
-          <!-- Project 2: svt match -->
-          <a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-svt rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-svt-bg">FIRST GAME</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#92A8D1] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/svt-match.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-svt-text">SVT Match</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A SVT based game featuring friends, leaderboards, shops, and more...</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-svt-text font-semibold">svt-match.web.app</span>
-              <i class="fa-solid fa-gamepad"></i>
-            </div>
-          </a>
-
-          <!-- Project 3: ktown -->
-          <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-ktown rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-ktown-bg">PRODUCTIVITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fbcfe8] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/ktown.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-ktown-text">kTown</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">The only study app you'll ever need for IB: Notes, Citer, and more soon...</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-ktown-text font-semibold">ktown-45.web.app</span>
-              <i class="fa-solid fa-book-open"></i>
-            </div>
-          </a>
-
-          <!-- Project 4: dropspot -->
-          <a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-dropspot rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-dropspot-bg">UTILITY</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#fff7d7] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/dropspot.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-dropspot-text">DropSpot</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Fast, light-weight web-based data &amp; file transfer application.</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-dropspot-text font-semibold">dropspot-0.web.app</span>
-              <i class="fa-solid fa-arrow-right-arrow-left"></i>
-            </div>
-          </a>
-
-        </div>
-        </div></div>
-      </section>
-
-      <!-- My Small Projects Section -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
-          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
-            <i class="fa-solid fa-cubes text-cyan-400"></i>
-            <span>My Small Projects</span>
-          </h2>
-          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Mini Tools &amp; Utilities</span>
-        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
-        <div class="collapse-body"><div class="collapse-inner">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          <!-- Project: colordle solver -->
-          <a href="https://kurtis-lam.web.app/colordle-solver" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-cyan rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-solver-bg">SOLVER</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-cyan-400 transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/colordle-solver.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-solver-text">Colordle Solver</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Solves colordle.ryantanen.com using mathematical formulas.</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-solver-text font-semibold">kurtis-lam.web.app/colordle-solver</span>
-              <i class="fa-solid fa-palette"></i>
-            </div>
-          </a>
-
-          <!-- Project: kahoot hack -->
-          <a href="https://kurtis-lam.web.app/kahoot-hack" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-kahoot rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kahoot-bg">EXTENSION</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#d8b4fe] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/kahoot-hack.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-kahoot-text">Kahoot Hack</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer.</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-kahoot-text font-semibold">kurtis-lam.web.app/kahoot-hack</span>
-              <i class="fa-solid fa-bolt"></i>
-            </div>
-          </a>
-
-          <!-- Project: monkeytyper -->
-          <a href="https://kurtis-lam.web.app/monkeytyper" target="_blank" rel="noopener noreferrer"
-             class="card-tilt fade-in glass-card glow-mtyper rounded-2xl p-6 flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-mtyper-bg">AUTOMATION</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-sm text-slate-300 group-hover:text-[#f5d76e] transition-colors"></i>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/monkeytyper.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-mtyper-text">Monkeytyper</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Two Python scripts that type Monkeytype tests for you: one reads the page DOM, one uses OCR.</p></div></div>
-            </div>
-            <div class="mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-mtyper-text font-semibold">kurtis-lam.web.app/monkeytyper</span>
-              <i class="fa-solid fa-keyboard"></i>
-            </div>
-          </a>
-
-        </div>
-        </div></div>
-      </section>
-
-      <!-- Utilities I Developed Section -->
-      <section class="space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-600/70 pb-4 cursor-pointer select-none section-toggle" role="button" tabindex="0" aria-expanded="true">
-          <h2 class="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 text-readable">
-            <i class="fa-solid fa-screwdriver-wrench text-cyan-400"></i>
-            <span>Utilities I developed:</span>
-          </h2>
-          <span class="ml-auto mr-4 hidden sm:inline text-sm font-mono text-slate-100 text-readable">Apps &amp; CLI Tools</span>
-        <i class="fa-solid fa-chevron-down text-slate-300 transition-transform duration-300 section-chevron"></i></div>
-        <div class="collapse-body"><div class="collapse-inner">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          <!-- Utility: fluxbg -->
-          <div class="card-tilt fade-in glass-card glow-fluxbg rounded-2xl p-6 flex flex-col justify-between group relative">
-            <a href="https://kurtis-lam.web.app/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg page" class="absolute inset-0 rounded-2xl z-0"></a>
-            <div class="relative z-10 pointer-events-none">
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-fluxbg-bg">ANDROID APP</span>
-                <a href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/fluxbg.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-fluxbg-text">fluxbg</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">Android wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p></div></div>
-            </div>
-            <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-fluxbg-text font-semibold">kurtis-lam.web.app/fluxbg</span>
-              <i class="fa-solid fa-film"></i>
-            </div>
-          </div>
-
-          <!-- Utility: kurt -->
-          <div class="card-tilt fade-in glass-card glow-kurt rounded-2xl p-6 flex flex-col justify-between group relative">
-            <a href="https://kurtis-lam.web.app/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt page" class="absolute inset-0 rounded-2xl z-0"></a>
-            <div class="relative z-10 pointer-events-none">
-              <div class="flex items-center justify-between mb-4">
-                <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold tracking-wide text-slate-950 shadow-sm moving-grad-kurt-bg">CLI TOOL</span>
-                <a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt on GitHub" class="pointer-events-auto text-xl text-slate-300 hover:text-white transition-colors"><i class="fa-brands fa-github"></i></a>
-              </div>
-              <div class="flex items-center gap-3"><img src="/assets/kurt.png" alt="" width="36" height="36" class="w-9 h-9 rounded-lg object-cover shrink-0" style="display:none" onload="this.style.display='block'" onerror="this.remove()"><h3 class="text-xl font-bold moving-grad-kurt-text">kurt</h3></div>
-              <div class="card-desc"><div><p class="font-mono text-xs md:text-sm text-[#e5e9ec] leading-relaxed pt-3">A terminal coding assistant that runs free open-source Hugging Face models locally through Ollama. You approve every edit.</p></div></div>
-            </div>
-            <div class="relative z-10 pointer-events-none mt-6 pt-4 border-t border-slate-600/70 flex items-center justify-between text-sm font-mono text-slate-100">
-              <span class="moving-grad-kurt-text font-semibold">kurtis-lam.web.app/kurt</span>
-              <i class="fa-solid fa-terminal"></i>
-            </div>
-          </div>
-
-        </div>
-        </div></div>
-      </section>
-
-      <!-- Contact Info Section -->
-      <div class="w-full">
-        <div class="glass-card fade-in rounded-2xl p-6 md:p-8 flex flex-col justify-between">
-          <div>
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-envelope text-pink-400"></i>
-              <span>Get In Touch</span>
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 font-mono text-sm">
-              <a href="mailto:kurtislam100@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 hover:text-cyan-300 hover:border-cyan-500/60 transition-colors group cursor-pointer">
-                <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
-                <span>kurtislam100@gmail.com</span>
-              </a>
-              <a href="mailto:kurtislam200@gmail.com" class="flex items-center gap-3 p-4 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 hover:text-cyan-300 hover:border-cyan-500/60 transition-colors group cursor-pointer">
-                <i class="fa-regular fa-paper-plane text-cyan-400 text-lg group-hover:scale-110 transition-transform"></i>
-                <span>kurtislam200@gmail.com</span>
-              </a>
+              <div class="piano" id="piano" role="group" aria-label="Piano keyboard"></div>
+              <p class="piano-hint">keys: A S D F G H J K · sharps: W E T Y U</p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
+      <!-- ===================== Hire ===================== -->
+      <section class="sec" id="hire">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">06 · Hire me</span>
+            <h2>Let's build <span class="serif grad">something</span></h2>
+            <p class="lede">Fill in the form and your email app opens with everything pre-written. Or just email me directly.</p>
+          </div>
+
+          <div class="hire-grid">
+            <div class="hire-info">
+              <div class="card contact-card reveal">
+                <div class="ico"><i class="fa-solid fa-envelope"></i></div>
+                <div class="meta"><small>Email</small><a class="val" href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a></div>
+                <button class="icon-btn" type="button" data-copy="kurtislam100@gmail.com" aria-label="Copy email address"><i class="fa-regular fa-copy"></i></button>
+              </div>
+              <div class="card contact-card reveal">
+                <div class="ico"><i class="fa-solid fa-at"></i></div>
+                <div class="meta"><small>Backup email</small><a class="val" href="mailto:kurtislam200@gmail.com">kurtislam200@gmail.com</a></div>
+                <button class="icon-btn" type="button" data-copy="kurtislam200@gmail.com" aria-label="Copy backup email address"><i class="fa-regular fa-copy"></i></button>
+              </div>
+              <div class="card contact-card reveal">
+                <div class="ico" style="color:#f472b6;background:rgba(244,114,182,.12)"><i class="fa-brands fa-instagram"></i></div>
+                <div class="meta"><small>Instagram DM</small><a class="val" href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer">@kurtis_1022</a></div>
+              </div>
+              <ul class="card avail reveal">
+                <li><i class="fa-solid fa-circle-check"></i><span><strong>Open for new projects</strong> — small and large</span></li>
+                <li><i class="fa-solid fa-circle-check"></i><span><strong>Remote-first</strong> — I work with people anywhere, on Hong Kong time</span></li>
+                <li><i class="fa-solid fa-circle-check"></i><span><strong>Usually reply within a day</strong> (Hong Kong time)</span></li>
+                <li><i class="fa-solid fa-circle-check"></i><span><strong>Fixed quote</strong> after I understand the brief</span></li>
+              </ul>
+            </div>
+
+            <div class="card reveal" id="form-card">
+              <form id="hire-form" novalidate>
+                <div class="row2">
+                  <label>Your name <span class="req">*</span>
+                    <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required />
+                    <span class="field-err" data-err="name"></span>
+                  </label>
+                  <label>Your email <span class="req">*</span>
+                    <input id="f-email" name="email" type="email" autocomplete="email" placeholder="jane@company.com" required />
+                    <span class="field-err" data-err="email"></span>
+                  </label>
+                </div>
+                <label>What do you need? <span class="req">*</span>
+                  <select id="f-type" name="type">
+                    <option value="Website / web app">Website / web app</option>
+                    <option value="Discord bot">Discord bot</option>
+                    <option value="Chrome extension / script">Chrome extension / script</option>
+                    <option value="Android app / CLI tool">Android app / CLI tool</option>
+                    <option value="Basic security check">Basic security check</option>
+                    <option value="Something else">Something else</option>
+                  </select>
+                </label>
+                <div class="row2">
+                  <label>Budget
+                    <select id="f-budget" name="budget">
+                      <option>Not sure yet</option>
+                      <option>Under US$100</option>
+                      <option>US$100 – 500</option>
+                      <option>US$500 – 1,500</option>
+                      <option>US$1,500+</option>
+                    </select>
+                  </label>
+                  <label>Timeline
+                    <select id="f-time" name="timeline">
+                      <option>Flexible</option>
+                      <option>As soon as possible</option>
+                      <option>Within 2 weeks</option>
+                      <option>Within a month</option>
+                    </select>
+                  </label>
+                </div>
+                <label>Tell me about it <span class="req">*</span>
+                  <textarea id="f-msg" name="message" placeholder="What are you building, who is it for, and is there anything I should look at?" required></textarea>
+                  <span class="field-err" data-err="message"></span>
+                </label>
+                <div class="hp" aria-hidden="true"><label>Leave this empty<input id="f-hp" type="text" tabindex="-1" autocomplete="off" /></label></div>
+                <div class="form-foot">
+                  <small>This opens your email app with the message ready to send. Nothing is stored on this site.</small>
+                  <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i>Send via email</button>
+                </div>
+              </form>
+
+              <div class="done" id="form-done" hidden>
+                <div class="big"><i class="fa-solid fa-check"></i></div>
+                <h3>Almost there!</h3>
+                <p>Your email app should have opened with your message. Just press <strong>Send</strong>. If nothing opened, use one of these:</p>
+                <div class="actions">
+                  <a class="btn btn-primary btn-sm" id="done-mailto" href="#"><i class="fa-solid fa-envelope"></i>Open email app</a>
+                  <a class="btn btn-ghost btn-sm" id="done-gmail" href="#" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-google"></i>Open in Gmail</a>
+                  <button class="btn btn-ghost btn-sm" id="done-copy" type="button"><i class="fa-regular fa-copy"></i>Copy message</button>
+                  <button class="btn btn-ghost btn-sm" id="done-back" type="button"><i class="fa-solid fa-pen"></i>Edit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== FAQ ===================== -->
+      <section class="sec" id="faq">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">07 · FAQ</span>
+            <h2>Quick <span class="serif grad">answers</span></h2>
+          </div>
+          <div class="faq reveal">
+            <details><summary>How fast will you reply?</summary><p>Usually within a day, Hong Kong time. Check the clock at the top of the page to see whether I'm probably awake.</p></details>
+            <details><summary>How does pricing work?</summary><p>Tell me your budget and what you need. Once I understand the brief, I'll send a fixed quote, so you know the cost before we start.</p></details>
+            <details><summary>Will I own the code?</summary><p>Yes. When we finish, you get the source code and a short guide on how to run and update it.</p></details>
+            <details><summary>Can you work around my time zone?</summary><p>I'm on UTC+8 and happy to work with other time zones. The "My time vs yours" card at the top of the page shows the overlap.</p></details>
+            <details><summary>Do you take AI or LLM projects?</summary><p>Not the heavy ones. I avoid anything that needs expensive GPUs or large model hosting. Connecting your app to an existing AI API is fine.</p></details>
+            <details><summary>I'm not sure what I need. Can I still write?</summary><p>Of course. Describe the problem in your own words and I'll help you work out what to build.</p></details>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="w-full text-center pt-8 border-t border-slate-600/70 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-200 font-mono gap-4 fade-in text-readable">
-      <div>
-        Made with 💖 by Kurtis Lam
-      </div>
-      <div class="flex items-center gap-2">
-        <i class="fa-regular fa-copyright text-slate-300"></i>
-        <span>Kurtis Lam <span id="year">2026</span></span>
+    <!-- ===================== Footer ===================== -->
+    <footer>
+      <div class="wrap">
+        <div class="foot-grid">
+          <div>
+            <a class="brand" href="#home" style="margin-bottom:14px"><img class="mark" src="/assets/icon.png" alt="" width="36" height="36" loading="lazy" decoding="async" /><span>Kurtis Lam</span></a>
+            <p>Student &amp; developer in Hong Kong. Websites, bots, extensions, apps and tools, built with care.</p>
+          </div>
+          <div>
+            <h4>Explore</h4>
+            <ul>
+              <li><a href="#about">About</a></li>
+              <li><a href="#services">Services</a></li>
+              <li><a href="#work">Work</a></li>
+              <li><a href="#story">Story</a></li>
+              <li><a href="#hire">Hire me</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Status</h4>
+            <ul>
+              <li><span class="dot live" id="foot-dot" style="margin-right:8px"></span>Available for work</li>
+              <li><i class="fa-solid fa-location-dot" style="margin-right:8px;color:var(--cyan)"></i>Hong Kong · UTC+8</li>
+              <li><i class="fa-regular fa-clock" style="margin-right:8px;color:var(--cyan)"></i><span class="mono" id="foot-time">--:--</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="foot-bottom">
+          <span>© <span id="year">2026</span> Kurtis Lam · Made with 💖 in Hong Kong</span>
+          <span style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="button" id="toggle-motion" aria-pressed="true"><i class="fa-solid fa-wand-magic-sparkles"></i> Effects: <span id="motion-state">on</span></button>
+            <button type="button" id="foot-palette"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
+          </span>
+        </div>
       </div>
     </footer>
-
   </div>
 
-  <div id="desc-popup" aria-hidden="true"><div class="dp-title"></div><div class="dp-text"></div></div>
+  <button class="to-top" id="to-top" type="button" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+  <div class="toast" id="toast" role="status" aria-live="polite"><i class="fa-solid fa-circle-check"></i><span id="toast-msg"></span></div>
 
-  <!-- JavaScript Logic -->
+  <!-- Command palette -->
+  <div class="palette" id="palette" hidden>
+    <div class="palette-box" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="palette-input">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="pal-q" type="text" placeholder="Jump to a section, open a project, copy my email…" autocomplete="off" spellcheck="false" aria-controls="pal-list" />
+        <kbd>esc</kbd>
+      </div>
+      <ul id="pal-list" role="listbox" aria-label="Commands"></ul>
+      <div class="palette-foot">↑ ↓ to move · Enter to run · Esc to close</div>
+    </div>
+  </div>
+
   <script>
-    // --- Page Initialization & Scroll Tracking ---
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+  (function () {
+    'use strict';
+    var $ = function (s, r) { return (r || document).querySelector(s); };
+    var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+    var root = document.documentElement;
+    var EMAIL = 'kurtislam100@gmail.com';
+    var reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+
+    /* ---------- Toast ---------- */
+    var toastTimer = 0;
+    function toast(msg) {
+      $('#toast-msg').textContent = msg;
+      $('#toast').classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { $('#toast').classList.remove('show'); }, 2400);
+    }
+    function copyText(text, okMsg) {
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        ta.remove(); toast(ok ? okMsg : 'Copy failed. Please copy it by hand.');
+      }
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+      } else fallback();
     }
 
-    const rootEl = document.documentElement;
-    const SCROLL_IDLE_MS = 150;
-    let scrollTimer = 0;
-    window.addEventListener('scroll', () => {
-      if (!rootEl.classList.contains('is-scrolling')) rootEl.classList.add('is-scrolling');
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => rootEl.classList.remove('is-scrolling'), SCROLL_IDLE_MS);
-    }, { passive: true });
+    /* ---------- Effects on / off (shared with the background iframe) ---------- */
+    var bg = $('#bg-iframe');
+    var motionOn = !reduceMotion && store('kl-motion') !== 'off';
+    function applyMotion() {
+      root.classList.toggle('calm', !motionOn);
+      $('#motion-state').textContent = motionOn ? 'on' : 'off';
+      $('#toggle-motion').setAttribute('aria-pressed', String(motionOn));
+      try { if (bg && bg.contentWindow) bg.contentWindow.postMessage({ type: 'motion', on: motionOn }, '*'); } catch (e) {}
+      restartTyping();
+    }
+    function setMotion(on) { motionOn = on; store('kl-motion', on ? 'on' : 'off'); applyMotion(); toast('Effects ' + (on ? 'on' : 'off')); }
+    $('#toggle-motion').addEventListener('click', function () { setMotion(!motionOn); });
+    if (bg) bg.addEventListener('load', function () { try { bg.contentWindow.postMessage({ type: 'motion', on: motionOn }, '*'); } catch (e) {} });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      window.scrollTo(0, 0);
-      document.body.classList.add('is-loaded');
+    /* ---------- Hong Kong clock (top right) ---------- */
+    var hkFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    var hkHM = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false });
+    var hkParts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', hour12: false });
+    var elHK = $('#hk-time'), elFoot = $('#foot-time'), elHKw = $('#tz-hk'), elYou = $('#tz-you');
+    var lastSec = '';
+    var youFmt = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+    function hkHour(d) { var h = 0; hkParts.formatToParts(d).forEach(function (p) { if (p.type === 'hour') h = +p.value % 24; }); return h; }
+    function tick() {
+      var now = new Date(), t = hkFmt.format(now);
+      if (t === lastSec) return;
+      lastSec = t; elHK.textContent = t;
+      var hm = t.slice(0, 5);
+      elFoot.textContent = hm + ' HKT'; elHKw.textContent = hm;
+      elYou.textContent = youFmt.format(now);
+      var h = hkHour(now), awake = h >= 8 && h < 24;
+      ['#hk-dot', '#foot-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
+      var hkEl = $('.hk'); if (hkEl) hkEl.title = 'Hong Kong time (UTC+8) — ' + (awake ? "I'm probably awake" : "it's night, I'm probably asleep");
+    }
+    var clockTimer = 0;
+    function startClock() { clearInterval(clockTimer); tick(); clockTimer = setInterval(tick, 250); }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) clearInterval(clockTimer); else startClock(); });
+    startClock();
+
+    // "My time vs yours" note (computed once; it only needs the viewer's UTC offset)
+    (function () {
+      var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+      $('#tz-you-label').textContent = tz ? 'You · ' + tz.replace(/_/g, ' ').split('/').pop() : 'You';
+      var diff = (-new Date().getTimezoneOffset() - 480) / 60;
+      var rel = diff === 0 ? "We're in the same time zone." : "You're " + Math.abs(diff) + 'h ' + (diff > 0 ? 'ahead of' : 'behind') + ' me.';
+      var now = new Date();
+      var p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now).forEach(function (x) { p[x.type] = +x.value; });
+      var f = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+      var a = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 10 - 8, 0))), b = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 22 - 8, 0)));
+      $('#tz-note').innerHTML = rel + ' I\'m usually around <strong>10:00–22:00 HKT</strong>, which is <strong>' + a + '–' + b + '</strong> for you.';
+    })();
+
+    /* ---------- Greeting, typewriter ---------- */
+    var greets = ["Hi, I'm", "Hey, I'm", "Hello, I'm", "Yo, I'm", "Welcome! I'm"];
+    $('#greet').textContent = greets[Math.floor(Math.random() * greets.length)];
+
+    var phrases = ['websites & web apps', 'Discord bots', 'Chrome extensions', 'Android apps', 'CLI tools', 'things people actually use'];
+    var typedEl = $('#typed'), pi = 0, ci = 0, del = false, typeTimer = 0;
+    function type() {
+      var w = phrases[pi];
+      ci += del ? -1 : 1;
+      typedEl.textContent = w.slice(0, ci);
+      var d = del ? 35 : 80;
+      if (!del && ci === w.length) { d = 1800; del = true; }
+      else if (del && ci === 0) { del = false; pi = (pi + 1) % phrases.length; d = 350; }
+      typeTimer = setTimeout(type, d);
+    }
+    function restartTyping() {
+      clearTimeout(typeTimer);
+      if (!motionOn) { typedEl.textContent = phrases[0]; return; }
+      ci = 0; del = false; type();
+    }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(typeTimer); else restartTyping(); });
+
+    $('#year').textContent = new Date().getFullYear();
+
+    /* ---------- Live age ---------- */
+    var born = new Date('2010-10-22T00:00:00+08:00').getTime(), YEAR = 1000 * 60 * 60 * 24 * 365.2425;
+    var ageEl = $('#live-age'), ageTimer = 0;
+    function age() {
+      var a = (Date.now() - born) / YEAR;
+      ageEl.textContent = a.toFixed(8);
+    }
+    function startAge() { clearInterval(ageTimer); age(); ageTimer = setInterval(age, 250); }
+    document.addEventListener('visibilitychange', function () { if (document.hidden) clearInterval(ageTimer); else startAge(); });
+    startAge();
+
+    /* ---------- Mobile menu ---------- */
+    var nav = $('#nav'), menuBtn = $('#menu-btn');
+    function closeMenu() { nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.firstElementChild.className = 'fa-solid fa-bars'; }
+    menuBtn.addEventListener('click', function () {
+      var open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+      menuBtn.firstElementChild.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
     });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(); });
 
-    const yearElem = document.getElementById('year');
-    if (yearElem) {
-      yearElem.innerText = new Date().getFullYear();
+    /* ---------- Scroll: progress bar, back-to-top, active link (one rAF-throttled handler) ---------- */
+    var prog = $('#progress'), topBtn = $('#to-top'), ticking = false;
+    function onScroll() {
+      ticking = false;
+      var max = root.scrollHeight - innerHeight, y = scrollY;
+      prog.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
+      topBtn.classList.toggle('show', y > 700);
     }
-
-    // --- Dynamic Greetings on Reload ---
-    const greetings = [
-      "Hey, I'm", "Yo! I'm", "Welcome, I'm", "What's up, I'm", 
-      "Hello world, I'm", "Greetings, I'm", "Howdy, I'm", 
-      "Nice to meet you, I'm", "Glad you're here, I'm"
-    ];
-    const greetingElement = document.getElementById('greeting-prefix');
-    if (greetingElement) {
-      greetingElement.innerText = greetings[Math.floor(Math.random() * greetings.length)];
-    }
-
-    // --- Dynamic Typewriter Effect ---
-    const typewriterElement = document.getElementById('typewriter');
-    const words = [
-      'Speed Typer',
-      'Webapp/Webpage Developer',
-      'Discord Bot Developer',
-      'Vulnerabilities Tester',
-      'Piano Player'
-    ];
-    let wordIndex = Math.floor(Math.random() * words.length);
-    let charIndex = 0;
-    let isDeleting = false;
-
-    function typeEffect() {
-      const currentWord = words[wordIndex];
-      if (isDeleting) {
-        typewriterElement.textContent = currentWord.substring(0, charIndex - 1);
-        charIndex--;
-      } else {
-        typewriterElement.textContent = currentWord.substring(0, charIndex + 1);
-        charIndex++;
-      }
-
-      let typeSpeed = isDeleting ? 40 : 90;
-
-      if (!isDeleting && charIndex === currentWord.length) {
-        typeSpeed = 2200;
-        isDeleting = true;
-      } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
-        wordIndex = (wordIndex + 1) % words.length;
-        typeSpeed = 400;
-      }
-      setTimeout(typeEffect, typeSpeed);
-    }
-    typeEffect();
-
-    // --- Precise Real-Time Live Age Counter ---
-    const birthTime = new Date('2010-10-22T00:00:00').getTime();
-    const MS_PER_YEAR = 1000 * 60 * 60 * 24 * 365.2425;
-    const liveAgeEl = document.getElementById('live-age');
-    let lastAgeText = '';
-    function updateLiveAge() {
-      const text = ((Date.now() - birthTime) / MS_PER_YEAR).toFixed(8);
-      if (text !== lastAgeText) {
-        lastAgeText = text;
-        liveAgeEl.textContent = text;
-      }
-    }
-    setInterval(updateLiveAge, 200);
-    updateLiveAge();
-
-    // --- Optimized Interactive Custom Cursor (animation frames run only while it is moving) ---
-    const cursorDot = document.getElementById('cursor-dot');
-    const cursorOutline = document.getElementById('cursor-outline');
-    let mouseX = -100, mouseY = -100;
-    let outlineX = -100, outlineY = -100;
-    let cursorRaf = 0;
-
-    function cursorTick() {
-      cursorRaf = 0;
-      cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
-      outlineX += (mouseX - outlineX) * 0.25;
-      outlineY += (mouseY - outlineY) * 0.25;
-      cursorOutline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
-      if (Math.abs(mouseX - outlineX) > 0.1 || Math.abs(mouseY - outlineY) > 0.1) {
-        cursorRaf = requestAnimationFrame(cursorTick);
-      }
-    }
-    window.addEventListener('mousemove', (e) => {
-      if (mouseX <= -90) { outlineX = e.clientX; outlineY = e.clientY; }
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      if (!cursorRaf) cursorRaf = requestAnimationFrame(cursorTick);
-    }, { passive: true });
-
-    // --- 3D Interactive Card Tilt Effect ---
-    const canTilt = window.matchMedia('(hover: hover) and (pointer: fine)').matches &&
-                    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const cards = canTilt ? document.querySelectorAll('.card-tilt') : [];
-    cards.forEach(card => {
-      let raf = 0, mx = 0, my = 0;
-      card.addEventListener('mousemove', (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        if (raf) return;
-        raf = requestAnimationFrame(() => {
-          raf = 0;
-          const rect = card.getBoundingClientRect();
-          const x = mx - rect.left;
-          const y = my - rect.top;
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          const rotateX = ((y - centerY) / centerY) * -6;
-          const rotateY = ((x - centerX) / centerX) * 6;
-          card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
-        });
-      }, { passive: true });
-      card.addEventListener('mouseleave', () => {
-        if (raf) { cancelAnimationFrame(raf); raf = 0; }
-        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
-      });
-    });
+    addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+    onScroll();
+    topBtn.addEventListener('click', function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
 
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) e.target.classList.toggle('anim-paused', !e.isIntersecting);
-      }, { rootMargin: '80px' });
-      document.querySelectorAll('.animated-gradient-text, [class*="moving-grad-"]').forEach(el => io.observe(el));
+      var links = {};
+      $$('.nav a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          $$('.nav a.active').forEach(function (a) { a.classList.remove('active'); });
+          var l = links[en.target.id === 'faq' ? 'hire' : en.target.id]; if (l) l.classList.add('active');
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      $$('main section[id]').forEach(function (s) { spy.observe(s); });
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
+      $$('.reveal').forEach(function (el) { io.observe(el); });
+    } else {
+      $$('.reveal').forEach(function (el) { el.classList.add('in'); });
     }
 
-
-    // --- Description popup that follows the cursor ---
-    (function () {
-      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-      const pop = document.getElementById('desc-popup');
-      const pTitle = pop.querySelector('.dp-title');
-      const pText = pop.querySelector('.dp-text');
-      const ACCENTS = {
-        'glow-gteyc': '149,244,238', 'glow-svt': '247,202,201', 'glow-ktown': '192,132,252',
-        'glow-dropspot': '146,184,246', 'glow-cyan': '6,182,212', 'glow-kahoot': '216,180,254',
-        'glow-mtyper': '245,215,110', 'glow-fluxbg': '125,211,252', 'glow-kurt': '74,222,128'
-      };
-      let px = 0, py = 0, raf = 0, active = null;
-      function place() {
-        raf = 0;
-        const w = pop.offsetWidth, h = pop.offsetHeight, gap = 18;
-        let x = px + gap, y = py + gap;
-        if (x + w > window.innerWidth - 8) x = px - w - gap;
-        if (y + h > window.innerHeight - 8) y = py - h - gap;
-        pop.style.transform = `translate3d(${Math.max(8, x)}px, ${Math.max(8, y)}px, 0)`;
-      }
-      function queue() { if (!raf) raf = requestAnimationFrame(place); }
-      document.querySelectorAll('.card-desc').forEach(desc => {
-        const card = desc.closest('.group');
-        if (!card) return;
-        card.addEventListener('mouseenter', (e) => {
-          active = card;
-          const h = card.querySelector('h2');
-          pTitle.textContent = h ? h.textContent : '';
-          pText.textContent = desc.textContent.trim();
-          const cls = Object.keys(ACCENTS).find(k => card.classList.contains(k));
-          pop.style.setProperty('--accent', cls ? ACCENTS[cls] : '56,189,248');
-          px = e.clientX; py = e.clientY;
-          place();
-          pop.classList.add('show');
+    /* ---------- Project filters ---------- */
+    var cards = $$('#proj-grid .proj');
+    $$('.filter').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var f = btn.getAttribute('data-filter');
+        $$('.filter').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+        cards.forEach(function (c) {
+          var show = f === 'all' || c.getAttribute('data-cat').split(' ').indexOf(f) > -1;
+          c.hidden = !show;
+          if (show) c.classList.add('in');
         });
-        card.addEventListener('mousemove', (e) => { px = e.clientX; py = e.clientY; queue(); }, { passive: true });
-        card.addEventListener('mouseleave', () => { if (active === card) { pop.classList.remove('show'); active = null; } });
-      });
-      window.addEventListener('scroll', () => { pop.classList.remove('show'); active = null; }, { passive: true });
-    })();
-
-    // --- Collapsible categories ---
-    document.querySelectorAll('.section-toggle').forEach(h => {
-      const sec = h.closest('section');
-      const toggle = () => {
-        const collapsed = sec.classList.toggle('is-collapsed');
-        h.setAttribute('aria-expanded', String(!collapsed));
-      };
-      h.addEventListener('click', toggle);
-      h.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
     });
 
-    // --- Forward pointer / scroll info to the shared background iframe ---
+    /* ---------- Piano (Web Audio, created on first key press) ---------- */
     (function () {
-      const bgIframe = document.getElementById('bg-iframe');
-      if (!bgIframe) return;
-      const post = (msg) => {
-        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
-      };
-      let mx = 0, my = 0, movePending = false, scrollPending = false;
-      window.addEventListener('pointermove', (e) => {
-        mx = e.clientX; my = e.clientY;
-        if (movePending) return;
-        movePending = true;
-        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
-      }, { passive: true });
-      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
-      window.addEventListener('scroll', () => {
-        if (scrollPending) return;
-        scrollPending = true;
-        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
-      }, { passive: true });
+      var KEYS = [
+        { n: 'C4', f: 261.63, k: 'a', w: 0 }, { n: 'D4', f: 293.66, k: 's', w: 1 }, { n: 'E4', f: 329.63, k: 'd', w: 2 }, { n: 'F4', f: 349.23, k: 'f', w: 3 },
+        { n: 'G4', f: 392.0, k: 'g', w: 4 }, { n: 'A4', f: 440.0, k: 'h', w: 5 }, { n: 'B4', f: 493.88, k: 'j', w: 6 }, { n: 'C5', f: 523.25, k: 'k', w: 7 },
+        { n: 'C#4', f: 277.18, k: 'w', b: 1 }, { n: 'D#4', f: 311.13, k: 'e', b: 2 }, { n: 'F#4', f: 369.99, k: 't', b: 4 }, { n: 'G#4', f: 415.3, k: 'y', b: 5 }, { n: 'A#4', f: 466.16, k: 'u', b: 6 }
+      ];
+      var byName = {}, byKey = {}, piano = $('#piano'), ctx = null;
+      KEYS.forEach(function (k) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'pk ' + (k.b ? 'b' : 'w'); b.setAttribute('aria-label', k.n);
+        b.innerHTML = '<span>' + k.k.toUpperCase() + '</span>';
+        if (k.b) { b.style.left = 'calc(' + (k.b * 12.5) + '% - 3.5%)'; } else { b.style.left = 'calc(' + (k.w * 12.5) + '% + 1.5px)'; }
+        k.el = b; byName[k.n] = k; byKey[k.k] = k; piano.appendChild(b);
+        b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); });
+      });
+      function audio() {
+        if (!ctx) { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; ctx = new AC(); }
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+      function press(k, len) {
+        var c = audio(); if (!c) return;
+        var t = c.currentTime, g = c.createGain(), o1 = c.createOscillator(), o2 = c.createOscillator(), d = len || 1.3;
+        o1.type = 'triangle'; o1.frequency.value = k.f; o2.type = 'sine'; o2.frequency.value = k.f * 2;
+        var g2 = c.createGain(); g2.gain.value = 0.25;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+        o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(c.destination);
+        o1.start(t); o2.start(t); o1.stop(t + d + 0.05); o2.stop(t + d + 0.05);
+        k.el.classList.add('on'); setTimeout(function () { k.el.classList.remove('on'); }, 160);
+      }
+      addEventListener('keydown', function (e) {
+        if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+        var t = e.target, tag = t && t.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+        if (!$('#palette').hidden) return;
+        var k = byKey[e.key.toLowerCase()];
+        if (k && pianoInView()) press(k);
+      });
+      function pianoInView() { var r = piano.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
+
+      var song = 'C4 C4 G4 G4 A4 A4 G4*2 F4 F4 E4 E4 D4 D4 C4*2'.split(' '), playing = false, songTimers = [];
+      var btn = $('#play-song');
+      function stopSong() { songTimers.forEach(clearTimeout); songTimers = []; playing = false; btn.querySelector('i').className = 'fa-solid fa-play'; btn.querySelector('span').textContent = 'Play a song'; }
+      btn.addEventListener('click', function () {
+        if (playing) return stopSong();
+        playing = true; btn.querySelector('i').className = 'fa-solid fa-stop'; btn.querySelector('span').textContent = 'Stop';
+        var at = 0, beat = 430;
+        song.forEach(function (s) {
+          var p = s.split('*'), len = p[1] ? +p[1] : 1, key = byName[p[0]];
+          songTimers.push(setTimeout(function () { press(key, 1.2 * len); }, at));
+          at += beat * len;
+        });
+        songTimers.push(setTimeout(stopSong, at + 300));
+      });
+      window.__klPlayChord = function () { ['C4', 'E4', 'G4'].forEach(function (n, i) { setTimeout(function () { press(byName[n], 1.6); }, i * 90); }); };
     })();
+
+    /* ---------- Hire form → email ---------- */
+    var form = $('#hire-form'), selType = $('#f-type');
+    $$('[data-ask]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var map = { web: 'Website / web app', discord: 'Discord bot', extension: 'Chrome extension / script', app: 'Android app / CLI tool', security: 'Basic security check', other: 'Something else' };
+        selType.value = map[b.getAttribute('data-ask')] || selType.value;
+        $('#hire').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+        setTimeout(function () { $('#f-name').focus({ preventScroll: true }); }, reduceMotion ? 0 : 600);
+      });
+    });
+    $$('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'Email copied'); }); });
+
+    function setErr(name, msg) {
+      var el = $('[data-err="' + name + '"]'), inp = form.elements[name];
+      if (el) el.textContent = msg || '';
+      if (inp) inp.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    }
+    function buildMail() {
+      var f = form.elements, msg = f.message.value.trim();
+      if (msg.length > 1400) msg = msg.slice(0, 1400) + '…';
+      var subject = '[Hire] ' + f.type.value + ' — ' + f.name.value.trim();
+      var body = 'Hi Kurtis,\n\n' + msg + '\n\n— Project details —\nType: ' + f.type.value + '\nBudget: ' + f.budget.value + '\nTimeline: ' + f.timeline.value + '\n\n— From —\n' + f.name.value.trim() + '\n' + f.email.value.trim() + '\n';
+      return { subject: subject, body: body };
+    }
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if ($('#f-hp').value) return; // honeypot
+      var f = form.elements, ok = true;
+      setErr('name', ''); setErr('email', ''); setErr('message', '');
+      if (!f.name.value.trim()) { setErr('name', 'Please tell me your name.'); ok = false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.value.trim())) { setErr('email', 'Please enter a valid email so I can reply.'); ok = false; }
+      if (f.message.value.trim().length < 10) { setErr('message', 'Add a few more details (10+ characters).'); ok = false; }
+      if (!ok) { var bad = form.querySelector('[aria-invalid="true"]'); if (bad) bad.focus(); return; }
+
+      var m = buildMail(), enc = encodeURIComponent;
+      var mailto = 'mailto:' + EMAIL + '?subject=' + enc(m.subject) + '&body=' + enc(m.body);
+      $('#done-mailto').href = mailto;
+      $('#done-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + enc(EMAIL) + '&su=' + enc(m.subject) + '&body=' + enc(m.body);
+      $('#done-copy').onclick = function () { copyText('To: ' + EMAIL + '\nSubject: ' + m.subject + '\n\n' + m.body, 'Message copied'); };
+      form.hidden = true; $('#form-done').hidden = false;
+      $('#form-card').scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
+      window.location.href = mailto;
+    });
+    $('#done-back').addEventListener('click', function () { $('#form-done').hidden = true; form.hidden = false; $('#f-msg').focus(); });
+    ['f-name', 'f-email', 'f-msg'].forEach(function (id) { $('#' + id).addEventListener('input', function () { this.setAttribute('aria-invalid', 'false'); var e = $('[data-err="' + this.name + '"]'); if (e) e.textContent = ''; }); });
+
+    /* ---------- Command palette (Ctrl/Cmd + K, or "/") ---------- */
+    var pal = $('#palette'), palQ = $('#pal-q'), palList = $('#pal-list'), palSel = 0, palItems = [], lastFocus = null;
+    var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+    $('#kbd-hint').textContent = isMac ? '⌘ K' : 'Ctrl K';
+    function go(id) { return function () { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); }; }
+    function open(url, same) { return function () { if (same) location.href = url; else window.open(url, '_blank', 'noopener'); }; }
+    var COMMANDS = [
+      { g: 'Go to', i: 'fa-house', t: 'Home', h: 'top', run: go('home') },
+      { g: 'Go to', i: 'fa-user', t: 'About me', run: go('about') },
+      { g: 'Go to', i: 'fa-briefcase', t: 'Services', run: go('services') },
+      { g: 'Go to', i: 'fa-folder-open', t: 'Work', run: go('work') },
+      { g: 'Go to', i: 'fa-timeline', t: 'My story', run: go('story') },
+      { g: 'Go to', i: 'fa-music', t: 'Extras & piano', run: go('extras') },
+      { g: 'Go to', i: 'fa-circle-question', t: 'FAQ', run: go('faq') },
+      { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'form', run: function () { go('hire')(); setTimeout(function () { $('#f-name').focus({ preventScroll: true }); }, 500); } },
+      { g: 'Hire me', i: 'fa-copy', t: 'Copy my email address', h: EMAIL, run: function () { copyText(EMAIL, 'Email copied'); } },
+      { g: 'Hire me', i: 'fa-envelope', t: 'Email me', run: open('mailto:' + EMAIL, true) },
+      { g: 'Projects', i: 'fa-mobile-screen', t: 'fluxbg', h: 'Android app', run: open('/fluxbg', true) },
+      { g: 'Projects', i: 'fa-terminal', t: 'kurt', h: 'CLI tool', run: open('/kurt', true) },
+      { g: 'Projects', i: 'fa-book-open', t: 'kTown', h: 'IB study app', run: open('https://ktown-45.web.app') },
+      { g: 'Projects', i: 'fa-gamepad', t: 'SVT Match', h: 'game', run: open('https://svt-match.web.app') },
+      { g: 'Projects', i: 'fa-graduation-cap', t: 'GTEYC 2627 SU', h: 'website', run: open('https://gtcsu-aurora.web.app') },
+      { g: 'Projects', i: 'fa-arrow-right-arrow-left', t: 'DropSpot', h: 'file transfer', run: open('https://dropspot-0.web.app') },
+      { g: 'Projects', i: 'fa-palette', t: 'Colordle Solver', run: open('/colordle-solver', true) },
+      { g: 'Projects', i: 'fa-bolt', t: 'Kahoot Hack', run: open('/kahoot-hack', true) },
+      { g: 'Projects', i: 'fa-keyboard', t: 'Monkeytyper', run: open('/monkeytyper', true) },
+      { g: 'Links', i: 'fa-brands fa-github', t: 'GitHub', h: '@Kurtis-Lam', run: open('https://github.com/Kurtis-Lam') },
+      { g: 'Links', i: 'fa-brands fa-instagram', t: 'Instagram', h: '@kurtis_1022', run: open('https://www.instagram.com/kurtis_1022/') },
+      { g: 'Links', i: 'fa-keyboard', t: 'Monkeytype profile', h: 'kurtislam', run: open('https://monkeytype.com/profile/kurtislam') },
+      { g: 'Fun', i: 'fa-wand-magic-sparkles', t: 'Toggle effects (stars & animations)', run: function () { setMotion(!motionOn); } },
+      { g: 'Fun', i: 'fa-music', t: 'Play a chord', run: function () { go('extras')(); setTimeout(function () { if (window.__klPlayChord) window.__klPlayChord(); }, 400); } },
+      { g: 'Fun', i: 'fa-star', t: 'Shower me with stars', run: function () { sparkle(); } },
+      { g: 'Fun', i: 'fa-arrow-up', t: 'Back to top', run: function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); } }
+    ];
+    function iconClass(i) { return i.indexOf('fa-brands') === 0 ? i : 'fa-solid ' + i; }
+    function renderPal() {
+      var q = palQ.value.trim().toLowerCase(), last = '';
+      palItems = COMMANDS.filter(function (c) { return !q || (c.t + ' ' + c.g + ' ' + (c.h || '')).toLowerCase().indexOf(q) > -1; });
+      palList.innerHTML = '';
+      if (!palItems.length) { palList.innerHTML = '<li class="pal-empty" role="presentation">No match. Try “work”, “hire” or “piano”.</li>'; return; }
+      palItems.forEach(function (c, idx) {
+        if (!q && c.g !== last) { var gh = document.createElement('li'); gh.className = 'pal-group'; gh.setAttribute('role', 'presentation'); gh.textContent = c.g; palList.appendChild(gh); last = c.g; }
+        var li = document.createElement('li'); li.setAttribute('role', 'option'); li.dataset.idx = idx;
+        li.innerHTML = '<i class="' + iconClass(c.i) + '"></i><span></span>' + (c.h ? '<span class="hint"></span>' : '');
+        li.children[1].textContent = c.t; if (c.h) li.children[2].textContent = c.h;
+        li.addEventListener('mousemove', function () { select(idx, false); });
+        li.addEventListener('click', function () { run(idx); });
+        palList.appendChild(li);
+      });
+      select(0, true);
+    }
+    function select(i, scroll) {
+      palSel = Math.max(0, Math.min(palItems.length - 1, i));
+      $$('#pal-list li[role="option"]').forEach(function (li) {
+        var on = +li.dataset.idx === palSel; li.setAttribute('aria-selected', String(on));
+        if (on && scroll) li.scrollIntoView({ block: 'nearest' });
+      });
+    }
+    function run(i) { var c = palItems[i]; if (!c) return; closePal(); setTimeout(c.run, 30); }
+    function openPal() { lastFocus = document.activeElement; pal.hidden = false; palQ.value = ''; renderPal(); palQ.focus(); document.body.style.overflow = 'hidden'; }
+    function closePal() { pal.hidden = true; document.body.style.overflow = ''; if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true }); }
+    $('#open-palette').addEventListener('click', openPal);
+    $('#foot-palette').addEventListener('click', openPal);
+    pal.addEventListener('mousedown', function (e) { if (e.target === pal) closePal(); });
+    palQ.addEventListener('input', renderPal);
+    palQ.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown') { e.preventDefault(); select(palSel + 1, true); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); select(palSel - 1, true); }
+      else if (e.key === 'Enter') { e.preventDefault(); run(palSel); }
+    });
+    addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); pal.hidden ? openPal() : closePal(); return; }
+      if (e.key === 'Escape' && !pal.hidden) { e.preventDefault(); closePal(); return; }
+      var t = e.target, tag = t && t.tagName;
+      if (e.key === '/' && pal.hidden && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') { e.preventDefault(); openPal(); }
+    });
+
+    /* ---------- Easter egg: Konami code ---------- */
+    function sparkle() {
+      if (reduceMotion) { toast('⭐ You found the stars!'); return; }
+      var icons = ['⭐', '✨', '💫', '🌟', '🎹', '⌨️'], frag = document.createDocumentFragment();
+      for (var i = 0; i < 36; i++) {
+        var s = document.createElement('span');
+        s.className = 'spark'; s.textContent = icons[(Math.random() * icons.length) | 0];
+        s.style.left = (Math.random() * 100) + 'vw';
+        s.style.setProperty('--t', (2.2 + Math.random() * 2) + 's');
+        s.style.setProperty('--dx', ((Math.random() - 0.5) * 160) + 'px');
+        s.style.setProperty('--rot', ((Math.random() - 0.5) * 720) + 'deg');
+        s.style.animationDelay = (Math.random() * 0.8) + 's';
+        frag.appendChild(s);
+        (function (el) { setTimeout(function () { el.remove(); }, 5200); })(s);
+      }
+      document.body.appendChild(frag);
+      toast('You found the secret! ⭐');
+    }
+    var KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'], kp = 0;
+    addEventListener('keydown', function (e) {
+      var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      kp = (k === KONAMI[kp]) ? kp + 1 : (k === KONAMI[0] ? 1 : 0);
+      if (kp === KONAMI.length) { kp = 0; sparkle(); }
+    });
+
+    applyMotion();
+  })();
   </script>
 </body>
 </html>
