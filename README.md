@@ -13,14 +13,14 @@ Welcome to the repository for **Kurtis Lam's Personal Portfolio Website**. This 
 
 | Route | File | Description |
 | :--- | :--- | :--- |
-| `/` | `public/index.html` | Portfolio home page |
+| `/` | `public/index.html` | Personal bio: about, services, work, story, extras (piano, live clocks), hire-me form, Ctrl+K command palette |
 | `/colordle-solver` | `public/colordle.html` | Colordle solver |
 | `/kahoot-hack` | `public/kahoot-hack.html` | Kahoot Hack: what it is, how it works, step-by-step setup |
 | `/monkeytyper` | `public/monkeytyper.html` | Monkeytyper: what it is, how it works, step-by-step setup |
 | `/fluxbg` | `public/fluxbg.html` | fluxbg: Huawei wallpaper app, features, APK, build and usage |
 | `/kurt` | `public/kurt.html` | Kurt: local terminal coding assistant, setup, commands, troubleshooting |
 
-All pages share the animated star field in `public/background.html`, which adapts its quality to the device to stay smooth.
+All pages share the lightweight night-sky background in `public/background.html`: stars are painted once and animated with GPU-only CSS, so it costs almost no CPU. Visitors can switch effects off from the footer or the Ctrl+K palette.
 
 ---
 
