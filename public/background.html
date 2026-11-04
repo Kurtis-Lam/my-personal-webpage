@@ -3,63 +3,153 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KL Star Background</title>
+  <title>Star Text Background</title>
   <style>
     html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background-color: #07090e; }
-    /* The nebula is generated in small slices, then fades in once ready (no pop-in) */
-    #nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07090e;
-              opacity: 0; transition: opacity 2.4s ease; }
-    #nebula.ready { opacity: 1; }
+    #nebula { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #07090e; }
     #nebula canvas { position: absolute; }
     #overlay { position: fixed; inset: 0; z-index: 3; pointer-events: none; }
-    #bg-canvas, #dust-canvas { position: fixed; top: 0; left: 0; z-index: 1; pointer-events: none; }
-    #dust-canvas { will-change: opacity; }
+    #bg-canvas {
+      position: fixed; top: 0; left: 0;
+      z-index: 1; pointer-events: none;
+    }
+    #shoot-canvas {
+      position: fixed; top: 0; left: 0;
+      z-index: 2; pointer-events: none; display: none;
+    }
+    #nebula canvas { transition: opacity 0.6s ease; }
+
+    #text-btn {
+      position: fixed; top: 18px; left: 18px;
+      width: 20px; height: 20px; padding: 0; margin: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(190, 210, 255, 0.22);
+      background: transparent;
+      opacity: 0.5;
+      cursor: pointer;
+      z-index: 10;
+      transition: opacity 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #text-btn:hover, #text-btn:focus-visible {
+      opacity: 1;
+      border-color: rgba(210, 225, 255, 0.55);
+      box-shadow: 0 0 10px rgba(150, 190, 255, 0.25);
+      outline: none;
+    }
+
+    #text-modal {
+      position: fixed; inset: 0; z-index: 20;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(4, 6, 12, 0.4);
+      -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    }
+    #text-modal.open { display: flex; }
+    #text-panel {
+      width: min(480px, 88vw);
+      box-sizing: border-box;
+      padding: 18px;
+      background: rgba(10, 14, 26, 0.85);
+      border: 1px solid rgba(190, 210, 255, 0.16);
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #e8f0ff;
+    }
+    #text-input {
+      width: 100%; box-sizing: border-box;
+      min-height: 96px; max-height: 40vh;
+      resize: vertical;
+      padding: 12px 14px;
+      font: 500 18px/1.35 "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #e8f0ff;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(190, 210, 255, 0.18);
+      border-radius: 10px;
+      outline: none;
+    }
+    #text-input:focus { border-color: rgba(190, 215, 255, 0.5); }
+    #text-input::placeholder { color: rgba(200, 215, 245, 0.35); }
+    #text-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; margin-top: 12px;
+    }
+    #text-hint { font-size: 11px; color: rgba(200, 215, 245, 0.4); }
+    #text-actions .btns { display: flex; gap: 8px; }
+    #text-actions button {
+      font: 600 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid rgba(190, 210, 255, 0.2);
+      background: transparent;
+      color: #cfe0ff;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    #text-actions button:hover { background: rgba(190, 210, 255, 0.1); border-color: rgba(210, 225, 255, 0.4); }
+    #text-apply { background: rgba(120, 176, 255, 0.2) !important; border-color: rgba(150, 195, 255, 0.5) !important; }
+    #text-apply:hover { background: rgba(120, 176, 255, 0.32) !important; }
   </style>
 </head>
 <body>
   <div id="nebula"></div>
   <canvas id="bg-canvas"></canvas>
   <div id="overlay"></div>
+
+  <button id="text-btn" type="button" aria-label="Change text" title="Change text"></button>
+  <div id="text-modal" role="dialog" aria-modal="true" aria-label="Enter text">
+    <div id="text-panel">
+      <textarea id="text-input" maxlength="240" placeholder="Type something..." spellcheck="false"></textarea>
+      <div id="text-actions">
+        <span id="text-hint">Enter to display &middot; Shift+Enter for new line</span>
+        <div class="btns">
+          <button id="text-cancel" type="button">Cancel</button>
+          <button id="text-apply" type="button">Display</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // =====================================================================
-    //  Shared KL star background.
-    //  Embedded by index.html / colordle.html / 404.html via <iframe>.
-    //  The parent forwards pointer + scroll info with postMessage.
-    // =====================================================================
+    const rootEl = document.documentElement;
     const STATIC_MODE = false;   // true = nothing moves (single rendered frame)
     const NEB_SPEED = 1;         // speed of the drifting background colours (try 0.5 - 2)
-    const NEB_FPS = 8;           // nebula redraw rate (it drifts so slowly that 12 looks the same as 30)
-    const NEB_PIXELS = 24000;    // nebula is computed at ~this many pixels, then smoothly upscaled (it is blurry by design)
-    const FPS_CAP = 60;          // 0 = follow display refresh. 60 halves the work on 120/144Hz screens
-    const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;   // start in a lighter mode
     const SCROLL_IDLE_MS = 150;
-    const MAX_STEP_MS = 50;      // animation clock never advances more than this per frame
-    const INTRO_MS = 6500;       // roughly how long the KL assembly takes
-
-    const rootEl = document.documentElement;
     let isScrolling = false;
     let lastScrollTime = 0;
 
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    const prefersReducedMotion = STATIC_MODE || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // --- Text state (persisted between visits) ---
+    const STORAGE_KEY = 'starTextValue';
+    const DEFAULT_TEXT = '';
+    let currentText = DEFAULT_TEXT;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved !== null) currentText = saved;
+    } catch (e) {}
+    let textScale = 1;       // star size multiplier derived from the fitted font size
+    let modalOpen = false;
 
-    // ---- Animation clock ----------------------------------------------
-    // Advances only by (clamped) time between RENDERED frames. If the page stalls while the
-    // parent loads Tailwind / fonts / etc., the intro simply pauses instead of skipping ahead,
-    // which is what used to make the KL "suddenly appear".
-    let clock = STATIC_MODE ? 1e7 : 0;
-    let lastNow = null;
-    let NEB_MS = 1000 / (LOW_END ? 8 : NEB_FPS);
-    let quality = LOW_END ? 1 : 0, emaDelta = 16.7, slowMs = 0;   // adaptive quality governor (see applyQuality)
+    // --- Canvas Star Field: realistic glowing stars + auto-fitted text star formation ---
+    let canvas = document.getElementById('bg-canvas');
+    // One instanced WebGL2 draw call per frame when available; the original Canvas 2D path is kept as fallback.
+    let gl = null;
+    try {
+      gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' });
+    } catch (e) { gl = null; }
+    let ctx = gl ? null : canvas.getContext('2d');
+    let fx = ctx;            // 2D context used for the shooting star
+    let shootCv = null;
+    const prefersReducedMotion = STATIC_MODE || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const pageStartTime = performance.now();
 
     const KL = {
-      heightRatio: 0.55,
+      heightRatio: 0.8,      // max fraction of the screen height the text block may use
+      widthRatio: 0.92,      // max fraction of the screen width the text block may use
       centerX: 0.5,
       centerY: 0.5,
-      density: 0.012,
-      minStars: 300,
-      maxStars: 520,
+      density: 0.021,
+      minStars: 400,
+      maxStars: 14000,
       assembleOnLoad: true
     };
 
@@ -70,10 +160,6 @@
       maxSpeed: 8,
       returnSpeed: 0.045
     };
-
-    const clamp01 = x => x < 0 ? 0 : x > 1 ? 1 : x;
-    const smooth = x => { x = clamp01(x); return x * x * (3 - 2 * x); };
-    const easeInOutCubic = p => p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
     const PALETTE = [
       { rgb: [178, 214, 255], w: 34 },
@@ -174,7 +260,6 @@
     let letterStars = [];
     let haloStars = [];
     let klBox = null;
-    let leaving = null;          // previous star set, cross-fading out after a resize
 
     const MAX_DPR = 1;   // soft glows don't need hi-dpi; raise to 1.5 for crisper cores (costs ~2x fill)
     function getSize() {
@@ -193,132 +278,259 @@
       canvas.style.height = height + 'px';
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (shootCv) sizeShootCanvas();
     }
     resize();
 
-    const par = { x: 0, y: 0 };   // gentle pointer parallax for the nebula
+    let builtH = height;
+    const coarsePointer = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    let resizeTimer;
+    function checkSize() {
+      const sz = getSize();
+      if (sz.w === width && sz.h === height) return;
+      // Touch browsers nudge the viewport height whenever the URL bar slides in or out while scrolling.
+      // Rebuilding the whole sky for that would stall the scroll, so only the canvas is resized.
+      if (coarsePointer && sz.w === width && Math.abs(sz.h - builtH) <= 160) {
+        resize();
+        dirty = true;
+        if (STATIC_MODE || !motionOn) { renderOnce = true; schedule(); }
+        return;
+      }
+      resize();
+      builtH = height;
+      initParticles(false);
+      drawNebula();
+      dirty = true;
+      if (STATIC_MODE || !motionOn) { renderOnce = true; schedule(); }
+    }
+    function scheduleCheck() { clearTimeout(resizeTimer); resizeTimer = setTimeout(checkSize, 120); }
+    window.addEventListener('resize', scheduleCheck);
+    if (window.ResizeObserver) new ResizeObserver(scheduleCheck).observe(document.documentElement);
+    setInterval(checkSize, 4000); // Plash doesn't always fire resize (display change, wake from sleep)
 
-    // ---- Pointer input (direct, or forwarded from the parent page) ------
     const ptr = { x: -9999, y: -9999, lastX: -9999, lastY: -9999, dx: 0, dy: 0, speed: 0, active: false };
     let pushing = false;
     let lastRealMove = -1e9;
-    let autoActive = false;
-
-    function onMove(x, y) {
-      if (isScrolling) return;
-      if (autoActive) {            // taking over from the auto-pilot: don't treat the jump as a swipe
-        autoActive = false;
-        ptr.lastX = ptr.lastY = -9999;
-      }
+    window.addEventListener('pointermove', (e) => {
+      if (isScrolling || modalOpen) return;
       if (ptr.lastX > -9000) {
-        ptr.dx += x - ptr.lastX;
-        ptr.dy += y - ptr.lastY;
+        ptr.dx += e.clientX - ptr.lastX;
+        ptr.dy += e.clientY - ptr.lastY;
       }
-      ptr.x = ptr.lastX = x;
-      ptr.y = ptr.lastY = y;
+      ptr.x = ptr.lastX = e.clientX;
+      ptr.y = ptr.lastY = e.clientY;
       ptr.active = true;
       lastRealMove = performance.now();
-    }
-    function onLeave() {
+    }, { passive: true });
+
+    document.documentElement.addEventListener('mouseleave', () => {
       ptr.active = false;
       ptr.x = ptr.y = ptr.lastX = ptr.lastY = -9999;
       ptr.dx = ptr.dy = 0;
-    }
-    function onScroll() {
-      lastScrollTime = performance.now();
-      isScrolling = true;
-      ptr.dx = ptr.dy = 0;
-    }
-    window.addEventListener('pointermove', e => onMove(e.clientX, e.clientY), { passive: true });
-    document.documentElement.addEventListener('mouseleave', onLeave);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('message', e => {
-      if (window.parent !== window && e.source !== window.parent) return;
-      const d = e.data;
-      if (!d || typeof d !== 'object') return;
-      if ((d.type === 'mousemove' || d.type === 'pointer') && isFinite(d.x) && isFinite(d.y)) onMove(d.x, d.y);
-      else if (d.type === 'leave') onLeave();
-      else if (d.type === 'scroll') onScroll();
-      else if (d.type === 'motion') setPaused(d.on === false);
     });
 
-    // ---- Noise helpers ---------------------------------------------------
-    // 256x256 lattice of random values (built once). A table read is far cheaper than hashing
-    // four corners per sample, and the nebula takes millions of samples.
-    const LATTICE = new Float32Array(65536);
-    (function () {
-      let a = 0x9e3779b9;
-      for (let i = 0; i < 65536; i++) {            // mulberry32
-        a = (a + 0x6d2b79f5) | 0;
-        let t = Math.imul(a ^ (a >>> 15), 1 | a);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        LATTICE[i] = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    // Noise + nebula pixel generator. Self-contained so the very same code can run inside a Web Worker
+    // (no main-thread stall at load / resize) or, as a fallback, on the main thread in small slices.
+    function makeNebulaGen() {
+      const hash2 = (x, y) => {
+        let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263);
+        h = Math.imul(h ^ (h >>> 13), 1274126177);
+        return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+      };
+      const valueNoise = (x, y) => {
+        const ix = Math.floor(x), iy = Math.floor(y);
+        const fx = x - ix, fy = y - iy;
+        const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
+        const a = hash2(ix, iy), b = hash2(ix + 1, iy), c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+        return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+      };
+      const fbm = (x, y) => {
+        let sum = 0, a = 0.5;
+        for (let i = 0; i < 5; i++) { sum += a * valueNoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.7; a *= 0.5; }
+        return sum;
+      };
+      const sstep = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+      const mix3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+      const COOL = [46, 104, 214], VIOLET = [140, 70, 205], WARM = [255, 140, 110], TEAL = [30, 150, 170],
+            ROSE = [225, 70, 140], GOLD = [255, 205, 150];
+      const G = 1.15;
+
+      // fills rows y0..y1 of the six layer buffers D (RGBA, w*h*4 each)
+      function gen(w, h, W, H, sc, nebSeed, bandAng, y0, y1, D) {
+        const m = Math.min(W, H), ca = Math.cos(bandAng), sa = Math.sin(bandAng);
+        let i = y0 * w * 4;
+        for (let y = y0; y < y1; y++) {
+          for (let x = 0; x < w; x++, i += 4) {
+            const u = (x * sc) / m, v = (y * sc) / m;
+            const px = u - (W / m) * 0.5, py = v - (H / m) * 0.5;
+            const warp = (fbm(u * 1.3 + nebSeed * 3, v * 1.3) - 0.5) * 0.24;
+            const dist = -px * sa + py * ca + warp, along = px * ca + py * sa;
+            let band = Math.exp(-(dist * dist) / (2 * 0.2 * 0.2));
+            const bulge = Math.exp(-(along * along) / 0.14);
+            band *= 0.6 + 0.6 * Math.exp(-(along * along) / 1.1);
+
+            const gas = fbm(u * 2.2 + nebSeed, v * 2.2);
+            const fine = fbm(u * 6 + nebSeed * 2, v * 6);
+            const hue = fbm(u * 1.6 - nebSeed, v * 1.6 + 5);
+            const dens = band * (0.25 + gas * 1.1) * (0.75 + fine * 0.5);
+            const lane = sstep(0.48, 0.72, fbm(u * 3.5 + 40, v * 3.5 - nebSeed)) * band;
+
+            const s1 = sstep(0.3, 0.6, hue);
+            const wv = sstep(0.6, 0.85, fine) * 0.55 * band;
+            const Ib = dens * 0.55 * G;
+            const Ic = Ib * (1 - s1), Iv = Ib * s1;
+            const gk = Math.min(1, bulge * band * 1.2);
+            const Iw = Ib * wv * 1.1 + bulge * band * 0.16 * G;
+            const wc = mix3(WARM, GOLD, gk);
+            const Ie = sstep(0.6, 0.84, fbm(u * 1.8 + 120 + nebSeed, v * 1.8 - 30)) * (0.25 + 0.75 * band) * 0.5 * 0.6 * G;
+            const It = sstep(0.5, 0.85, fbm(u * 1.4 + 90, v * 1.4)) * 0.11 * (1 - band * 0.5) * G;
+
+            D[0][i] = COOL[0] * Ic;   D[0][i + 1] = COOL[1] * Ic;   D[0][i + 2] = COOL[2] * Ic;   D[0][i + 3] = 255;
+            D[1][i] = VIOLET[0] * Iv; D[1][i + 1] = VIOLET[1] * Iv; D[1][i + 2] = VIOLET[2] * Iv; D[1][i + 3] = 255;
+            D[2][i] = wc[0] * Iw;     D[2][i + 1] = wc[1] * Iw;     D[2][i + 2] = wc[2] * Iw;     D[2][i + 3] = 255;
+            D[3][i] = ROSE[0] * Ie;   D[3][i + 1] = ROSE[1] * Ie;   D[3][i + 2] = ROSE[2] * Ie;   D[3][i + 3] = 255;
+            D[4][i] = TEAL[0] * It;   D[4][i + 1] = TEAL[1] * It * 0.9; D[4][i + 2] = TEAL[2] * It; D[4][i + 3] = 255;
+            D[5][i] = 2; D[5][i + 1] = 3; D[5][i + 2] = 8; D[5][i + 3] = Math.min(255, lane * 0.8 * 255);
+          }
+        }
       }
-    })();
-    function valueNoise(x, y) {
-      const ix = Math.floor(x), iy = Math.floor(y);
-      const fx = x - ix, fy = y - iy;
-      const u = fx * fx * (3 - 2 * fx), v = fy * fy * (3 - 2 * fy);
-      const x0 = ix & 255, x1 = (ix + 1) & 255, r0 = (iy & 255) << 8, r1 = ((iy + 1) & 255) << 8;
-      const a = LATTICE[x0 | r0], b = LATTICE[x1 | r0], c = LATTICE[x0 | r1], d = LATTICE[x1 | r1];
-      return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+      return { valueNoise, gen };
     }
+    function nebulaWorkerMain(factory) {
+      const gen = factory().gen;
+      onmessage = (e) => {
+        const d = e.data;
+        const bufs = [];
+        for (let k = 0; k < 6; k++) bufs.push(new Uint8ClampedArray(d.w * d.h * 4));
+        gen(d.w, d.h, d.W, d.H, d.sc, d.seed, d.ang, 0, d.h, bufs);
+        postMessage({ job: d.job, bufs }, bufs.map(b => b.buffer));
+      };
+    }
+    const { valueNoise, gen: nebulaGen } = makeNebulaGen();
     const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) * 2;
 
-    function buildKLPoints() {
-      const H = Math.min(height * KL.heightRatio, (width * 0.9) / 1.24);
-      const S = H * 0.15;
-      const T = S * 1.15;
-      const Wk = H * 0.62;
-      const Wl = H * 0.5;
-      const gap = H * 0.12;
-      const totalW = Wk + gap + Wl;
-      const pad = 4;
-      const cw = Math.ceil(totalW) + pad * 2;
-      const ch = Math.ceil(H) + pad * 2;
+    // ---------- Auto-fit text layout ----------
+    // Finds the largest font size whose wrapped text fits the box, then tightens the wrap width
+    // so the lines come out balanced instead of one long line and one short one.
+    const TEXT_FONT = f => `800 ${f}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    const TEXT_LH = 1.05;
+    const measureCtx = document.createElement('canvas').getContext('2d');
+
+    function wrapText(paras, f, maxW) {
+      measureCtx.font = TEXT_FONT(f);
+      const lines = [];
+      for (const para of paras) {
+        const words = para.split(/\s+/).filter(Boolean);
+        let cur = '';
+        for (const w of words) {
+          if (measureCtx.measureText(w).width > maxW) {
+            if (cur) { lines.push(cur); cur = ''; }
+            let chunk = '';
+            for (const ch of w) {
+              if (chunk && measureCtx.measureText(chunk + ch).width > maxW) { lines.push(chunk); chunk = ch; }
+              else chunk += ch;
+            }
+            cur = chunk;
+            continue;
+          }
+          const test = cur ? cur + ' ' + w : w;
+          if (measureCtx.measureText(test).width <= maxW) cur = test;
+          else { lines.push(cur); cur = w; }
+        }
+        if (cur) lines.push(cur);
+      }
+      return lines;
+    }
+
+    function fitText(text, maxW, maxH) {
+      const paras = text.split('\n').map(s => s.trim()).filter(Boolean);
+      if (!paras.length) return null;
+      const fits = f => wrapText(paras, f, maxW).length * f * TEXT_LH <= maxH;
+
+      let lo = 6, hi = Math.max(6, Math.floor(maxH / TEXT_LH));
+      while (lo < hi) {
+        const mid = Math.ceil((lo + hi) / 2);
+        if (fits(mid)) lo = mid; else hi = mid - 1;
+      }
+      const size = lo;
+
+      const n = wrapText(paras, size, maxW).length;
+      let wLo = maxW * 0.3, wHi = maxW;
+      for (let i = 0; i < 12; i++) {
+        const mid = (wLo + wHi) / 2;
+        if (wrapText(paras, size, mid).length <= n) wHi = mid; else wLo = mid;
+      }
+      const lines = wrapText(paras, size, wHi);
+      return { lines, size };
+    }
+
+    function buildTextPoints() {
+      const text = currentText.trim();
+      const layout = text ? fitText(text, width * KL.widthRatio, height * KL.heightRatio) : null;
+      if (!layout) { klBox = null; return []; }
+      const { lines, size } = layout;
+      textScale = Math.min(1.1, Math.max(0.35, 0.2 + size / 500));
+
+      measureCtx.font = TEXT_FONT(size);
+      let maxLineW = 0;
+      for (const l of lines) maxLineW = Math.max(maxLineW, measureCtx.measureText(l).width);
+      const pad = Math.ceil(size * 0.2) + 4;
+      const cw = Math.ceil(maxLineW) + pad * 2;
+      const ch = Math.ceil(lines.length * size * TEXT_LH) + pad * 2;
 
       const off = document.createElement('canvas');
       off.width = cw;
       off.height = ch;
       const c = off.getContext('2d');
+      c.font = TEXT_FONT(size);
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
       c.fillStyle = '#fff';
-      c.translate(pad, pad);
-
-      c.fillRect(0, 0, S, H);
-      const x2 = S * 0.35, mid = H / 2;
-      c.beginPath();
-      c.moveTo(Wk - T, 0); c.lineTo(Wk, 0); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
-      c.closePath();
-      c.fill();
-      c.beginPath();
-      c.moveTo(Wk - T, H); c.lineTo(Wk, H); c.lineTo(x2 + T, mid); c.lineTo(x2, mid);
-      c.closePath();
-      c.fill();
-
-      const lx = Wk + gap;
-      c.fillRect(lx, 0, S, H);
-      c.fillRect(lx, H - S * 0.9, Wl, S * 0.9);
+      c.strokeStyle = '#fff';
+      c.lineJoin = 'round';
+      c.lineWidth = size * 0.03;
+      lines.forEach((l, i) => {
+        const y = pad + (i + 0.5) * size * TEXT_LH;
+        c.strokeText(l, cw / 2, y);
+        c.fillText(l, cw / 2, y);
+      });
 
       const data = c.getImageData(0, 0, cw, ch).data;
       const filled = [];
-      for (let y = 0; y < ch; y += 2) {
-        for (let x = 0; x < cw; x += 2) {
-          if (data[(y * cw + x) * 4 + 3] > 128) filled.push(x, y);
+      let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+      const step = size < 70 ? 1 : 2;   // finer sampling for small text
+      for (let y = 0; y < ch; y += step) {
+        for (let x = 0; x < cw; x += step) {
+          if (data[(y * cw + x) * 4 + 3] > 128) {
+            filled.push(x, y);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+          }
         }
       }
       const samples = filled.length / 2;
-      const areaPx = samples * 4;
-      const target = Math.max(KL.minStars, Math.min(KL.maxStars, Math.round(areaPx * KL.density)));
+      if (!samples) { klBox = null; return []; }
+      const areaPx = samples * step * step;
+      // Keep visual coverage constant: a star's glow area shrinks with the square of its scale,
+      // so smaller text needs proportionally more stars per pixel to look as dense as big text.
+      const effScale = Math.max(0.4, textScale);
+      const target = Math.max(KL.minStars, Math.min(KL.maxStars,
+        Math.round(areaPx * KL.density / (effScale * effScale))));
 
-      const originX = width * KL.centerX - totalW / 2 - pad;
-      const originY = height * KL.centerY - H / 2 - pad;
-      klBox = { x: originX + pad, y: originY + pad, w: totalW, h: H };
+      // centre the visible ink (not the padded canvas) on the screen
+      const originX = width * KL.centerX - (minX + maxX) / 2;
+      const originY = height * KL.centerY - (minY + maxY) / 2;
+      klBox = { x: originX + minX, y: originY + minY, w: maxX - minX, h: maxY - minY };
 
+      const sc = textScale;
+      const noiseSize = Math.max(14, 46 * sc);
       const seed = (Math.random() * 1000) | 0;
       const density = (x, y) => {
-        const n = valueNoise(x / 46 + seed, y / 46 + seed * 0.37);
-        return 0.55 + 0.45 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
+        const n = valueNoise(x / noiseSize + seed, y / noiseSize + seed * 0.37);
+        return 0.8 + 0.2 * Math.min(1, Math.max(0, (n - 0.25) / 0.5));
       };
       const pickSample = () => {
         const i = (Math.random() * samples) | 0;
@@ -328,13 +540,13 @@
       const out = [];
       const nField = Math.round(target * 0.62);
       const nClump = Math.round(target * 0.30);
-      const nStray = Math.round(target * 0.04);
+      const nStray = Math.round(target * 0.02);
 
       let guard = 0;
       while (out.length < nField && guard++ < nField * 20) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        out.push({ x: x + gauss() * 1.3, y: y + gauss() * 1.3, kind: 'field' });
+        out.push({ x: x + gauss() * 0.6 * sc, y: y + gauss() * 0.6 * sc, kind: 'field' });
       }
 
       let made = 0;
@@ -342,8 +554,8 @@
       while (made < nClump && guard++ < nClump * 10) {
         const [x, y] = pickSample();
         if (Math.random() > density(x, y)) continue;
-        const members = 4 + ((Math.random() * 7) | 0);
-        const sigma = 2 + Math.random() * 2.5;
+        const members = 3 + ((Math.random() * 4) | 0);
+        const sigma = (0.8 + Math.random() * 1.2) * sc;
         out.push({ x, y, kind: 'lead' });
         for (let m = 1; m < members; m++) {
           out.push({ x: x + gauss() * sigma, y: y + gauss() * sigma, kind: 'field' });
@@ -354,7 +566,7 @@
       for (let s = 0; s < nStray; s++) {
         const [x, y] = pickSample();
         const ang = Math.random() * Math.PI * 2;
-        const dist = 10 + Math.random() * 34;
+        const dist = (5 + Math.random() * 12) * sc;
         out.push({ x: x + Math.cos(ang) * dist, y: y + Math.sin(ang) * dist, kind: 'stray' });
       }
 
@@ -365,36 +577,32 @@
       return out;
     }
 
-    // =====================================================================
-    //  Star
-    //  Position = home + intro offset + physics offset + idle wobble.
-    //  The intro offset is a deterministic eased tween (curved flight path), fully independent
-    //  of frame rate and of the pointer physics, so the KL always forms as a smooth motion.
-    // =====================================================================
     class Star {
       constructor(hx, hy, o) {
         const halo = o.layer === 'halo';
         const dust = o.layer === 'dust';
         const ambient = o.layer !== 'letter';
+        const sc = o.scale || 1;
         this.hx = hx;
         this.hy = hy;
-        this.born = o.born || 0;
+        this.t0 = o.t0 || 0;   // birth time (ms since page start), so stars created later still fade in
 
         let mag = Math.pow(Math.random(), 3.2);
         if (o.kind === 'lead') mag = Math.max(mag, 0.4 + Math.random() * 0.5);
         if (o.kind === 'stray') mag *= 0.35;
 
         this.ci = pickColor();
-        this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : 0.75 + mag * 2.2;
-        this.bright = dust ? 0.1 + mag * 0.3 : halo ? 0.12 + mag * 0.2 : ambient ? 0.1 + mag * 0.3 : 0.6 + mag * 0.3;
+        // Boosted size and baseline brightness for letter stars
+        this.core = dust ? 0.22 + mag * 0.55 : halo ? 0.45 + mag * 0.9 : ambient ? 0.4 + mag * 1.3 : Math.max(0.5, (0.8 + mag * 1.5) * sc);
+        this.bright = dust ? 0.1 + mag * 0.3 : halo ? 0.12 + mag * 0.2 : ambient ? 0.1 + mag * 0.3 : 1.0 + mag * 0.3;
         this.glowSize = this.core * 2 / GLOW_CORE;
         this.glowRect = glowRects[this.ci][pickGlowLevel(this.glowSize)];
-        this.spike = !halo && !dust && mag > 0.85;
-        this.spikeSize = this.core * 26;
+        this.spike = !halo && !dust && mag > (ambient ? 0.85 : 0.93);
+        this.spikeSize = this.core * (ambient ? 26 : 16);
 
         this.hazeR = 0;
-        if (!ambient && Math.random() < 0.07) {
-          this.hazeR = 20 + Math.random() * 30;
+        if (!ambient && Math.random() < 0.03) {
+          this.hazeR = (20 + Math.random() * 30) * sc;
           this.hazeA = 0.08 + Math.random() * 0.08;
         }
 
@@ -410,47 +618,30 @@
         this.idleFy = 0.0007 + Math.random() * 0.0011;
         this.idleSx = Math.random() * 1000;
         this.idleSy = Math.random() * 1000;
-        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
-        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : 3.0 + Math.random() * 4.0;
+        this.idleAx = ambient ? 2.0 + Math.random() * 2.5 : (0.8 + Math.random() * 1.4) * sc;
+        this.idleAy = ambient ? 2.0 + Math.random() * 2.5 : (0.8 + Math.random() * 1.4) * sc;
 
         this.ambient = ambient;
         this.driftX = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
         this.driftY = (Math.random() - 0.5) * (halo || dust ? 0.04 : ambient ? 0.28 : 0.20);
 
-        // ---- intro flight ----
         this.intro = !!o.scatter;
-        this.ix = 0; this.iy = 0;
         if (this.intro) {
-          this.sx = Math.random() * width - hx;     // scatter offset from home
-          this.sy = Math.random() * height - hy;
-          const nx = klBox ? clamp01((hx - klBox.x) / klBox.w) : Math.random();
-          // stars set off in a left-to-right wave, so the letters "draw in" instead of appearing at once
-          this.moveStart = 400 + nx * 1300 + Math.random() * 600;
-          this.moveDur = 2600 + Math.random() * 1400;
-          this.curve = (Math.random() - 0.5) * 0.6;   // sideways bend of the flight path
-          this.ix = this.sx; this.iy = this.sy;
+          this.ox = Math.random() * width - hx;
+          this.oy = Math.random() * height - hy;
         }
 
-        // ---- fade-in (smoothstepped in update) ----
-        if (ambient) {
-          this.fadeStart = Math.random() * 800;
-          this.fadeDur = 800 + Math.random() * 400;
-        } else if (o.scatter) {
-          this.fadeStart = Math.random() * 1000;
-          this.fadeDur = 900 + Math.random() * 500;
-        } else {
-          this.fadeStart = Math.random() * 350;
-          this.fadeDur = 500 + Math.random() * 400;
-        }
+        this.fadeStart = Math.random() * (ambient ? 800 : 1750);
+        this.fadeDur = ambient ? 800 + Math.random() * 400 : 700 + Math.random() * 560;
+        this.moveStart = this.fadeStart + this.fadeDur + Math.random() * 840;
         this.alpha = 0;
-        this.x = hx + this.ix;
-        this.y = hy + this.iy;
+        this.x = hx + this.ox;
+        this.y = hy + this.oy;
       }
 
-      update(dt, t) {
-        const el = t - this.born;
-        const fp = el <= this.fadeStart ? 0 : Math.min(1, (el - this.fadeStart) / this.fadeDur);
-        this.alpha = fp * fp * (3 - 2 * fp);
+      update(dt, t, elapsed) {
+        elapsed -= this.t0;
+        this.alpha = elapsed < this.fadeStart ? 0 : Math.min(1, (elapsed - this.fadeStart) / this.fadeDur);
 
         if (this.ambient) {
           this.hx += this.driftX * dt;
@@ -459,29 +650,24 @@
           if (this.hy < -20) this.hy = height + 20; else if (this.hy > height + 20) this.hy = -20;
         }
 
-        // intro flight: eased tween along a curved path, landing exactly on home
-        let ix = 0, iy = 0;
+        let w = this.w;
         if (this.intro) {
-          if (el < this.moveStart) {
-            this.sx += this.driftX * dt;
-            this.sy += this.driftY * dt;
-            ix = this.sx; iy = this.sy;
-          } else {
-            const p = Math.min(1, (el - this.moveStart) / this.moveDur);
-            const e = easeInOutCubic(p);
-            const c = Math.sin(Math.PI * p) * this.curve;
-            ix = this.sx * (1 - e) - this.sy * c;
-            iy = this.sy * (1 - e) + this.sx * c;
-            if (p >= 1) { this.intro = false; ix = iy = 0; }
+          if (elapsed < this.moveStart) {
+            this.ox += this.driftX * dt;
+            this.oy += this.driftY * dt;
+            this.x = this.hx + this.ox;
+            this.y = this.hy + this.oy;
+            return;
           }
+          const p = Math.min(1, (elapsed - this.moveStart) / 2200);
+          w *= 0.5 + 1.6 * p * p;
+          if (elapsed > this.moveStart + 5500) this.intro = false;
         }
 
-        // pointer physics (spring back to rest)
         let vx = this.vx, vy = this.vy;
-        const cx = this.hx + ix + this.ox, cy = this.hy + iy + this.oy;
 
         if (pushing) {
-          const dx = cx - ptr.x, dy = cy - ptr.y;
+          const dx = this.x - ptr.x, dy = this.y - ptr.y;
           const d2 = dx * dx + dy * dy, R = MOTION.radius;
           if (d2 < R * R) {
             const d = Math.sqrt(d2) + 0.001;
@@ -492,7 +678,6 @@
           }
         }
 
-        const w = this.w;
         const atRest = this.ox * this.ox + this.oy * this.oy < 1e-4 && vx * vx + vy * vy < 1e-6;
         if (atRest) {
           this.ox = this.oy = this.vx = this.vy = 0;
@@ -515,44 +700,48 @@
           this.oy += vy * dt;
         }
 
-        // idle wobble is ALWAYS on (never switched on/off), so nothing snaps when the intro ends
         const idleX = prefersReducedMotion ? 0 : Math.sin(t * this.idleFx + this.idleSx) * this.idleAx;
         const idleY = prefersReducedMotion ? 0 : Math.cos(t * this.idleFy + this.idleSy) * this.idleAy;
-        this.x = this.hx + ix + this.ox + idleX;
-        this.y = this.hy + iy + this.oy + idleY;
+        this.x = this.hx + this.ox + idleX;
+        this.y = this.hy + this.oy + idleY;
       }
     }
 
-    function initParticles(assemble, born) {
-      ambientStars = [];
-      const count = Math.min(120, Math.round((width * height) / 14000));
-      for (let i = 0; i < count; i++) {
-        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient', born }));
-      }
-      letterStars = buildKLPoints().map(p =>
-        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble, born })
+    function makeLetterStars(assemble, t0) {
+      const pts = buildTextPoints();
+      letterStars = pts.map(p =>
+        new Star(p.x, p.y, { layer: 'letter', kind: p.kind, scatter: assemble, scale: textScale, t0 })
       );
-      buildHalo(born);
-      buildDust(born);
+      buildHalo();
     }
 
-    // =====================================================================
-    //  Procedural Milky Way + nebula
-    //  Generated in small time-sliced chunks (never blocks a frame), then faded in.
-    // =====================================================================
+    function initParticles(assemble) {
+      ambientStars = [];
+      const count = Math.min(320, Math.round((width * height) / 6500));
+      for (let i = 0; i < count; i++) {
+        ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient' }));
+      }
+      makeLetterStars(assemble, 0);
+      buildDust();
+    }
+
+    // Swap the displayed text: new stars scatter in and fly into the new letter shapes
+    function setText(str) {
+      currentText = String(str).replace(/\r/g, '');
+      try { localStorage.setItem(STORAGE_KEY, currentText); } catch (e) {}
+      const born = STATIC_MODE ? 0 : performance.now() - pageStartTime;
+      makeLetterStars(!prefersReducedMotion, born);
+      dirty = true;
+      if (STATIC_MODE || !motionOn) { renderOnce = true; schedule(); }
+    }
+
+    // ---------- Procedural Milky Way + nebula (rendered once, low-res, smoothly upscaled) ----------
     const BAND_ANG = -0.45;
     const neb = document.getElementById('nebula');
     const nebSeed = Math.random() * 100;
-    // Fewer octaves = cheaper. The result is rescaled to the 5-octave mean so thresholds/colours match.
-    const FBM_NORM = Array.from({ length: 6 }, (_, o) => o ? 0.96875 / (1 - Math.pow(0.5, o)) : 0);
-    const fbm = (x, y, oct = 5) => {
-      let sum = 0, a = 0.5;
-      for (let i = 0; i < oct; i++) { sum += a * valueNoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.7; a *= 0.5; }
-      return sum * FBM_NORM[oct];
-    };
-    const sstep = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
-    
-    let nebLayers = [], nebCv = null, nebCtx = null, nebDim = null;
+    // Each colour of the nebula is its own layer. Layers are blended additively ("screen") and
+    // drift / pulse independently, so the colours slowly flow into and out of each other.
+    let nebLayers = [], nebCv, nebCtx, nebDim;
     const TAU = Math.PI * 2, per = sec => TAU / (sec * 1000);
     const LAYER_SPECS = [
       { key: 'cool',   ax: 75, ay: 50, tx: 42, ty: 55, tr: 90,  ts: 60, to: 26, rot: 0.010, op: 0.85, pulse: 0.22, par: 18 },
@@ -562,105 +751,79 @@
       { key: 'teal',   ax: 60, ay: 64, tx: 60, ty: 33, tr: 85,  ts: 48, to: 30, rot: 0.010, op: 0.85, pulse: 0.30, par: 16 },
       { key: 'dust',   ax: 45, ay: 34, tx: 70, ty: 80, tr: 110, ts: 90, to: 60, rot: 0.006, op: 0.95, pulse: 0.06, par: 12, plain: true }
     ];
-    // fixed per-layer phases so a rebuild after a resize looks identical (no colour jump)
-    const nebPhase = LAYER_SPECS.map(() => [Math.random() * TAU, Math.random() * TAU]);
 
-    function* nebulaGen(W, H, M, sc, w, h) {
+    // The six layers are generated off the main thread (Web Worker; time-sliced main-thread fallback),
+    // then composited exactly as before. Until they are ready the plain dark sky shows.
+    let nebJob = 0, nebWorker = null, nebWorkerOk = typeof Worker === 'function' && typeof Blob === 'function' && !!(window.URL && URL.createObjectURL);
+    function generateNebula(job, w, h, W, H, sc, done) {
+      if (nebWorkerOk) {
+        try {
+          if (!nebWorker) {
+            const src = '(' + nebulaWorkerMain.toString() + ')(' + makeNebulaGen.toString() + ')';
+            nebWorker = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+            nebWorker.onmessage = (e) => { if (e.data.job === nebJob) nebWorker.pending(e.data.bufs); };
+            nebWorker.onerror = () => { nebWorkerOk = false; try { nebWorker.terminate(); } catch (_) {} nebWorker = null; if (job === nebJob) generateNebula(job, w, h, W, H, sc, done); };
+          }
+          nebWorker.pending = done;
+          nebWorker.postMessage({ job, w, h, W, H, sc, seed: nebSeed, ang: BAND_ANG });
+          return;
+        } catch (e) { nebWorkerOk = false; nebWorker = null; }
+      }
+      const bufs = [];
+      for (let k = 0; k < 6; k++) bufs.push(new Uint8ClampedArray(w * h * 4));
+      let y = 0;
+      const step = () => {
+        if (job !== nebJob) return;
+        const t0 = performance.now();
+        while (y < h && performance.now() - t0 < 6) {
+          const y1 = Math.min(h, y + 4);
+          nebulaGen(w, h, W, H, sc, nebSeed, BAND_ANG, y, y1, bufs);
+          y = y1;
+        }
+        if (y < h) setTimeout(step, 0); else done(bufs);
+      };
+      setTimeout(step, 0);
+    }
+
+    function drawNebula() {
+      const job = ++nebJob;
+      const M = 160, W = width + M * 2, H = height + M * 2, sc = 4;
+      const w = Math.ceil(W / sc), h = Math.ceil(H / sc);
+      generateNebula(job, w, h, W, H, sc, (bufs) => { if (job === nebJob) buildNebulaLayers(bufs, w, h, W, H, M); });
+    }
+
+    function buildNebulaLayers(bufs, w, h, W, H, M) {
+      // static sky gradient (with faint airglow at the bottom)
       const bc = document.createElement('canvas');
       bc.width = 2; bc.height = 256;
       const bg = bc.getContext('2d'), gr = bg.createLinearGradient(0, 0, 0, 256);
       gr.addColorStop(0, 'rgb(6,8,13)'); gr.addColorStop(0.72, 'rgb(11,18,37)'); gr.addColorStop(1, 'rgb(16,45,60)');
       bg.fillStyle = gr; bg.fillRect(0, 0, 2, 256);
 
-      const tmp = document.createElement('canvas').getContext('2d');
-      const imgs = LAYER_SPECS.map(() => tmp.createImageData(w, h));
-      const d0 = imgs[0].data, d1 = imgs[1].data, d2 = imgs[2].data, d3 = imgs[3].data, d4 = imgs[4].data, d5 = imgs[5].data;
-      const m = Math.min(W, H), ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG);
-      const inv = sc / m, offX = (W / m) * 0.5, offY = (H / m) * 0.5, s2 = nebSeed * 2, s3 = nebSeed * 3;
-      const G = 1.15;
-      // colours as plain numbers (no per-pixel array allocation -> no GC hiccups)
-      const WR = 255, WG = 140, WB = 110, GR = 255, GG = 205, GB = 150;
-      let i = 0;
-      for (let y = 0; y < h; y++) {
-        const v = y * inv, py = v - offY;
-        for (let x = 0; x < w; x++, i += 4) {
-          const u = x * inv, px = u - offX;
-          const warp = (fbm(u * 1.3 + s3, v * 1.3, 3) - 0.5) * 0.24;
-          const dist = -px * sa + py * ca + warp, along = px * ca + py * sa;
-          const al2 = along * along;
-          let band = Math.exp(-(dist * dist) / 0.08);
-          const bulge = Math.exp(-al2 / 0.14);
-          band *= 0.6 + 0.6 * Math.exp(-al2 / 1.1);
-
-          const gas = fbm(u * 2.2 + nebSeed, v * 2.2, 5);
-          const fine = fbm(u * 6 + s2, v * 6, 4);
-          const hue = fbm(u * 1.6 - nebSeed, v * 1.6 + 5, 3);
-          const dens = band * (0.25 + gas * 1.1) * (0.75 + fine * 0.5);
-          // dust lane is multiplied by band, so far from the band it is invisible: skip its noise
-          const lane = band > 0.004 ? sstep(0.48, 0.72, fbm(u * 3.5 + 40, v * 3.5 - nebSeed, 4)) * band : 0;
-
-          const s1 = sstep(0.3, 0.6, hue);
-          const wv = sstep(0.6, 0.85, fine) * 0.55 * band;
-          const Ib = dens * 0.55 * G;
-          const Ic = Ib * (1 - s1), Iv = Ib * s1;
-          let gk = bulge * band * 1.2; if (gk > 1) gk = 1;
-          const Iw = Ib * wv * 1.1 + bulge * band * 0.16 * G;
-          const Ie = sstep(0.6, 0.84, fbm(u * 1.8 + 120 + nebSeed, v * 1.8 - 30, 3)) * (0.25 + 0.75 * band) * 0.3 * G;
-          const It = sstep(0.5, 0.85, fbm(u * 1.4 + 90, v * 1.4, 3)) * 0.11 * (1 - band * 0.5) * G;
-
-          d0[i] = 46 * Ic;   d0[i + 1] = 104 * Ic;  d0[i + 2] = 214 * Ic;  d0[i + 3] = 255;
-          d1[i] = 140 * Iv;  d1[i + 1] = 70 * Iv;   d1[i + 2] = 205 * Iv;  d1[i + 3] = 255;
-          d2[i] = (WR + (GR - WR) * gk) * Iw; d2[i + 1] = (WG + (GG - WG) * gk) * Iw; d2[i + 2] = (WB + (GB - WB) * gk) * Iw; d2[i + 3] = 255;
-          d3[i] = 225 * Ie;  d3[i + 1] = 70 * Ie;   d3[i + 2] = 140 * Ie;  d3[i + 3] = 255;
-          d4[i] = 30 * It;   d4[i + 1] = 135 * It;  d4[i + 2] = 170 * It;  d4[i + 3] = 255;
-          d5[i] = 2; d5[i + 1] = 3; d5[i + 2] = 8; d5[i + 3] = Math.min(255, lane * 0.8 * 255);
-        }
-        if ((y & 1) === 1) yield;   // hand control back regularly so a frame is never blocked
-      }
-      return { imgs, w, h, W, H, M, bc };
-    }
-
-    let nebJob = null;
-    function startNebula() {
-      const M = 160, W = width + M * 2, H = height + M * 2;
-      const sc = Math.max(4, Math.sqrt((W * H) / NEB_PIXELS));   // big screens get a coarser (still smooth) grid
-      const w = Math.ceil(W / sc), h = Math.ceil(H / sc);
-      nebJob = nebulaGen(W, H, M, sc, w, h);   // replaces any unfinished older job
-      if (STATIC_MODE) pumpNebula(Infinity);
-    }
-    function pumpNebula(budgetMs) {
-      if (!nebJob) return;
-      const t0 = performance.now();
-      do {
-        const r = nebJob.next();
-        if (r.done) { const res = r.value; nebJob = null; finishNebula(res); return; }
-      } while (performance.now() - t0 < budgetMs);
-    }
-    function finishNebula(res) {
-      const { imgs, w, h, W, H, M, bc } = res;
-      const layers = LAYER_SPECS.map((sp, k) => {
+      const layers = [];
+      LAYER_SPECS.forEach((sp, k) => {
         const c = document.createElement('canvas');
         c.width = w; c.height = h;
-        c.getContext('2d').putImageData(imgs[k], 0, 0);
-        return {
+        c.getContext('2d').putImageData(new ImageData(bufs[k], w, h), 0, 0);
+        layers.push({
           el: c, plain: !!sp.plain, ax: sp.ax, ay: sp.ay, rot: sp.rot, op: sp.op, pulse: sp.pulse, par: sp.par,
           fx: per(sp.tx), fy: per(sp.ty), fr: per(sp.tr), fs: per(sp.ts), fo: per(sp.to),
-          px: nebPhase[k][0], py: nebPhase[k][1]
-        };
+          px: Math.random() * TAU, py: Math.random() * TAU
+        });
       });
       // One low-res canvas: layers are blended inside it (cheap), then the browser upscales it once
       const cv = document.createElement('canvas');
       cv.width = w; cv.height = h;
-      cv.style.cssText = `left:${-M}px;top:${-M}px;width:${W}px;height:${H}px`;
-      const g = cv.getContext('2d', { alpha: false });
-      nebLayers = layers;
-      nebDim = { W, H, M, kx: w / W, ky: h / H, bg: bc };
-      nebCtx = g;
-      updateNebula(clock);                       // paint before it becomes visible
-      if (nebCv && nebCv.parentNode) nebCv.parentNode.removeChild(nebCv);
-      nebCv = cv;
+      cv.style.cssText = `left:${-M}px;top:${-M}px;width:${W}px;height:${H}px;opacity:0`;
+      const old = Array.from(neb.children);
       neb.appendChild(cv);
-      requestAnimationFrame(() => neb.classList.add('ready'));   // fade in (first build) / no-op afterwards
+      nebLayers = layers;
+      nebCv = cv;
+      nebCtx = cv.getContext('2d', { alpha: false });
+      nebDim = { W, H, M, kx: w / W, ky: h / H, bg: bc };
+      updateNebula(performance.now());
+      requestAnimationFrame(() => requestAnimationFrame(() => { cv.style.opacity = '1'; }));
+      if (old.length) setTimeout(() => old.forEach(o => o.remove()), 800);
     }
 
     function updateNebula(t) {
@@ -684,20 +847,16 @@
       }
     }
 
-    // Dense tiny stars along the Milky Way band, baked ONCE into a static canvas element.
-    // The browser composites it on the GPU; per frame we only touch its CSS opacity (no full-screen redraw).
-    let dustEl = null, dustBorn = 0, dustOpacity = -1;
-    function buildDust(born) {
-      dustBorn = born || 0;
-      const old = dustEl;
-      const el = document.createElement('canvas');
-      el.id = 'dust-canvas';
-      el.width = width; el.height = height;
-      el.style.width = width + 'px'; el.style.height = height + 'px';
-      el.style.opacity = '0';
-      const g = el.getContext('2d');
+    // Dense tiny stars along the Milky Way band.
+    // Baked ONCE into a static offscreen canvas -> 1 drawImage per frame instead of ~1500.
+    let dustLayer = null, dustDirty = false;
+    function buildDust() {
+      dustDirty = true;
+      dustLayer = document.createElement('canvas');
+      dustLayer.width = width; dustLayer.height = height;
+      const g = dustLayer.getContext('2d');
       g.globalCompositeOperation = 'lighter';
-      const n = Math.min(450, Math.round((width * height) / 4500));
+      const n = Math.min(1200, Math.round((width * height) / 1800));
       const ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG), diag = Math.hypot(width, height);
       const sigma = Math.min(width, height) * 0.2 * 0.85;
       let made = 0, guard = 0;
@@ -712,40 +871,58 @@
         g.drawImage(atlas, gr.x, gr.y, gr.s, gr.s, x - s / 2, y - s / 2, s, s);
         made++;
       }
-      document.body.insertBefore(el, canvas);
-      dustEl = el;
-      dustOpacity = -1;
-      if (old) {                                   // cross-fade the previous layer out after a resize
-        old.style.transition = 'opacity 0.7s ease';
-        old.style.opacity = '0';
-        setTimeout(() => old.remove(), 800);
-      }
     }
 
-    // Occasional shooting star (fades in at the head so it never pops)
-    let shoot = null, nextShoot = 4000 + Math.random() * 6000;
+    // Occasional shooting star
+    let shoot = null, nextShoot = performance.now() + 4000 + Math.random() * 6000;
+    function sizeShootCanvas() {
+      shootCv.style.width = width + 'px';
+      shootCv.style.height = height + 'px';
+      shootCv.width = Math.round(width * dpr);
+      shootCv.height = Math.round(height * dpr);
+      fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      fx.globalCompositeOperation = 'lighter';
+    }
+    function endShoot() {
+      if (gl && shootCv) { fx.clearRect(0, 0, width, height); shootCv.style.display = 'none'; }
+    }
     function drawShoot(t, dt) {
-      if (!shoot && t > nextShoot && !prefersReducedMotion) {
+      if (!shoot && t > nextShoot && !prefersReducedMotion && motionOn) {
         const a = 0.35 + Math.random() * 0.5;
         shoot = { x: Math.random() * width * 0.7, y: Math.random() * height * 0.35, vx: Math.cos(a) * 14, vy: Math.sin(a) * 14, life: 0, max: 55 };
+        if (gl) {
+          if (!shootCv) {
+            // the streak lives on its own tiny-cost overlay canvas (only shown while a shooting star is flying)
+            shootCv = document.createElement('canvas');
+            shootCv.id = 'shoot-canvas';
+            canvas.after(shootCv);
+            fx = shootCv.getContext('2d');
+            sizeShootCanvas();
+          }
+          shootCv.style.display = 'block';
+        }
       }
       if (!shoot) return;
       shoot.x += shoot.vx * dt; shoot.y += shoot.vy * dt; shoot.life += dt;
-      const k = (1 - shoot.life / shoot.max) * Math.min(1, shoot.life / 8);
-      if (shoot.life >= shoot.max) { shoot = null; nextShoot = t + 7000 + Math.random() * 12000; return; }
+      const k = 1 - shoot.life / shoot.max;
+      if (k <= 0) { shoot = null; nextShoot = t + 7000 + Math.random() * 12000; endShoot(); return; }
+      if (gl) fx.clearRect(0, 0, width, height);
       const tx = shoot.x - shoot.vx * 11, ty = shoot.y - shoot.vy * 11;
-      const gr = ctx.createLinearGradient(tx, ty, shoot.x, shoot.y);
+      const gr = fx.createLinearGradient(tx, ty, shoot.x, shoot.y);
       gr.addColorStop(0, 'rgba(180,210,255,0)');
       gr.addColorStop(1, `rgba(225,238,255,${0.85 * k})`);
-      ctx.globalAlpha = 1; ctx.strokeStyle = gr; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(shoot.x, shoot.y); ctx.stroke();
-      ctx.globalAlpha = k; const sg = glowRects[0][1]; ctx.drawImage(atlas, sg.x, sg.y, sg.s, sg.s, shoot.x - 9, shoot.y - 9, 18, 18);
+      fx.globalAlpha = 1; fx.strokeStyle = gr; fx.lineWidth = 1.6; fx.lineCap = 'round';
+      fx.beginPath(); fx.moveTo(tx, ty); fx.lineTo(shoot.x, shoot.y); fx.stroke();
+      fx.globalAlpha = k; const sg = glowRects[0][1]; fx.drawImage(atlas, sg.x, sg.y, sg.s, sg.s, shoot.x - 9, shoot.y - 9, 18, 18);
     }
 
-    function buildHalo(born) {
+    // Gentle pointer parallax for the nebula
+    const par = { x: 0, y: 0 };
+
+    function buildHalo() {
       haloStars = [];
       if (!klBox) return;
-      const m = klBox.h * 0.3, gap = klBox.h * 0.05;
+      const m = Math.max(klBox.h * 0.3, 60), gap = Math.max(klBox.h * 0.05, 12);
       const x0 = Math.max(10, klBox.x - m), x1 = Math.min(width - 10, klBox.x + klBox.w + m);
       const y0 = Math.max(10, klBox.y - m), y1 = Math.min(height - 10, klBox.y + klBox.h + m);
       const count = Math.max(18, Math.min(45, Math.round(width * height / 26000)));
@@ -754,9 +931,171 @@
         const x = x0 + Math.random() * (x1 - x0), y = y0 + Math.random() * (y1 - y0);
         const inside = x > klBox.x - gap && x < klBox.x + klBox.w + gap && y > klBox.y - gap && y < klBox.y + klBox.h + gap;
         if (inside) continue;
-        haloStars.push(new Star(x, y, { layer: 'halo', born }));
+        haloStars.push(new Star(x, y, { layer: 'halo', t0: letterStars.length ? letterStars[0].t0 : 0 }));
       }
     }
+    initParticles(KL.assembleOnLoad && !prefersReducedMotion);
+    drawNebula();
+
+    // ---------- Star renderer ----------
+    // WebGL2: every glow / spike / haze sprite of every star is one instance of a textured quad, all drawn in a
+    // single instanced call with additive blending (identical to Canvas 2D "lighter" + globalAlpha).
+    // Canvas 2D: original one-drawImage-per-sprite path, used only when WebGL2 is unavailable.
+    const INST = 9;                 // cx, cy, w, h, srcX, srcY, srcW, srcH, alpha
+    let inst = new Float32Array(INST * 2048), instN = 0, instBytes = 0;
+    const dustInst = new Float32Array(INST);
+    let glReady = false, glLost = false;
+    let glProg, glVao, glBuf, glDustVao, glDustBuf, glAtlasTex, glDustTex, uRes, uTex;
+
+    function setupGL() {
+      const compile = (type, src) => {
+        const sh = gl.createShader(type);
+        gl.shaderSource(sh, src);
+        gl.compileShader(sh);
+        return sh;
+      };
+      const vs = compile(gl.VERTEX_SHADER, `#version 300 es
+        layout(location = 0) in vec4 aPos;
+        layout(location = 1) in vec4 aSrc;
+        layout(location = 2) in float aAlpha;
+        uniform vec2 uRes;
+        uniform vec2 uTex;
+        out vec2 vUv;
+        out float vA;
+        void main() {
+          vec2 c = vec2(float(gl_VertexID & 1), float(gl_VertexID >> 1));
+          vec2 p = aPos.xy + (c - 0.5) * aPos.zw;
+          gl_Position = vec4(p.x / uRes.x * 2.0 - 1.0, 1.0 - p.y / uRes.y * 2.0, 0.0, 1.0);
+          vUv = (aSrc.xy + c * aSrc.zw) / uTex;
+          vA = aAlpha;
+        }`);
+      const fs = compile(gl.FRAGMENT_SHADER, `#version 300 es
+        precision mediump float;
+        uniform sampler2D uSamp;
+        in vec2 vUv;
+        in float vA;
+        out vec4 o;
+        void main() { o = texture(uSamp, vUv) * vA; }`);
+      glProg = gl.createProgram();
+      gl.attachShader(glProg, vs);
+      gl.attachShader(glProg, fs);
+      gl.linkProgram(glProg);
+      if (!gl.getProgramParameter(glProg, gl.LINK_STATUS)) throw new Error('star shader link failed');
+      uRes = gl.getUniformLocation(glProg, 'uRes');
+      uTex = gl.getUniformLocation(glProg, 'uTex');
+      gl.useProgram(glProg);
+      gl.uniform1i(gl.getUniformLocation(glProg, 'uSamp'), 0);
+
+      const makeVao = (buf) => {
+        const vao = gl.createVertexArray();
+        gl.bindVertexArray(vao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        const stride = INST * 4;
+        gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 4, gl.FLOAT, false, stride, 0);  gl.vertexAttribDivisor(0, 1);
+        gl.enableVertexAttribArray(1); gl.vertexAttribPointer(1, 4, gl.FLOAT, false, stride, 16); gl.vertexAttribDivisor(1, 1);
+        gl.enableVertexAttribArray(2); gl.vertexAttribPointer(2, 1, gl.FLOAT, false, stride, 32); gl.vertexAttribDivisor(2, 1);
+        return vao;
+      };
+      glBuf = gl.createBuffer();
+      glVao = makeVao(glBuf);
+      glDustBuf = gl.createBuffer();
+      glDustVao = makeVao(glDustBuf);
+      gl.bindBuffer(gl.ARRAY_BUFFER, glDustBuf);
+      gl.bufferData(gl.ARRAY_BUFFER, dustInst.byteLength, gl.DYNAMIC_DRAW);
+      instBytes = 0;
+
+      const makeTex = (src) => {
+        const tx = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tx);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        return tx;
+      };
+      glAtlasTex = makeTex(atlas);
+      glDustTex = gl.createTexture();
+      dustDirty = true;
+      gl.disable(gl.DEPTH_TEST);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      glReady = true;
+    }
+
+    function uploadDust() {
+      dustDirty = false;
+      gl.bindTexture(gl.TEXTURE_2D, glDustTex);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, dustLayer);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
+
+    function glRender(dustAlpha) {
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.useProgram(glProg);
+      gl.uniform2f(uRes, width, height);
+      gl.activeTexture(gl.TEXTURE0);
+
+      if (dustLayer && dustAlpha > 0) {
+        if (dustDirty) uploadDust();
+        dustInst[0] = width / 2; dustInst[1] = height / 2; dustInst[2] = width; dustInst[3] = height;
+        dustInst[4] = 0; dustInst[5] = 0; dustInst[6] = dustLayer.width; dustInst[7] = dustLayer.height;
+        dustInst[8] = dustAlpha;
+        gl.bindTexture(gl.TEXTURE_2D, glDustTex);
+        gl.uniform2f(uTex, dustLayer.width, dustLayer.height);
+        gl.bindVertexArray(glDustVao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, glDustBuf);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, dustInst);
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, 1);
+      }
+
+      if (instN) {
+        gl.bindTexture(gl.TEXTURE_2D, glAtlasTex);
+        gl.uniform2f(uTex, atlas.width, atlas.height);
+        gl.bindVertexArray(glVao);
+        gl.bindBuffer(gl.ARRAY_BUFFER, glBuf);
+        if (instBytes < inst.byteLength) { gl.bufferData(gl.ARRAY_BUFFER, inst.byteLength, gl.DYNAMIC_DRAW); instBytes = inst.byteLength; }
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, inst.subarray(0, instN * INST));
+        gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, instN);
+      }
+    }
+
+    if (gl) {
+      try {
+        setupGL();
+        canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); glLost = true; glReady = false; });
+        canvas.addEventListener('webglcontextrestored', () => { try { setupGL(); glLost = false; renderOnce = true; schedule(); } catch (_) { glLost = true; } });
+      } catch (e) {
+        // very rare: shader/link failure -> keep the sky running on the 2D renderer via a fresh canvas
+        const fresh = canvas.cloneNode(false);
+        canvas.replaceWith(fresh);
+        canvas = fresh;
+        gl = null;
+        ctx = canvas.getContext('2d');
+        fx = ctx;
+        resize();
+      }
+    }
+
+    function emitGL(r, cx, cy, size, a) {
+      const o = instN * INST;
+      inst[o] = cx; inst[o + 1] = cy; inst[o + 2] = size; inst[o + 3] = size;
+      inst[o + 4] = r.x; inst[o + 5] = r.y; inst[o + 6] = r.s; inst[o + 7] = r.s;
+      inst[o + 8] = a > 1 ? 1 : a;
+      instN++;
+    }
+    function emit2D(r, cx, cy, size, a) {
+      ctx.globalAlpha = a > 1 ? 1 : a;
+      ctx.drawImage(atlas, r.x, r.y, r.s, r.s, cx - size / 2, cy - size / 2, size, size);
+    }
+    let emit = gl ? emitGL : emit2D;
 
     function drawStars(list, t) {
       for (let i = 0; i < list.length; i++) {
@@ -764,28 +1103,17 @@
         if (p.alpha <= 0.01) continue;
 
         const sineWave = Math.sin(t * p.tws + p.twp);
+        // Added brightness floor so letter stars don't fade to black
         const tw = p.ambient
           ? Math.max(0, (sineWave + 0.15) * 1.35)
-          : Math.max(0.35, (sineWave + 0.35) * 1.2);
+          : Math.max(0.75, (sineWave + 0.5) * 1.2);
         const a = p.alpha * p.bright * tw;
 
         if (a <= 0.008) continue;
 
-        if (p.hazeR) {
-          ctx.globalAlpha = Math.min(1, p.alpha * p.hazeA * tw);
-          const hs = p.hazeR * 2;
-          const hr = hazeRects[p.ci]; ctx.drawImage(atlas, hr.x, hr.y, hr.s, hr.s, p.x - p.hazeR, p.y - p.hazeR, hs, hs);
-        }
-
-        ctx.globalAlpha = Math.min(1, a);
-        const s = p.glowSize;
-        const gr = p.glowRect; ctx.drawImage(atlas, gr.x, gr.y, gr.s, gr.s, p.x - s / 2, p.y - s / 2, s, s);
-
-        if (p.spike) {
-          ctx.globalAlpha = Math.min(1, a * 0.75);
-          const L = p.spikeSize;
-          const sr = spikeRects[p.ci]; ctx.drawImage(atlas, sr.x, sr.y, sr.s, sr.s, p.x - L / 2, p.y - L / 2, L, L);
-        }
+        if (p.hazeR) emit(hazeRects[p.ci], p.x, p.y, p.hazeR * 2, p.alpha * p.hazeA * tw);
+        emit(p.glowRect, p.x, p.y, p.glowSize, a);
+        if (p.spike) emit(spikeRects[p.ci], p.x, p.y, p.spikeSize, a * 0.75);
       }
     }
 
@@ -801,108 +1129,68 @@
       }
       g.putImageData(img, 0, 0);
       const ov = document.getElementById('overlay');
-      ov.style.backgroundImage = `linear-gradient(rgba(3,5,12,0.2), rgba(3,5,12,0.2)), radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(2,3,10,0.7) 100%), url(${c.toDataURL()})`;
-      ov.style.backgroundSize = `100% 100%, 100% 100%, ${n}px ${n}px`;
+      ov.style.backgroundImage = `radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(2,3,10,0.7) 100%), url(${c.toDataURL()})`;
+      ov.style.backgroundSize = `100% 100%, ${n}px ${n}px`;
     })();
 
-    // ---- Adaptive quality ------------------------------------------------
-    // If frames keep taking too long (weak GPU / busy machine) shed load in two steps instead of stuttering.
-    // Level 1: slower nebula redraw, no large haze sprites.  Level 2: also thin out the star field.
-    function applyQuality() {
-      NEB_MS = 1000 / (quality >= 2 ? 6 : quality >= 1 ? 8 : NEB_FPS);
-      if (quality >= 1) for (const list of [ambientStars, letterStars, haloStars]) for (const p of list) p.hazeR = 0;
-      if (quality >= 2) {
-        ambientStars = ambientStars.filter((p, i) => i % 2 === 0);
-        haloStars = haloStars.filter((p, i) => i % 2 === 0);
-        letterStars = letterStars.filter((p, i) => p.spike || i % 3 !== 0);
-      }
-    }
-
-    // ---- Resize handling: rebuild, cross-fading the old stars out ------------
-    let resizeTimer;
-    function rebuild() {
-      const old = [...ambientStars, ...letterStars, ...haloStars];
-      if (!STATIC_MODE && old.length) {
-        old.forEach(p => { p.alpha0 = p.alpha; });
-        leaving = { stars: old, t0: clock };
-      }
-      resize();
-      const assemble = KL.assembleOnLoad && !prefersReducedMotion && clock < INTRO_MS;
-      initParticles(assemble, STATIC_MODE ? 0 : clock);
-      applyQuality();
-      startNebula();
-      kick();
-    }
-    function checkSize() {
-      const sz = getSize();
-      if (sz.w !== width || sz.h !== height) rebuild();
-    }
-    function scheduleCheck() { clearTimeout(resizeTimer); resizeTimer = setTimeout(checkSize, 150); }
-    window.addEventListener('resize', scheduleCheck);
-    if (window.ResizeObserver) new ResizeObserver(scheduleCheck).observe(document.documentElement);
-    setInterval(checkSize, 4000); // wallpaper engines don't always fire resize (display change, wake from sleep)
-
-    // ---- Auto-pilot cursor for wallpaper engines that never deliver mouse events ----
+    // Wallpaper engines (e.g. Plash) don't deliver mouse events, so when no real pointer has
+    // moved for AUTO_IDLE ms a virtual cursor glides through the stars on its own.
     const AUTO_IDLE = 3500;
-    const AUTO_START = 5000;   // wait until the KL has mostly formed
-    let autoT = 0, autoLast = null, autoGain = 0;
-    function autoPilot(now, dt) {
-      if (prefersReducedMotion || clock < AUTO_START || now - lastRealMove < AUTO_IDLE) {
-        autoLast = null; autoGain = 0; autoActive = false; return;
-      }
-      autoActive = true;
-      autoGain = Math.min(1, autoGain + dt * 0.02);    // ease the virtual cursor in
+    let autoT = 0, autoLast = null;
+    function autoPilot(t, dt) {
+      if (prefersReducedMotion || t - lastRealMove < AUTO_IDLE) { autoLast = null; return; }
       autoT += 0.016 * dt;
       const cx = width * KL.centerX, cy = height * KL.centerY;
       const ax = cx + width * 0.38 * Math.sin(autoT * 0.9 + 0.6 * Math.sin(autoT * 0.37));
       const ay = cy + height * 0.30 * Math.sin(autoT * 0.61 + 1.3);
-      if (autoLast) { ptr.dx += (ax - autoLast.x) * autoGain; ptr.dy += (ay - autoLast.y) * autoGain; }
+      if (autoLast) { ptr.dx += ax - autoLast.x; ptr.dy += ay - autoLast.y; }
       ptr.x = ax; ptr.y = ay; ptr.active = true;
       autoLast = { x: ax, y: ay };
     }
 
-    // ---- Main loop -------------------------------------------------------
-    initParticles(KL.assembleOnLoad && !prefersReducedMotion, 0);
-    applyQuality();
-    startNebula();
+    let lastTime = performance.now();
+    let skipFrame = false;
+    let dirty = true;
+    const TARGET_FPS = 30, FRAME_MS = 1000 / TARGET_FPS;
+    const NEB_MS = 1000 / 10;
+    let lastFrame = 0, lastNeb = 0;
 
-    let paused = false, running = false;
-    function setPaused(p) {
-      paused = p;
-      if (!p && !running && !STATIC_MODE) { lastNow = null; running = true; requestAnimationFrame(frame); }
-    }
-    document.addEventListener('visibilitychange', () => { if (!document.hidden && !paused && !running && !STATIC_MODE) { lastNow = null; running = true; requestAnimationFrame(frame); } });
+    // Exactly one animation-frame chain can ever be pending, so tab switches can't pile up extra loops.
+    let rafId = 0, motionOn = true, renderOnce = false;
+    function schedule() { if (!rafId) rafId = requestAnimationFrame(frame); }
+    function frame(now) { rafId = 0; animate(now); }
 
-    let skipFrame = false, lastNeb = -1e9;
-    function kick() { if (STATIC_MODE) requestAnimationFrame(frame); }
-
-    function frame(now) {
-      if (!STATIC_MODE) {
-        if (paused || document.hidden) { running = false; lastNow = null; return; }   // loop fully stops: zero CPU/GPU while off or in a background tab
-        requestAnimationFrame(frame);
+    function animate(now) {
+      if (STATIC_MODE) { if (!dirty) return; dirty = false; }
+      if (document.hidden) return;   // resumed by the visibilitychange handler
+      const forced = renderOnce;     // one-off redraw while effects are off
+      renderOnce = false;
+      if (!motionOn && !forced) return;
+      const frozen = STATIC_MODE || !motionOn;
+      const t = STATIC_MODE ? 5000 : (now || performance.now());
+      if (!frozen) {
+        const since = t - lastFrame;
+        if (since < FRAME_MS - 1) { schedule(); return; }
+        lastFrame = t - (since % FRAME_MS);
       }
 
-      if (lastNow === null) lastNow = now - 16.667;
-      const delta = now - lastNow;
-      const cap = quality >= 2 ? 30 : FPS_CAP;          // last-resort mode runs at half rate
-      if (cap && delta < 1000 / cap - 2) return;
-
-      if (isScrolling && now - lastScrollTime > SCROLL_IDLE_MS) isScrolling = false;
-      if (isScrolling) { lastNow = now; return; }   // draw nothing while the parent scrolls: the main thread stays free for smooth scrolling
-
-      lastNow = now;
-      if (!STATIC_MODE && !isScrolling && clock > INTRO_MS + 1500 && !nebJob && delta < 200) {
-        emaDelta += (delta - emaDelta) * 0.04;
-        slowMs = emaDelta > 25 ? slowMs + delta : 0;          // sustained < ~40 fps
-        if (slowMs > 1800 && quality < 2) { quality++; applyQuality(); slowMs = 0; emaDelta = 16.7; }
+      if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
+        isScrolling = false;
+        rootEl.classList.remove('is-scrolling');
       }
-      const step = Math.min(delta, MAX_STEP_MS);
-      if (!STATIC_MODE) clock += step;
-      const dt = Math.max(0.1, step / 16.667);
-      const t = clock;
 
-      pumpNebula(STATIC_MODE ? Infinity : 4);   // build the nebula a few ms per frame
-      autoPilot(now, dt);
+      if (isScrolling && !frozen) {
+        skipFrame = !skipFrame;
+        if (skipFrame) { schedule(); return; }
+      } else {
+        skipFrame = false;
+      }
+
+      const dt = Math.max(0.1, Math.min((t - lastTime) / 16.667, 3.0));
+      lastTime = t;
+      const elapsed = frozen ? 1e7 : t - pageStartTime;
+
+      if (!modalOpen) autoPilot(t, dt);
 
       let rawSpeed = Math.hypot(ptr.dx, ptr.dy);
       if (rawSpeed > 60) {
@@ -911,49 +1199,112 @@
         rawSpeed = 60;
       }
       ptr.speed = rawSpeed;
-      pushing = ptr.active && ptr.speed > 0.05 && !isScrolling && !prefersReducedMotion;
+      pushing = ptr.active && ptr.speed > 0.05 && !isScrolling && !modalOpen && !prefersReducedMotion;
 
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.clearRect(0, 0, width, height);
+      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t, elapsed);
+      for (let i = 0; i < haloStars.length; i++) haloStars[i].update(dt, t, elapsed);
 
-      for (let i = 0; i < ambientStars.length; i++) ambientStars[i].update(dt, t);
-      for (let i = 0; i < letterStars.length; i++) letterStars[i].update(dt, t);
-      for (let i = 0; i < haloStars.length; i++) haloStars[i].update(dt, t);
-
-      ctx.globalCompositeOperation = 'lighter';
-
-      // previous star set fading out after a resize
-      if (leaving) {
-        const k = 1 - (t - leaving.t0) / 700;
-        if (k <= 0) leaving = null;
-        else {
-          const ease = k * k * (3 - 2 * k);
-          for (const p of leaving.stars) p.alpha = p.alpha0 * ease;
-          drawStars(leaving.stars, t);
+      const dustAlpha = Math.min(1, elapsed / 1200) * (0.85 + 0.15 * Math.sin(t * 0.0008));
+      if (gl) {
+        if (glReady) {
+          const need = (ambientStars.length + letterStars.length + haloStars.length) * 3 * INST;
+          if (inst.length < need) inst = new Float32Array(need + INST * 256);
+          instN = 0;
+          drawStars(ambientStars, t);
+          drawStars(letterStars, t);
+          drawStars(haloStars, t);
+          glRender(dustAlpha);
         }
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.clearRect(0, 0, width, height);
+        ctx.globalCompositeOperation = 'lighter';
+        if (dustLayer) {
+          ctx.globalAlpha = dustAlpha;
+          ctx.drawImage(dustLayer, 0, 0, width, height);
+        }
+        drawStars(ambientStars, t);
+        drawStars(letterStars, t);
+        drawStars(haloStars, t);
       }
-
-      if (dustEl) {
-        const o = Math.round(smooth((t - dustBorn) / 1400) * (0.85 + 0.15 * Math.sin(t * 0.0008)) * 100) / 100;
-        if (o !== dustOpacity) { dustOpacity = o; dustEl.style.opacity = o; }
-      }
-      drawStars(ambientStars, t);
-      drawStars(letterStars, t);
-      drawStars(haloStars, t);
       drawShoot(t, dt);
-
-      // frame-rate independent parallax smoothing
-      const pk = 1 - Math.pow(0.98, dt);
-      par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * pk;
-      par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * pk;
-
-      if (!prefersReducedMotion && t - lastNeb >= NEB_MS - 4) { lastNeb = t; updateNebula(t); }
-      ctx.globalAlpha = 1;
+      par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * 0.04;
+      par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * 0.04;
+      if (!STATIC_MODE && t - lastNeb >= NEB_MS) { lastNeb = t; updateNebula(t); }
+      if (ctx) ctx.globalAlpha = 1;
 
       ptr.dx = ptr.dy = 0;
+      if (!STATIC_MODE && motionOn) schedule();
     }
-    running = true;
-    requestAnimationFrame(frame);
+    schedule();
+
+    // stop all work when the page is hidden (screen off / other space / minimised)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) { lastTime = performance.now(); schedule(); }
+    });
+
+    // Effects on/off and scroll activity are sent by the host page (the page that embeds this one as an iframe).
+    function setMotion(on) {
+      if (on === motionOn) return;
+      motionOn = on;
+      if (on) { lastTime = performance.now(); schedule(); return; }
+      // effects off: settle every star at its place and draw one still frame
+      shoot = null; endShoot();
+      for (const list of [ambientStars, letterStars, haloStars]) {
+        for (let i = 0; i < list.length; i++) { const p = list[i]; p.ox = p.oy = p.vx = p.vy = 0; p.intro = false; }
+      }
+      renderOnce = true;
+      schedule();
+    }
+    window.addEventListener('message', (e) => {
+      if (window.parent === window || e.source !== window.parent) return;
+      const d = e.data;
+      if (!d || typeof d !== 'object') return;
+      if (d.type === 'scroll') {
+        lastScrollTime = performance.now();
+        if (!isScrolling) { isScrolling = true; rootEl.classList.add('is-scrolling'); }
+      } else if (d.type === 'motion') {
+        setMotion(!!d.on);
+      }
+    });
+
+    // ---------- Text entry UI ----------
+    const textBtn = document.getElementById('text-btn');
+    const textModal = document.getElementById('text-modal');
+    const textInput = document.getElementById('text-input');
+    const textApply = document.getElementById('text-apply');
+    const textCancel = document.getElementById('text-cancel');
+
+    function openModal() {
+      modalOpen = true;
+      ptr.active = false;
+      ptr.dx = ptr.dy = 0;
+      textInput.value = currentText;
+      textModal.classList.add('open');
+      setTimeout(() => { textInput.focus(); textInput.select(); }, 30);
+    }
+    function closeModal() {
+      modalOpen = false;
+      textModal.classList.remove('open');
+      textInput.blur();
+    }
+    function applyText() {
+      setText(textInput.value);
+      closeModal();
+    }
+
+    textBtn.addEventListener('click', openModal);
+    textApply.addEventListener('click', applyText);
+    textCancel.addEventListener('click', closeModal);
+    textModal.addEventListener('mousedown', (e) => { if (e.target === textModal) closeModal(); });
+    textInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); applyText(); }
+      else if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalOpen) closeModal();
+    });
   </script>
 </body>
 </html>
