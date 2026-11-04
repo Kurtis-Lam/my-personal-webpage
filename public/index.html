@@ -1062,7 +1062,10 @@
       prog.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, y / max) : 0) + ')';
       topBtn.classList.toggle('show', y > 700);
     }
-    addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+    addEventListener('scroll', function () {
+      if (bg && bg.contentWindow) { try { bg.contentWindow.postMessage({ type: 'scroll' }, '*'); } catch (e) {} }
+      if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
     onScroll();
     topBtn.addEventListener('click', function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); });
 
