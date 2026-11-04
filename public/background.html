@@ -28,8 +28,8 @@
     // =====================================================================
     const STATIC_MODE = false;   // true = nothing moves (single rendered frame)
     const NEB_SPEED = 1;         // speed of the drifting background colours (try 0.5 - 2)
-    const NEB_FPS = 12;          // nebula redraw rate (it drifts so slowly that 12 looks the same as 30)
-    const NEB_PIXELS = 48000;    // nebula is computed at ~this many pixels, then smoothly upscaled (it is blurry by design)
+    const NEB_FPS = 8;           // nebula redraw rate (it drifts so slowly that 12 looks the same as 30)
+    const NEB_PIXELS = 24000;    // nebula is computed at ~this many pixels, then smoothly upscaled (it is blurry by design)
     const FPS_CAP = 60;          // 0 = follow display refresh. 60 halves the work on 120/144Hz screens
     const LOW_END = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;   // start in a lighter mode
     const SCROLL_IDLE_MS = 150;
@@ -58,8 +58,8 @@
       centerX: 0.5,
       centerY: 0.5,
       density: 0.012,
-      minStars: 420,
-      maxStars: 900,
+      minStars: 300,
+      maxStars: 520,
       assembleOnLoad: true
     };
 
@@ -240,6 +240,7 @@
       if ((d.type === 'mousemove' || d.type === 'pointer') && isFinite(d.x) && isFinite(d.y)) onMove(d.x, d.y);
       else if (d.type === 'leave') onLeave();
       else if (d.type === 'scroll') onScroll();
+      else if (d.type === 'motion') setPaused(d.on === false);
     });
 
     // ---- Noise helpers ---------------------------------------------------
@@ -524,7 +525,7 @@
 
     function initParticles(assemble, born) {
       ambientStars = [];
-      const count = Math.min(200, Math.round((width * height) / 9500));
+      const count = Math.min(120, Math.round((width * height) / 14000));
       for (let i = 0; i < count; i++) {
         ambientStars.push(new Star(Math.random() * width, Math.random() * height, { layer: 'ambient', born }));
       }
@@ -696,7 +697,7 @@
       el.style.opacity = '0';
       const g = el.getContext('2d');
       g.globalCompositeOperation = 'lighter';
-      const n = Math.min(800, Math.round((width * height) / 2600));
+      const n = Math.min(450, Math.round((width * height) / 4500));
       const ca = Math.cos(BAND_ANG), sa = Math.sin(BAND_ANG), diag = Math.hypot(width, height);
       const sigma = Math.min(width, height) * 0.2 * 0.85;
       let made = 0, guard = 0;
@@ -865,12 +866,21 @@
     applyQuality();
     startNebula();
 
+    let paused = false, running = false;
+    function setPaused(p) {
+      paused = p;
+      if (!p && !running && !STATIC_MODE) { lastNow = null; running = true; requestAnimationFrame(frame); }
+    }
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && !paused && !running && !STATIC_MODE) { lastNow = null; running = true; requestAnimationFrame(frame); } });
+
     let skipFrame = false, lastNeb = -1e9;
     function kick() { if (STATIC_MODE) requestAnimationFrame(frame); }
 
     function frame(now) {
-      if (!STATIC_MODE) requestAnimationFrame(frame);
-      if (document.hidden) { lastNow = null; return; }
+      if (!STATIC_MODE) {
+        if (paused || document.hidden) { running = false; lastNow = null; return; }   // loop fully stops: zero CPU/GPU while off or in a background tab
+        requestAnimationFrame(frame);
+      }
 
       if (lastNow === null) lastNow = now - 16.667;
       const delta = now - lastNow;
@@ -878,10 +888,7 @@
       if (cap && delta < 1000 / cap - 2) return;
 
       if (isScrolling && now - lastScrollTime > SCROLL_IDLE_MS) isScrolling = false;
-      if (isScrolling) {                       // half rate while the parent is scrolling
-        skipFrame = !skipFrame;
-        if (skipFrame) return;
-      } else skipFrame = false;
+      if (isScrolling) { lastNow = now; return; }   // draw nothing while the parent scrolls: the main thread stays free for smooth scrolling
 
       lastNow = now;
       if (!STATIC_MODE && !isScrolling && clock > INTRO_MS + 1500 && !nebJob && delta < 200) {
@@ -945,6 +952,7 @@
 
       ptr.dx = ptr.dy = 0;
     }
+    running = true;
     requestAnimationFrame(frame);
   </script>
 </body>
