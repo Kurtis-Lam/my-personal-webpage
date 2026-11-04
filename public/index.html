@@ -142,12 +142,13 @@
     .nav a { padding: 8px 12px; border-radius: 10px; color: var(--muted); font-size: .93rem; font-weight: 500; transition: color .2s, background-color .2s; }
     .nav a:hover, .nav a.active { color: #fff; background: rgba(255, 255, 255, 0.07); }
     .bar-right { display: flex; align-items: center; gap: 10px; }
-    .hk {
-      display: inline-flex; align-items: center; gap: 9px; padding: 6px 13px; border-radius: 999px;
-      border: 1px solid var(--line-strong); background: rgba(255, 255, 255, 0.04); font-family: var(--mono); font-size: .82rem; line-height: 1.15;
-    }
-    .hk small { display: block; color: var(--muted); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; }
-    .hk time { display: block; color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .sub-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; height: 36px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .8rem; }
+    .live-age { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); white-space: nowrap; }
+    .live-age i { color: var(--cyan); }
+    .live-age b { color: var(--cyan); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+    .hk { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+    .hk small { color: var(--muted); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
+    .hk time { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
     .kbd-btn {
       display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 10px; cursor: pointer;
       border: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: .78rem;
@@ -160,7 +161,7 @@
     /* =====================================================================
        Sections
        ===================================================================== */
-    section { scroll-margin-top: 80px; }
+    section { scroll-margin-top: 112px; }
     .sec { padding: 84px 0 8px; }
     .sec-head { max-width: 680px; margin-bottom: 36px; }
     .eyebrow { font-family: var(--mono); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
@@ -170,6 +171,11 @@
     /* ---------- Hero ---------- */
     .hero { padding: 64px 0 24px; }
     .hero-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 40px; align-items: center; }
+    .hero-name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 30px; }
+    .photos { position: relative; flex: none; width: clamp(92px, 14vw, 140px); aspect-ratio: 1; padding: 0; margin: 16px 18px 0 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .photos.single { cursor: default; }
+    .photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 26px; border: 2px solid var(--line-strong); background: #0b1122; box-shadow: 0 10px 28px rgba(0, 0, 0, .5); transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.3, .8, .3, 1), opacity .4s ease; will-change: transform; user-select: none; -webkit-user-drag: none; }
+    .photos:not(.single):hover img[data-pos="0"] { transform: translateY(-3px) scale(1.02) !important; }
     .hero h1 { font-size: clamp(2.9rem, 8vw, 5.6rem); line-height: .98; letter-spacing: -.04em; font-weight: 700; margin: 20px 0 18px; }
     .hero h1 .serif { font-size: 1.06em; letter-spacing: -.01em; }
     .role-line { font-family: var(--mono); font-size: clamp(1rem, 2.2vw, 1.28rem); min-height: 1.9em; color: var(--text); }
@@ -185,7 +191,6 @@
 
     .hero-side { display: grid; gap: 18px; width: 100%; max-width: 420px; margin-inline: auto; }
     .hero-side .widget { padding: 24px; }
-    .hero-side .age-num { font-size: clamp(1.7rem, 4.2vw, 2.4rem); }
     .hero-side .tz b { font-size: 1.3rem; }
 
     .scroll-cue { display: flex; justify-content: center; margin-top: 36px; color: var(--muted); font-family: var(--mono); font-size: .78rem; gap: 10px; align-items: center; }
@@ -267,8 +272,6 @@
     .widget h3 i { color: var(--cyan); }
     .widget .sub { color: var(--muted); font-size: .93rem; margin-bottom: 18px; }
     .widget.wide { grid-column: 1 / -1; }
-    .age-num { font-family: var(--mono); font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 600; color: var(--cyan); letter-spacing: .03em; font-variant-numeric: tabular-nums; contain: content; }
-    .age-unit { font-family: var(--mono); font-size: .8rem; color: var(--muted); letter-spacing: .14em; }
 
     .tz { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .tz > div { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
@@ -284,6 +287,7 @@
     .pk.b { top: 0; height: 62%; width: 7%; background: linear-gradient(#262e45, #0b0f1c); border-radius: 0 0 7px 7px; z-index: 2; color: #9aa8c8; padding-bottom: 8px; font-family: var(--mono); font-size: .65rem; border: 1px solid #000; }
     .pk.w.on { background: linear-gradient(#a5f3fc, #67e8f9); transform: translateY(2px); }
     .pk.b.on { background: linear-gradient(#6d5bd0, #3b2f9a); transform: translateY(2px); }
+    .song-pick { width: auto; padding: 8px 34px 8px 12px; border-radius: 10px; font-size: .92rem; }
     .piano-hint { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 12px; font-family: var(--mono); }
 
     /* ---------- Hire ---------- */
@@ -320,16 +324,6 @@
     .done h3 { font-size: 1.5rem; letter-spacing: -.01em; }
     .done p { color: var(--muted); }
     .done .actions { display: flex; flex-wrap: wrap; gap: 10px; }
-
-    /* ---------- FAQ ---------- */
-    .faq { display: grid; gap: 12px; max-width: 820px; }
-    details { padding: 0; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); transition: border-color .2s; }
-    details[open] { border-color: var(--line-strong); }
-    summary { cursor: pointer; list-style: none; padding: 18px 22px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-    summary::-webkit-details-marker { display: none; }
-    summary::after { content: "+"; font-family: var(--mono); font-size: 1.4rem; color: var(--cyan); transition: transform .2s; }
-    details[open] summary::after { transform: rotate(45deg); }
-    details p { padding: 0 22px 20px; color: var(--muted); }
 
     /* ---------- Footer ---------- */
     footer { margin-top: 96px; border-top: 1px solid var(--line); background: rgba(7, 9, 14, .92); }
@@ -385,7 +379,7 @@
       .bar-right { margin-left: auto; }
       .kbd-btn, .bar-right .btn { display: none; }
       .hero-grid, .about-grid, .hire-grid { grid-template-columns: 1fr; }
-      .hero-side { max-width: none; grid-template-columns: 1fr 1fr; }
+      .hero-side { max-width: none; }
       .svc-grid, .proj-grid { grid-template-columns: repeat(2, 1fr); }
       .steps { grid-template-columns: repeat(2, 1fr); }
       .foot-grid { grid-template-columns: 1fr 1fr; }
@@ -395,8 +389,8 @@
       body { font-size: 1rem; }
       .sec { padding-top: 64px; }
       .svc-grid, .proj-grid, .play-grid, .row2 { grid-template-columns: 1fr; }
-      .hero-side { grid-template-columns: 1fr; }
       .hk small { display: none; }
+      .live-age .yrs { display: none; }
       .brand-name { display: none; }
       form, .widget, .about-text { padding: 22px; }
       .piano { height: 150px; }
@@ -436,12 +430,15 @@
 
         <div class="bar-right">
           <button class="kbd-btn" id="open-palette" type="button" aria-label="Open command palette"><i class="fa-solid fa-magnifying-glass"></i><span>Search</span><kbd id="kbd-hint">Ctrl K</kbd></button>
-          <div class="hk" title="Hong Kong time (UTC+8)">
-            <span class="dot live" id="hk-dot"></span>
-            <div><small>Hong Kong · UTC+8</small><time id="hk-time" aria-label="Current time in Hong Kong">--:--:--</time></div>
-          </div>
           <a class="btn btn-primary btn-sm" href="#hire">Hire me</a>
           <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav"><i class="fa-solid fa-bars"></i></button>
+        </div>
+      </div>
+      <div class="wrap sub-bar">
+        <div class="live-age" title="Born 22 Oct 2010, counted live"><i class="fa-solid fa-cake-candles"></i><b id="live-age">15.00000000</b><span class="yrs">years old</span></div>
+        <div class="hk" title="Hong Kong time (UTC+8)">
+          <span class="dot live" id="hk-dot"></span>
+          <small>Hong Kong · UTC+8</small><time id="hk-time" aria-label="Current time in Hong Kong">--:--:--</time>
         </div>
       </div>
       <div class="progress" id="progress"></div>
@@ -455,7 +452,10 @@
           <div class="hero-grid">
             <div>
               <div class="chip"><span class="dot live"></span><span>Available for freelance work · Remote</span></div>
-              <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
+              <div class="hero-name">
+                <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
+                <button class="photos" id="photos" type="button" aria-label="Show next photo of Kurtis" hidden></button>
+              </div>
               <div class="role-line" aria-live="off"><span class="prompt">&gt;&nbsp;</span>I build <span id="typed"></span><span class="caret">|</span></div>
               <p class="bio">I'm a <strong>student (and developer) in Hong Kong</strong> who turns ideas into small, fast things people actually use: web apps, study tools, bots, browser extensions, Android apps, you name it.</p>
               <div class="cta">
@@ -466,21 +466,12 @@
                 <a class="social" style="--c:#4ade80" href="https://github.com/Kurtis-Lam" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
                 <a class="social" style="--c:#f472b6" href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
                 <a class="social" style="--c:#e2b714" href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" aria-label="Monkeytype profile"><i class="fa-solid fa-keyboard"></i></a>
-                <a class="social" href="mailto:kurtislam100@gmail.com" aria-label="Email Kurtis"><i class="fa-solid fa-envelope"></i></a>
               </div>
             </div>
 
             <div class="hero-side">
               <div class="card widget reveal">
-                <h3><i class="fa-solid fa-cake-candles"></i>Live age</h3>
-                <p class="sub">Born 22 Oct 2010, counted live.</p>
-                <div class="age-num" id="live-age">15.00000000</div>
-                <div class="age-unit">YEARS OLD</div>
-              </div>
-
-              <div class="card widget reveal">
                 <h3><i class="fa-solid fa-earth-asia"></i>My time vs yours</h3>
-                <p class="sub">Handy for planning a call.</p>
                 <div class="tz">
                   <div><small>Me · Hong Kong</small><b id="tz-hk">--:--</b></div>
                   <div><small id="tz-you-label">You</small><b id="tz-you">--:--</b></div>
@@ -505,7 +496,7 @@
           <div class="about-grid">
             <div class="card about-text reveal">
               <p>Hey, I'm <strong>Kurtis</strong>. I live in <strong>Hong Kong</strong>, I'm still a student (currently G11 preparing for IB exams), and I like to code stuff because I enjoy it. I like projects where the results are simple yet useful.</p>
-              <p>I've shipped a <strong>Student Union website for my schools (voluntarily)</strong>, a <strong>SVT based game</strong>, an <strong>IB study app</strong>, a <strong>wallpaper app for Huawei phones</strong> , a <strong>terminal coding assistant</strong> that runs open-source models on your own machine, a <strong>versatile Discord bot</strong>named Utilities, and lots more...</p>
+              <p>I've shipped a <strong>Student Union website for my schools (voluntarily)</strong>, a <strong>SVT based game</strong>, an <strong>IB study app</strong>, a <strong>wallpaper app for Huawei phones</strong> , a <strong>terminal coding assistant</strong> that runs open-source models on your own machine, a <strong>versatile Discord bot</strong> named Utilities, and lots more...</p>
               <p>I also test things for vulnerabilities, explore new tech stuff, play around with LLMs, (and type on Monkeytype). If you have a problem that can be solved with code, I'd love to hear it and help out.</p>
             </div>
 
@@ -742,6 +733,7 @@
                   <p class="sub" style="margin:0">One octave. Click or tap the keys, or use your keyboard.</p>
                 </div>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
+                  <select class="song-pick" id="song-pick" aria-label="Choose a song"></select>
                   <button class="btn btn-ghost btn-sm" id="play-song" type="button"><i class="fa-solid fa-play"></i><span>Play a song</span></button>
                 </div>
               </div>
@@ -852,24 +844,6 @@
           </div>
         </div>
       </section>
-
-      <!-- ===================== FAQ ===================== -->
-      <section class="sec" id="faq">
-        <div class="wrap">
-          <div class="sec-head reveal">
-            <span class="eyebrow">07 · FAQ</span>
-            <h2>Quick <span class="serif grad">answers</span></h2>
-          </div>
-          <div class="faq reveal">
-            <details><summary>How fast will you reply?</summary><p>Usually within a day, Hong Kong time. Check the clock at the top of the page to see whether I'm probably awake.</p></details>
-            <details><summary>How does pricing work?</summary><p>Tell me your budget and what you need. Once I understand the brief, I'll send a fixed quote, so you know the cost before we start.</p></details>
-            <details><summary>Will I own the code?</summary><p>Yes. When we finish, you get the source code and a short guide on how to run and update it.</p></details>
-            <details><summary>Can you work around my time zone?</summary><p>I'm on UTC+8 and happy to work with other time zones. The "My time vs yours" card at the top of the page shows the overlap.</p></details>
-            <details><summary>Do you take AI or LLM projects?</summary><p>Not the heavy ones. I avoid anything that needs expensive GPUs or large model hosting. Connecting your app to an existing AI API is fine.</p></details>
-            <details><summary>I'm not sure what I need. Can I still write?</summary><p>Of course. Describe the problem in your own words and I'll help you work out what to build.</p></details>
-          </div>
-        </div>
-      </section>
     </main>
 
     <!-- ===================== Footer ===================== -->
@@ -972,7 +946,7 @@
     $('#toggle-motion').addEventListener('click', function () { setMotion(!motionOn); });
     if (bg) bg.addEventListener('load', function () { try { bg.contentWindow.postMessage({ type: 'motion', on: motionOn }, '*'); } catch (e) {} });
 
-    /* ---------- Hong Kong clock (top right) ---------- */
+    /* ---------- Hong Kong clock (header, bottom right) ---------- */
     var hkFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     var hkHM = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false });
     var hkParts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', hour12: false });
@@ -987,7 +961,7 @@
       var hm = t.slice(0, 5);
       elFoot.textContent = hm + ' HKT'; elHKw.textContent = hm;
       elYou.textContent = youFmt.format(now);
-      var h = hkHour(now), awake = h >= 8 && h < 24;
+      var h = hkHour(now), awake = h >= 8 && h < 22;
       ['#hk-dot', '#foot-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
       var hkEl = $('.hk'); if (hkEl) hkEl.title = 'Hong Kong time (UTC+8) — ' + (awake ? "I'm probably awake" : "it's night, I'm probably asleep");
     }
@@ -1005,8 +979,8 @@
       var now = new Date();
       var p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now).forEach(function (x) { p[x.type] = +x.value; });
       var f = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
-      var a = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 10 - 8, 0))), b = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 22 - 8, 0)));
-      $('#tz-note').innerHTML = rel + ' I\'m usually around <strong>10:00–22:00 HKT</strong>, which is <strong>' + a + '–' + b + '</strong> for you.';
+      var a = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 8 - 8, 0))), b = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 22 - 8, 0)));
+      $('#tz-note').innerHTML = rel + ' I\'m usually around <strong>08:00–22:00 HKT</strong>, which is <strong>' + a + '–' + b + '</strong> for you.';
     })();
 
     /* ---------- Greeting, typewriter ---------- */
@@ -1024,9 +998,13 @@
       else if (del && ci === 0) { del = false; pi = (pi + 1) % phrases.length; d = 350; }
       typeTimer = setTimeout(type, d);
     }
+    function cycleStatic() {
+      typedEl.textContent = phrases[pi];
+      typeTimer = setTimeout(function () { pi = (pi + 1) % phrases.length; cycleStatic(); }, 2600);
+    }
     function restartTyping() {
       clearTimeout(typeTimer);
-      if (!motionOn) { typedEl.textContent = phrases[0]; return; }
+      if (!motionOn) { cycleStatic(); return; }
       ci = 0; del = false; type();
     }
     document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(typeTimer); else restartTyping(); });
@@ -1043,6 +1021,57 @@
     function startAge() { clearInterval(ageTimer); age(); ageTimer = setInterval(age, 250); }
     document.addEventListener('visibilitychange', function () { if (document.hidden) clearInterval(ageTimer); else startAge(); });
     startAge();
+
+    /* ---------- Photo stack: put images in /assets/me/ named 1.webp, 2.webp, 3.webp ... (jpg, jpeg, png, avif also work) ---------- */
+    (function () {
+      var el = $('#photos'), BASE = '/assets/me/', EXT = ['webp', 'jpg', 'jpeg', 'png', 'avif'], MAX = 30, found = [], cur = 0, imgs = [];
+      if (!el) return;
+      function probe(n, cb) {
+        var ei = 0;
+        (function next() {
+          if (ei >= EXT.length) return cb(null);
+          var im = new Image(), src = BASE + n + '.' + EXT[ei++];
+          im.onload = function () { cb(src); };
+          im.onerror = next;
+          im.src = src;
+        })();
+      }
+      function scan(n) {
+        probe(n, function (src) {
+          if (!src) return build();
+          found.push(src);
+          if (n < MAX) scan(n + 1); else build();
+        });
+      }
+      var POS = [
+        'translate(0, 0) rotate(0deg) scale(1)',
+        'translate(16px, -6px) rotate(6deg) scale(.95)',
+        'translate(-14px, -10px) rotate(-7deg) scale(.9)'
+      ];
+      function layout() {
+        var n = imgs.length;
+        imgs.forEach(function (im, i) {
+          var pos = (i - cur + n) % n;
+          im.setAttribute('data-pos', pos);
+          im.style.zIndex = n - pos;
+          im.style.transform = POS[Math.min(pos, 2)];
+          im.style.opacity = pos < 3 ? '1' : '0';
+        });
+      }
+      function build() {
+        if (!found.length) return;
+        found.forEach(function (src) {
+          var im = document.createElement('img');
+          im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+          el.appendChild(im); imgs.push(im);
+        });
+        layout();
+        el.hidden = false;
+        if (found.length === 1) { el.classList.add('single'); el.tabIndex = -1; el.setAttribute('aria-label', 'Photo of Kurtis'); return; }
+        el.addEventListener('click', function () { cur = (cur + 1) % imgs.length; layout(); });
+      }
+      scan(1);
+    })();
 
     /* ---------- Mobile menu ---------- */
     var nav = $('#nav'), menuBtn = $('#menu-btn');
@@ -1076,7 +1105,7 @@
         entries.forEach(function (en) {
           if (!en.isIntersecting) return;
           $$('.nav a.active').forEach(function (a) { a.classList.remove('active'); });
-          var l = links[en.target.id === 'faq' ? 'hire' : en.target.id]; if (l) l.classList.add('active');
+          var l = links[en.target.id]; if (l) l.classList.add('active');
         });
       }, { rootMargin: '-45% 0px -50% 0px' });
       $$('main section[id]').forEach(function (s) { spy.observe(s); });
@@ -1144,19 +1173,36 @@
       });
       function pianoInView() { var r = piano.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; }
 
-      var song = 'C4 C4 G4 G4 A4 A4 G4*2 F4 F4 E4 E4 D4 D4 C4*2'.split(' '), playing = false, songTimers = [];
+      var SONGS = [
+        { name: 'Twinkle Twinkle', beat: 430, notes: 'C4 C4 G4 G4 A4 A4 G4*2 F4 F4 E4 E4 D4 D4 C4*2 G4 G4 F4 F4 E4 E4 D4*2 G4 G4 F4 F4 E4 E4 D4*2 C4 C4 G4 G4 A4 A4 G4*2 F4 F4 E4 E4 D4 D4 C4*2' },
+        { name: 'Ode to Joy', beat: 420, notes: 'E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 E4*1.5 D4*0.5 D4*2 E4 E4 F4 G4 G4 F4 E4 D4 C4 C4 D4 E4 D4*1.5 C4*0.5 C4*2' },
+        { name: 'Mary Had a Little Lamb', beat: 400, notes: 'E4 D4 C4 D4 E4 E4 E4*2 D4 D4 D4*2 E4 G4 G4*2 E4 D4 C4 D4 E4 E4 E4 E4 D4 D4 E4 D4 C4*2' },
+        { name: 'Happy Birthday', beat: 480, notes: 'C4*0.75 C4*0.25 D4 C4 F4 E4*2 C4*0.75 C4*0.25 D4 C4 G4 F4*2 C4*0.75 C4*0.25 C5 A4 F4 E4 D4*2 A#4*0.75 A#4*0.25 A4 F4 G4 F4*2' },
+        { name: 'Jingle Bells', beat: 360, notes: 'E4 E4 E4*2 E4 E4 E4*2 E4 G4 C4*1.5 D4*0.5 E4*4 F4 F4 F4*1.5 F4*0.5 F4 E4 E4 E4*0.5 E4*0.5 E4 D4 D4 E4 D4*2 G4*2' },
+        { name: 'Frère Jacques', beat: 420, notes: 'C4 D4 E4 C4 C4 D4 E4 C4 E4 F4 G4*2 E4 F4 G4*2 G4*0.5 A4*0.5 G4*0.5 F4*0.5 E4 C4 G4*0.5 A4*0.5 G4*0.5 F4*0.5 E4 C4 C4 G4 C4*2 C4 G4 C4*2' },
+        { name: 'London Bridge', beat: 400, notes: 'G4*1.5 A4*0.5 G4 F4 E4 F4 G4*2 D4 E4 F4*2 E4 F4 G4*2 G4*1.5 A4*0.5 G4 F4 E4 F4 G4*2 D4 G4 E4 C4*2' },
+        { name: 'Row, Row, Row Your Boat', beat: 440, notes: 'C4 C4 C4*0.75 D4*0.25 E4 E4*0.75 D4*0.25 E4*0.75 F4*0.25 G4*2 C5*0.34 C5*0.33 C5*0.33 G4*0.34 G4*0.33 G4*0.33 E4*0.34 E4*0.33 E4*0.33 C4*0.34 C4*0.33 C4*0.33 G4*0.75 F4*0.25 E4*0.75 D4*0.25 C4*2' }
+      ];
+      var pick = $('#song-pick'), playing = false, songTimers = [], lastSong = -1;
+      var o = document.createElement('option'); o.value = 'random'; o.textContent = 'Random song'; pick.appendChild(o);
+      SONGS.forEach(function (sg, i) { var op = document.createElement('option'); op.value = i; op.textContent = sg.name; pick.appendChild(op); });
       var btn = $('#play-song');
       function stopSong() { songTimers.forEach(clearTimeout); songTimers = []; playing = false; btn.querySelector('i').className = 'fa-solid fa-play'; btn.querySelector('span').textContent = 'Play a song'; }
       btn.addEventListener('click', function () {
         if (playing) return stopSong();
-        playing = true; btn.querySelector('i').className = 'fa-solid fa-stop'; btn.querySelector('span').textContent = 'Stop';
-        var at = 0, beat = 430;
-        song.forEach(function (s) {
-          var p = s.split('*'), len = p[1] ? +p[1] : 1, key = byName[p[0]];
-          songTimers.push(setTimeout(function () { press(key, 1.2 * len); }, at));
-          at += beat * len;
+        var idx;
+        if (pick.value === 'random') { do { idx = Math.floor(Math.random() * SONGS.length); } while (idx === lastSong && SONGS.length > 1); }
+        else idx = +pick.value;
+        lastSong = idx;
+        var sg = SONGS[idx];
+        playing = true; btn.querySelector('i').className = 'fa-solid fa-stop'; btn.querySelector('span').textContent = 'Stop · ' + sg.name;
+        var at = 0;
+        sg.notes.split(' ').forEach(function (n) {
+          var p = n.split('*'), len = p[1] ? +p[1] : 1, key = byName[p[0]];
+          if (key) songTimers.push(setTimeout(function () { press(key, Math.max(0.5, 1.2 * len)); }, at));
+          at += sg.beat * len;
         });
-        songTimers.push(setTimeout(stopSong, at + 300));
+        songTimers.push(setTimeout(stopSong, at + 400));
       });
       window.__klPlayChord = function () { ['C4', 'E4', 'G4'].forEach(function (n, i) { setTimeout(function () { press(byName[n], 1.6); }, i * 90); }); };
     })();
@@ -1220,7 +1266,6 @@
       { g: 'Go to', i: 'fa-folder-open', t: 'Work', run: go('work') },
       { g: 'Go to', i: 'fa-timeline', t: 'My story', run: go('story') },
       { g: 'Go to', i: 'fa-music', t: 'Extras & piano', run: go('extras') },
-      { g: 'Go to', i: 'fa-circle-question', t: 'FAQ', run: go('faq') },
       { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'form', run: function () { go('hire')(); setTimeout(function () { $('#f-name').focus({ preventScroll: true }); }, 500); } },
       { g: 'Hire me', i: 'fa-copy', t: 'Copy my email address', h: EMAIL, run: function () { copyText(EMAIL, 'Email copied'); } },
       { g: 'Hire me', i: 'fa-envelope', t: 'Email me', run: open('mailto:' + EMAIL, true) },
