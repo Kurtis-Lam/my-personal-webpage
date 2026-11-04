@@ -94,6 +94,7 @@
     .mono { font-family: var(--mono); }
     .grad { background: linear-gradient(90deg, #67e8f9, #a78bfa 55%, #f472b6); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
     .serif { font-family: var(--serif); font-style: italic; font-weight: 400; }
+    .grad.serif { padding: 0 .16em .08em 0; margin-right: -.16em; }
 
     /* =====================================================================
        Buttons / chips / cards
@@ -142,13 +143,6 @@
     .nav a { padding: 8px 12px; border-radius: 10px; color: var(--muted); font-size: .93rem; font-weight: 500; transition: color .2s, background-color .2s; }
     .nav a:hover, .nav a.active { color: #fff; background: rgba(255, 255, 255, 0.07); }
     .bar-right { display: flex; align-items: center; gap: 10px; }
-    .sub-bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; height: 36px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: .8rem; }
-    .live-age { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); white-space: nowrap; }
-    .live-age i { color: var(--cyan); }
-    .live-age b { color: var(--cyan); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-    .hk { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
-    .hk small { color: var(--muted); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; }
-    .hk time { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
     .kbd-btn {
       display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border-radius: 10px; cursor: pointer;
       border: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--mono); font-size: .78rem;
@@ -170,7 +164,7 @@
 
     /* ---------- Hero ---------- */
     .hero { padding: 64px 0 24px; }
-    .hero-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 40px; align-items: center; }
+    .hero-grid { display: block; }
     .hero-name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 30px; }
     .photos { position: relative; flex: none; width: clamp(92px, 14vw, 140px); aspect-ratio: 1; padding: 0; margin: 16px 18px 0 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .photos.single { cursor: default; }
@@ -189,13 +183,21 @@
     .social { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 1.2rem; transition: transform .2s, border-color .2s, color .2s; }
     .social:hover { transform: translateY(-3px); border-color: var(--c, var(--cyan)); color: var(--c, var(--cyan)); }
 
-    .hero-side { display: grid; gap: 18px; width: 100%; max-width: 420px; margin-inline: auto; }
-    .hero-side .widget { padding: 24px; }
-    .hero-side .tz b { font-size: 1.3rem; }
-
     .scroll-cue { display: flex; justify-content: center; margin-top: 36px; color: var(--muted); font-family: var(--mono); font-size: .78rem; gap: 10px; align-items: center; }
     .scroll-cue i { animation: bob 2s ease-in-out infinite; }
     @keyframes bob { 50% { transform: translateY(5px); } }
+
+    /* ---------- Live cards (above About) ---------- */
+    .now { padding-top: 8px; }
+    .now-grid { display: grid; grid-template-columns: 1fr 1.25fr; gap: 18px; }
+    .now-card { padding: 26px; }
+    .now-card h3 { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; margin-bottom: 14px; }
+    .now-card h3 i { color: var(--cyan); }
+    .age-num { display: block; font-family: var(--mono); font-weight: 600; font-size: clamp(1.8rem, 4.4vw, 2.6rem); color: var(--cyan); font-variant-numeric: tabular-nums; letter-spacing: .01em; line-height: 1.15; }
+    .age-unit { display: block; margin-top: 4px; color: var(--text); font-size: 1.05rem; }
+    .now-sub { color: var(--muted); font-size: .93rem; margin-top: 12px; }
+    .now-card .tz b { font-size: 1.5rem; }
+    .now-card .tz small .dot { margin-right: 6px; }
 
     /* ---------- About ---------- */
     .about-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 22px; }
@@ -280,6 +282,16 @@
     .tz-note { margin-top: 14px; color: var(--muted); font-size: .95rem; }
     .tz-note strong { color: var(--text); font-weight: 500; }
 
+    .colorgen { display: grid; grid-template-columns: 1.1fr 1fr; gap: 20px; align-items: stretch; }
+    .cg-swatch { min-height: 190px; border-radius: 16px; border: 1px solid var(--line-strong); display: grid; place-items: center; cursor: pointer; font-family: var(--mono); font-size: 1.6rem; font-weight: 600; letter-spacing: .04em; transition: background-color .35s ease, color .35s ease; user-select: none; -webkit-user-select: none; }
+    .cg-side { display: grid; gap: 12px; align-content: start; }
+    .cg-vals { display: grid; gap: 8px; }
+    .cg-val { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); cursor: pointer; font-family: var(--mono); font-size: .9rem; text-align: left; transition: border-color .2s; }
+    .cg-val:hover { border-color: var(--cyan); }
+    .cg-val small { color: var(--muted); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; }
+    .cg-hist { display: flex; flex-wrap: wrap; gap: 8px; min-height: 30px; }
+    .cg-hist button { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line-strong); cursor: pointer; padding: 0; transition: transform .15s; }
+    .cg-hist button:hover { transform: translateY(-2px) scale(1.08); }
     .piano-wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
     .piano { position: relative; height: 190px; max-width: 640px; margin-inline: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
     .pk { position: absolute; border: 0; cursor: pointer; padding: 0; display: flex; align-items: flex-end; justify-content: center; transition: background-color .08s, transform .08s; }
@@ -378,8 +390,7 @@
       .menu-btn { display: inline-grid; place-items: center; }
       .bar-right { margin-left: auto; }
       .kbd-btn, .bar-right .btn { display: none; }
-      .hero-grid, .about-grid, .hire-grid { grid-template-columns: 1fr; }
-      .hero-side { max-width: none; }
+      .about-grid, .hire-grid { grid-template-columns: 1fr; }
       .svc-grid, .proj-grid { grid-template-columns: repeat(2, 1fr); }
       .steps { grid-template-columns: repeat(2, 1fr); }
       .foot-grid { grid-template-columns: 1fr 1fr; }
@@ -389,10 +400,12 @@
       body { font-size: 1rem; }
       .sec { padding-top: 64px; }
       .svc-grid, .proj-grid, .play-grid, .row2 { grid-template-columns: 1fr; }
-      .hk small { display: none; }
-      .live-age .yrs { display: none; }
+      .now-grid { grid-template-columns: 1fr; }
+      .now-card .tz b { font-size: 1.2rem; }
       .brand-name { display: none; }
       form, .widget, .about-text { padding: 22px; }
+      .colorgen { grid-template-columns: 1fr; }
+      .cg-swatch { min-height: 130px; }
       .piano { height: 150px; }
       .pk.w { font-size: .62rem; }
       .pk.b { font-size: 0; }
@@ -434,13 +447,6 @@
           <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav"><i class="fa-solid fa-bars"></i></button>
         </div>
       </div>
-      <div class="wrap sub-bar">
-        <div class="live-age" title="Born 22 Oct 2010, counted live"><i class="fa-solid fa-cake-candles"></i><b id="live-age">15.00000000</b><span class="yrs">years old</span></div>
-        <div class="hk" title="Hong Kong time (UTC+8)">
-          <span class="dot live" id="hk-dot"></span>
-          <small>Hong Kong · UTC+8</small><time id="hk-time" aria-label="Current time in Hong Kong">--:--:--</time>
-        </div>
-      </div>
       <div class="progress" id="progress"></div>
     </header>
 
@@ -469,19 +475,31 @@
               </div>
             </div>
 
-            <div class="hero-side">
-              <div class="card widget reveal">
-                <h3><i class="fa-solid fa-earth-asia"></i>My time vs yours</h3>
-                <div class="tz">
-                  <div><small>Me · Hong Kong</small><b id="tz-hk">--:--</b></div>
-                  <div><small id="tz-you-label">You</small><b id="tz-you">--:--</b></div>
-                </div>
-                <p class="tz-note" id="tz-note"></p>
-              </div>
-            </div>
           </div>
 
           <div class="scroll-cue"><i class="fa-solid fa-chevron-down"></i><span>scroll</span></div>
+        </div>
+      </section>
+
+      <!-- ===================== Live cards ===================== -->
+      <section class="sec now" id="now" aria-label="Live age and time zones">
+        <div class="wrap">
+          <div class="now-grid">
+            <div class="card now-card reveal">
+              <h3><i class="fa-solid fa-cake-candles"></i>Live age</h3>
+              <b class="age-num" id="live-age">15.00000000</b>
+              <span class="age-unit">years old</span>
+              <p class="now-sub">Born 22 Oct 2010, counted live.</p>
+            </div>
+            <div class="card now-card reveal">
+              <h3><i class="fa-solid fa-earth-asia"></i>My time vs yours</h3>
+              <div class="tz">
+                <div><small><span class="dot live" id="hk-dot"></span>Me · Hong Kong · UTC+8</small><b id="tz-hk">--:--:--</b></div>
+                <div><small id="tz-you-label">You</small><b id="tz-you">--:--:--</b></div>
+              </div>
+              <p class="tz-note" id="tz-note"></p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -597,8 +615,8 @@
 
           <div class="filters reveal" role="group" aria-label="Filter projects">
             <button class="filter" type="button" data-filter="all" aria-pressed="true">All <span class="mono" id="count-all">9</span></button>
-            <button class="filter" type="button" data-filter="web" aria-pressed="false">Web</button>
-            <button class="filter" type="button" data-filter="tools" aria-pressed="false">Tools &amp; extensions</button>
+            <button class="filter" type="button" data-filter="web" aria-pressed="false">Projects</button>
+            <button class="filter" type="button" data-filter="tools" aria-pressed="false">Small Utilities</button>
             <button class="filter" type="button" data-filter="apps" aria-pressed="false">Apps &amp; CLI</button>
           </div>
 
@@ -722,7 +740,7 @@
           <div class="sec-head reveal">
             <span class="eyebrow">05 · Extras</span>
             <h2>Little things for <span class="serif grad">fun</span></h2>
-            <p class="lede">A piano I actually play and a few hidden things. Try <kbd>Ctrl</kbd> + <kbd>K</kbd> too.</p>
+            <p class="lede">A piano I actually play, a random color generator and a few hidden things. Try <kbd>Ctrl</kbd> + <kbd>K</kbd> too.</p>
           </div>
 
           <div class="play-grid">
@@ -739,6 +757,22 @@
               </div>
               <div class="piano" id="piano" role="group" aria-label="Piano keyboard"></div>
               <p class="piano-hint">keys: A S D F G H J K · sharps: W E T Y U</p>
+            </div>
+            <div class="card widget wide reveal">
+              <h3><i class="fa-solid fa-palette"></i>Random color generator</h3>
+              <p class="sub">Click the swatch or press the button (or Space) for a new color. Click any value to copy it.</p>
+              <div class="colorgen">
+                <div class="cg-swatch" id="cg-swatch" role="button" tabindex="0" aria-label="Generate a random color"><span id="cg-label">#000000</span></div>
+                <div class="cg-side">
+                  <div class="cg-vals">
+                    <button class="cg-val" id="cg-hex" type="button"><small>HEX</small><span></span></button>
+                    <button class="cg-val" id="cg-rgb" type="button"><small>RGB</small><span></span></button>
+                    <button class="cg-val" id="cg-hsl" type="button"><small>HSL</small><span></span></button>
+                  </div>
+                  <button class="btn btn-primary btn-sm" id="cg-new" type="button"><i class="fa-solid fa-shuffle"></i>Generate color</button>
+                  <div class="cg-hist" id="cg-hist" aria-label="Recent colors"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -780,16 +814,16 @@
             <div class="card reveal" id="form-card">
               <form id="hire-form" novalidate>
                 <div class="row2">
-                  <label>Your name <span class="req">*</span>
+                  <label><span class="lbl">Your name <span class="req">*</span></span>
                     <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required />
                     <span class="field-err" data-err="name"></span>
                   </label>
-                  <label>Your email <span class="req">*</span>
+                  <label><span class="lbl">Your email <span class="req">*</span></span>
                     <input id="f-email" name="email" type="email" autocomplete="email" placeholder="jane@company.com" required />
                     <span class="field-err" data-err="email"></span>
                   </label>
                 </div>
-                <label>What do you need? <span class="req">*</span>
+                <label><span class="lbl">What do you need? <span class="req">*</span></span>
                   <select id="f-type" name="type">
                     <option value="Website / web app">Website / web app</option>
                     <option value="Discord bot">Discord bot</option>
@@ -818,7 +852,7 @@
                     </select>
                   </label>
                 </div>
-                <label>Tell me about it <span class="req">*</span>
+                <label><span class="lbl">Tell me about it <span class="req">*</span></span>
                   <textarea id="f-msg" name="message" placeholder="What are you building, who is it for, and is there anything I should look at?" required></textarea>
                   <span class="field-err" data-err="message"></span>
                 </label>
@@ -876,7 +910,6 @@
         <div class="foot-bottom">
           <span>© <span id="year">2026</span> Kurtis Lam · Made with 💖 in Hong Kong</span>
           <span style="display:flex;gap:10px;flex-wrap:wrap">
-            <button type="button" id="toggle-motion" aria-pressed="true"><i class="fa-solid fa-wand-magic-sparkles"></i> Effects: <span id="motion-state">on</span></button>
             <button type="button" id="foot-palette"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
           </span>
         </div>
@@ -934,36 +967,32 @@
 
     /* ---------- Effects on / off (shared with the background iframe) ---------- */
     var bg = $('#bg-iframe');
-    var motionOn = !reduceMotion && store('kl-motion') !== 'off';
+    var motionOn = !reduceMotion;
     function applyMotion() {
       root.classList.toggle('calm', !motionOn);
-      $('#motion-state').textContent = motionOn ? 'on' : 'off';
-      $('#toggle-motion').setAttribute('aria-pressed', String(motionOn));
       try { if (bg && bg.contentWindow) bg.contentWindow.postMessage({ type: 'motion', on: motionOn }, '*'); } catch (e) {}
       restartTyping();
     }
-    function setMotion(on) { motionOn = on; store('kl-motion', on ? 'on' : 'off'); applyMotion(); toast('Effects ' + (on ? 'on' : 'off')); }
-    $('#toggle-motion').addEventListener('click', function () { setMotion(!motionOn); });
     if (bg) bg.addEventListener('load', function () { try { bg.contentWindow.postMessage({ type: 'motion', on: motionOn }, '*'); } catch (e) {} });
 
     /* ---------- Hong Kong clock (header, bottom right) ---------- */
     var hkFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     var hkHM = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hour12: false });
     var hkParts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', hour12: false });
-    var elHK = $('#hk-time'), elFoot = $('#foot-time'), elHKw = $('#tz-hk'), elYou = $('#tz-you');
+    var elFoot = $('#foot-time'), elHKw = $('#tz-hk'), elYou = $('#tz-you');
     var lastSec = '';
-    var youFmt = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+    var youFmt = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     function hkHour(d) { var h = 0; hkParts.formatToParts(d).forEach(function (p) { if (p.type === 'hour') h = +p.value % 24; }); return h; }
     function tick() {
       var now = new Date(), t = hkFmt.format(now);
       if (t === lastSec) return;
-      lastSec = t; elHK.textContent = t;
+      lastSec = t;
       var hm = t.slice(0, 5);
-      elFoot.textContent = hm + ' HKT'; elHKw.textContent = hm;
+      elFoot.textContent = hm + ' HKT'; elHKw.textContent = t;
       elYou.textContent = youFmt.format(now);
       var h = hkHour(now), awake = h >= 8 && h < 22;
       ['#hk-dot', '#foot-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
-      var hkEl = $('.hk'); if (hkEl) hkEl.title = 'Hong Kong time (UTC+8) — ' + (awake ? "I'm probably awake" : "it's night, I'm probably asleep");
+      var hkEl = $('#hk-dot'); if (hkEl) hkEl.title = awake ? "I'm probably awake" : "it's night, I'm probably asleep";
     }
     var clockTimer = 0;
     function startClock() { clearInterval(clockTimer); tick(); clockTimer = setInterval(tick, 250); }
@@ -978,9 +1007,9 @@
       var rel = diff === 0 ? "We're in the same time zone." : "You're " + Math.abs(diff) + 'h ' + (diff > 0 ? 'ahead of' : 'behind') + ' me.';
       var now = new Date();
       var p = {}; new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Hong_Kong', year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now).forEach(function (x) { p[x.type] = +x.value; });
-      var f = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit' });
+      var f = new Intl.DateTimeFormat([], { hour: '2-digit', minute: '2-digit', hour12: false });
       var a = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 8 - 8, 0))), b = f.format(new Date(Date.UTC(p.year, p.month - 1, p.day, 22 - 8, 0)));
-      $('#tz-note').innerHTML = rel + ' I\'m usually around <strong>08:00–22:00 HKT</strong>, which is <strong>' + a + '–' + b + '</strong> for you.';
+      $('#tz-note').innerHTML = rel + ' I\'m usually available <strong>08:00 to 22:00 HKT</strong>, which is <strong>' + a + ' to ' + b + '</strong> for you.';
     })();
 
     /* ---------- Greeting, typewriter ---------- */
@@ -998,13 +1027,8 @@
       else if (del && ci === 0) { del = false; pi = (pi + 1) % phrases.length; d = 350; }
       typeTimer = setTimeout(type, d);
     }
-    function cycleStatic() {
-      typedEl.textContent = phrases[pi];
-      typeTimer = setTimeout(function () { pi = (pi + 1) % phrases.length; cycleStatic(); }, 2600);
-    }
     function restartTyping() {
       clearTimeout(typeTimer);
-      if (!motionOn) { cycleStatic(); return; }
       ci = 0; del = false; type();
     }
     document.addEventListener('visibilitychange', function () { if (document.hidden) clearTimeout(typeTimer); else restartTyping(); });
@@ -1281,7 +1305,6 @@
       { g: 'Links', i: 'fa-brands fa-github', t: 'GitHub', h: '@Kurtis-Lam', run: open('https://github.com/Kurtis-Lam') },
       { g: 'Links', i: 'fa-brands fa-instagram', t: 'Instagram', h: '@kurtis_1022', run: open('https://www.instagram.com/kurtis_1022/') },
       { g: 'Links', i: 'fa-keyboard', t: 'Monkeytype profile', h: 'kurtislam', run: open('https://monkeytype.com/profile/kurtislam') },
-      { g: 'Fun', i: 'fa-wand-magic-sparkles', t: 'Toggle effects (stars & animations)', run: function () { setMotion(!motionOn); } },
       { g: 'Fun', i: 'fa-music', t: 'Play a chord', run: function () { go('extras')(); setTimeout(function () { if (window.__klPlayChord) window.__klPlayChord(); }, 400); } },
       { g: 'Fun', i: 'fa-star', t: 'Shower me with stars', run: function () { sparkle(); } },
       { g: 'Fun', i: 'fa-arrow-up', t: 'Back to top', run: function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); } }
@@ -1353,6 +1376,56 @@
       kp = (k === KONAMI[kp]) ? kp + 1 : (k === KONAMI[0] ? 1 : 0);
       if (kp === KONAMI.length) { kp = 0; sparkle(); }
     });
+
+    /* ---------- Random color generator ---------- */
+    (function () {
+      var sw = $('#cg-swatch'), lab = $('#cg-label'), hist = $('#cg-hist'), hexB = $('#cg-hex'), rgbB = $('#cg-rgb'), hslB = $('#cg-hsl');
+      var recent = [], cur = null;
+      function toHex(n) { return ('0' + n.toString(16)).slice(-2); }
+      function toHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, h = 0, s = 0, d = mx - mn;
+        if (d) {
+          s = d / (1 - Math.abs(2 * l - 1));
+          if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4;
+          h = Math.round(h * 60); if (h < 0) h += 360;
+        }
+        return [h, Math.round(s * 100), Math.round(l * 100)];
+      }
+      function show(c) {
+        cur = c;
+        var hex = ('#' + toHex(c[0]) + toHex(c[1]) + toHex(c[2])).toUpperCase();
+        var hsl = toHsl(c[0], c[1], c[2]);
+        var rgb = 'rgb(' + c[0] + ', ' + c[1] + ', ' + c[2] + ')';
+        var hs = 'hsl(' + hsl[0] + ', ' + hsl[1] + '%, ' + hsl[2] + '%)';
+        sw.style.backgroundColor = hex;
+        var lum = (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255;
+        sw.style.color = lum > 0.6 ? '#0b0f1c' : '#ffffff';
+        lab.textContent = hex;
+        hexB.lastElementChild.textContent = hex; rgbB.lastElementChild.textContent = rgb; hslB.lastElementChild.textContent = hs;
+        hexB.dataset.v = hex; rgbB.dataset.v = rgb; hslB.dataset.v = hs;
+      }
+      function renderHist() {
+        hist.innerHTML = '';
+        recent.forEach(function (c) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          var hx = '#' + toHex(c[0]) + toHex(c[1]) + toHex(c[2]);
+          b.style.backgroundColor = hx; b.title = hx.toUpperCase(); b.setAttribute('aria-label', 'Use ' + hx.toUpperCase());
+          b.addEventListener('click', function () { show(c); });
+          hist.appendChild(b);
+        });
+      }
+      function gen() {
+        if (cur) { recent.unshift(cur); recent = recent.slice(0, 10); renderHist(); }
+        show([Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]);
+      }
+      sw.addEventListener('click', gen);
+      sw.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); gen(); } });
+      $('#cg-new').addEventListener('click', gen);
+      [hexB, rgbB, hslB].forEach(function (b) { b.addEventListener('click', function () { copyText(b.dataset.v, 'Copied ' + b.dataset.v); }); });
+      show([Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]);
+    })();
 
     applyMotion();
   })();
