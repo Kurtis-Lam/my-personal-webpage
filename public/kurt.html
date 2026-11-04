@@ -12,27 +12,15 @@
   <meta property="og:url" content="https://kurtis-lam.web.app/kurt" />
   <title>Kurt | Kurtis Lam</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" /></noscript>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" /></noscript>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Space Grotesk', 'sans-serif'],
-            mono: ['Fira Code', 'monospace'],
-          }
-        }
-      }
-    }
-  </script>
 
   <style>
     :root { --accent: #86efac; --accent-2: #4ade80; }
@@ -147,6 +135,7 @@
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
     </style>
+  <link rel="stylesheet" href="/assets/tailwind.css" />
 </head>
 <body class="bg-[#07090e] text-slate-100 font-sans antialiased overflow-x-hidden min-h-screen selection:bg-cyan-500 selection:text-black">
   <a href="#main" class="skip-link">Skip to content</a>
