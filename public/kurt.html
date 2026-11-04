@@ -428,25 +428,12 @@ kurt ❯ why does main.js throw "undefined is not a function"?</pre></div>
       });
     })();
 
-    // --- Forward pointer / scroll info to the shared background iframe ---
+    // --- Tell the shared background iframe when the page is scrolling (it eases off while you scroll) ---
     (function () {
       const bgIframe = document.getElementById('bg-iframe');
       if (!bgIframe) return;
-      const post = (msg) => {
-        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage(msg, '*'); } catch (_) {}
-      };
-      let mx = 0, my = 0, movePending = false, scrollPending = false;
-      window.addEventListener('pointermove', (e) => {
-        mx = e.clientX; my = e.clientY;
-        if (movePending) return;
-        movePending = true;
-        requestAnimationFrame(() => { movePending = false; post({ type: 'mousemove', x: mx, y: my }); });
-      }, { passive: true });
-      document.documentElement.addEventListener('mouseleave', () => post({ type: 'leave' }));
       window.addEventListener('scroll', () => {
-        if (scrollPending) return;
-        scrollPending = true;
-        requestAnimationFrame(() => { scrollPending = false; post({ type: 'scroll' }); });
+        try { if (bgIframe.contentWindow) bgIframe.contentWindow.postMessage({ type: 'scroll' }, '*'); } catch (_) {}
       }, { passive: true });
     })();
   </script>
