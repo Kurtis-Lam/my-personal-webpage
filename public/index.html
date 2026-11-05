@@ -15,6 +15,10 @@
   <meta property="og:url" content="https://kurtis-lam.web.app/" />
   <meta name="twitter:card" content="summary" />
 
+  <link rel="preload" as="image" href="/assets/me/1.webp" type="image/webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/assets/me/2.webp" type="image/webp" />
+  <link rel="preload" as="image" href="/assets/me/3.webp" type="image/webp" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
@@ -164,11 +168,12 @@
 
     /* ---------- Hero ---------- */
     .hero { padding: 64px 0 24px; }
-    .hero-grid { display: block; }
-    .hero-name { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 30px; }
-    .photos { position: relative; flex: none; width: clamp(92px, 14vw, 140px); aspect-ratio: 1; padding: 0; margin: 16px 18px 0 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .hero-grid { display: flex; align-items: center; justify-content: space-between; gap: 48px; }
+    .hero-text { flex: 1 1 0; min-width: 0; }
+    .hero-name { display: block; }
+    .photos { position: relative; flex: none; width: clamp(240px, 30vw, 380px); aspect-ratio: 4 / 5; padding: 0; margin: 0 18px 0 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .photos.single { cursor: default; }
-    .photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 26px; border: 2px solid var(--line-strong); background: #0b1122; box-shadow: 0 10px 28px rgba(0, 0, 0, .5); transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.3, .8, .3, 1), opacity .4s ease; will-change: transform; user-select: none; -webkit-user-drag: none; }
+    .photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 28px; border: 2px solid var(--line-strong); background: #0b1122; box-shadow: 0 14px 36px rgba(0, 0, 0, .5); transform-origin: 50% 100%; transition: transform .5s cubic-bezier(.3, .8, .3, 1), opacity .4s ease; will-change: transform; user-select: none; -webkit-user-drag: none; }
     .photos:not(.single):hover img[data-pos="0"] { transform: translateY(-3px) scale(1.02) !important; }
     .hero h1 { font-size: clamp(2.9rem, 8vw, 5.6rem); line-height: .98; letter-spacing: -.04em; font-weight: 700; margin: 20px 0 18px; }
     .hero h1 .serif { font-size: 1.06em; letter-spacing: -.01em; }
@@ -391,6 +396,8 @@
       .bar-right { margin-left: auto; }
       .kbd-btn, .bar-right .btn { display: none; }
       .about-grid, .hire-grid { grid-template-columns: 1fr; }
+      .hero-grid { flex-direction: column; align-items: flex-start; gap: 32px; }
+      .photos { width: min(300px, 70vw); margin: 0 0 0 12px; }
       .svc-grid, .proj-grid { grid-template-columns: repeat(2, 1fr); }
       .steps { grid-template-columns: repeat(2, 1fr); }
       .foot-grid { grid-template-columns: 1fr 1fr; }
@@ -456,11 +463,10 @@
       <section class="hero" id="home">
         <div class="wrap">
           <div class="hero-grid">
-            <div>
+            <div class="hero-text">
               <div class="chip"><span class="dot live"></span><span>Available for freelance work · Remote</span></div>
               <div class="hero-name">
                 <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
-                <button class="photos" id="photos" type="button" aria-label="Show next photo of Kurtis" hidden></button>
               </div>
               <div class="role-line" aria-live="off"><span class="prompt">&gt;&nbsp;</span>I build <span id="typed"></span><span class="caret">|</span></div>
               <p class="bio">I'm a <strong>student (and developer) in Hong Kong</strong> who turns ideas into small, fast things people actually use: web apps, study tools, bots, browser extensions, Android apps, you name it.</p>
@@ -474,7 +480,7 @@
                 <a class="social" style="--c:#e2b714" href="https://monkeytype.com/profile/kurtislam" target="_blank" rel="noopener noreferrer" aria-label="Monkeytype profile"><i class="fa-solid fa-keyboard"></i></a>
               </div>
             </div>
-
+            <button class="photos" id="photos" type="button" aria-label="Show next photo of Kurtis"></button>
           </div>
 
           <div class="scroll-cue"><i class="fa-solid fa-chevron-down"></i><span>scroll</span></div>
@@ -1046,31 +1052,14 @@
     document.addEventListener('visibilitychange', function () { if (document.hidden) clearInterval(ageTimer); else startAge(); });
     startAge();
 
-    /* ---------- Photo stack: put images in /assets/me/ named 1.webp, 2.webp, 3.webp ... (jpg, jpeg, png, avif also work) ---------- */
+    /* ---------- Photo stack: images are preloaded in <head>; add files to SRCS to add photos ---------- */
     (function () {
-      var el = $('#photos'), BASE = '/assets/me/', EXT = ['webp', 'jpg', 'jpeg', 'png', 'avif'], MAX = 30, found = [], cur = 0, imgs = [];
+      var el = $('#photos'), SRCS = ['/assets/me/1.webp', '/assets/me/2.webp', '/assets/me/3.webp'], cur = 0, imgs = [];
       if (!el) return;
-      function probe(n, cb) {
-        var ei = 0;
-        (function next() {
-          if (ei >= EXT.length) return cb(null);
-          var im = new Image(), src = BASE + n + '.' + EXT[ei++];
-          im.onload = function () { cb(src); };
-          im.onerror = next;
-          im.src = src;
-        })();
-      }
-      function scan(n) {
-        probe(n, function (src) {
-          if (!src) return build();
-          found.push(src);
-          if (n < MAX) scan(n + 1); else build();
-        });
-      }
       var POS = [
         'translate(0, 0) rotate(0deg) scale(1)',
-        'translate(16px, -6px) rotate(6deg) scale(.95)',
-        'translate(-14px, -10px) rotate(-7deg) scale(.9)'
+        'translate(22px, -8px) rotate(6deg) scale(.95)',
+        'translate(-20px, -12px) rotate(-7deg) scale(.9)'
       ];
       function layout() {
         var n = imgs.length;
@@ -1082,19 +1071,17 @@
           im.style.opacity = pos < 3 ? '1' : '0';
         });
       }
-      function build() {
-        if (!found.length) return;
-        found.forEach(function (src) {
-          var im = document.createElement('img');
-          im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false;
-          el.appendChild(im); imgs.push(im);
-        });
-        layout();
-        el.hidden = false;
-        if (found.length === 1) { el.classList.add('single'); el.tabIndex = -1; el.setAttribute('aria-label', 'Photo of Kurtis'); return; }
-        el.addEventListener('click', function () { cur = (cur + 1) % imgs.length; layout(); });
-      }
-      scan(1);
+      SRCS.forEach(function (src, i) {
+        var im = new Image();
+        im.alt = ''; im.decoding = 'async'; im.draggable = false;
+        im.loading = 'eager';
+        if (i === 0) im.fetchPriority = 'high';
+        im.src = src;
+        el.appendChild(im); imgs.push(im);
+      });
+      layout();
+      if (imgs.length === 1) { el.classList.add('single'); el.tabIndex = -1; el.setAttribute('aria-label', 'Photo of Kurtis'); return; }
+      el.addEventListener('click', function () { cur = (cur + 1) % imgs.length; layout(); });
     })();
 
     /* ---------- Mobile menu ---------- */
