@@ -464,7 +464,7 @@
         <div class="wrap">
           <div class="hero-grid">
             <div class="hero-text">
-              <div class="chip"><span class="dot live"></span><span></span></div>
+              <div class="chip"><span class="dot live"></span><span>(not) Online</span></div>
               <div class="hero-name">
                 <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
               </div>
@@ -1054,7 +1054,7 @@
 
     /* ---------- Photo stack: images are preloaded in <head>; add files to SRCS to add photos ---------- */
     (function () {
-      var el = $('#photos'), SRCS = ['/assets/me/1.webp', '/assets/me/2.webp', '/assets/me/3.webp'], cur = 0, imgs = [];
+      var el = $('#photos'), SRCS = Array.from({ length: 10 }, (_, i) => `/assets/me/${i + 1}.webp`), cur = 0, imgs = [];
       if (!el) return;
       var POS = [
         'translate(0, 0) rotate(0deg) scale(1)',
