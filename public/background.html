@@ -1154,6 +1154,10 @@
     const TARGET_FPS = 30, FRAME_MS = 1000 / TARGET_FPS;
     const NEB_MS = 1000 / 10;
     let lastFrame = 0, lastNeb = 0;
+    // The host page says "busy" while it animates something (photo changes). For that short moment the stars
+    // update at 15 fps and the nebula drift at 5 fps, so the compositor and main thread are free for the page.
+    const BUSY_FRAME_MS = 1000 / 15, BUSY_NEB_MS = 200;
+    let busyUntil = 0;
 
     // Exactly one animation-frame chain can ever be pending, so tab switches can't pile up extra loops.
     let rafId = 0, motionOn = true, renderOnce = false;
@@ -1169,9 +1173,10 @@
       const frozen = STATIC_MODE || !motionOn;
       const t = STATIC_MODE ? 5000 : (now || performance.now());
       if (!frozen) {
+        const fms = t < busyUntil ? BUSY_FRAME_MS : FRAME_MS;
         const since = t - lastFrame;
-        if (since < FRAME_MS - 1) { schedule(); return; }
-        lastFrame = t - (since % FRAME_MS);
+        if (since < fms - 1) { schedule(); return; }
+        lastFrame = t - (since % fms);
       }
 
       if (isScrolling && t - lastScrollTime > SCROLL_IDLE_MS) {
@@ -1231,7 +1236,7 @@
       drawShoot(t, dt);
       par.x += ((ptr.active ? ptr.x / width - 0.5 : 0) - par.x) * 0.04;
       par.y += ((ptr.active ? ptr.y / height - 0.5 : 0) - par.y) * 0.04;
-      if (!STATIC_MODE && t - lastNeb >= NEB_MS) { lastNeb = t; updateNebula(t); }
+      if (!STATIC_MODE && t - lastNeb >= (t < busyUntil ? BUSY_NEB_MS : NEB_MS)) { lastNeb = t; updateNebula(t); }
       if (ctx) ctx.globalAlpha = 1;
 
       ptr.dx = ptr.dy = 0;
@@ -1266,6 +1271,8 @@
         if (!isScrolling) { isScrolling = true; rootEl.classList.add('is-scrolling'); }
       } else if (d.type === 'motion') {
         setMotion(!!d.on);
+      } else if (d.type === 'busy') {
+        busyUntil = performance.now() + Math.max(0, Math.min(2000, +d.ms || 600));
       }
     });
 
