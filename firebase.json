@@ -16,10 +16,6 @@
         "destination": "/colordle.html"
       },
       {
-        "source": "/gggrinder",
-        "destination": "/grinder.html"
-      },
-      {
         "source": "/hbd-twin",
         "destination": "/birthday.html"
       },
