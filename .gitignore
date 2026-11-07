@@ -2,7 +2,7 @@
 .firebaserc
 node_modules/
 
-public/grinder.html
 public/birthday.html
+firebase.json
 *txt*
 *zip*
