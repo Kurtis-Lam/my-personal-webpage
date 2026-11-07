@@ -122,7 +122,7 @@
     }
     .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; flex: none; }
     .dot.live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: rgba(74, 222, 128, .6); animation: pulse 2.4s ease-out infinite; will-change: transform, opacity; }
-    .dot.off { background: var(--amber); }
+    .dot.off { background: transparent; box-shadow: inset 0 0 0 2px #80848e; }
     .dot.off::after { display: none; }
     @keyframes pulse { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(3.2); opacity: 0; } }
 
@@ -472,7 +472,7 @@
         <div class="wrap">
           <div class="hero-grid">
             <div class="hero-text">
-              <div class="chip"><span class="dot live"></span><span>Online</span></div>
+              <div class="chip"><span class="dot live" id="chip-dot"></span><span id="chip-text">Online from HKT 0800 to 2200</span></div>
               <div class="hero-name">
                 <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
               </div>
@@ -1008,7 +1008,8 @@
       elFoot.textContent = hm + ' HKT'; elHKw.textContent = t;
       elYou.textContent = youFmt.format(now);
       var h = hkHour(now), awake = h >= 8 && h < 22;
-      ['#hk-dot', '#foot-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
+      ['#hk-dot', '#foot-dot', '#chip-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
+      var chipT = $('#chip-text'); if (chipT) chipT.textContent = awake ? 'Online from HKT 0800 to 2200' : 'On Hiatus';
       var hkEl = $('#hk-dot'); if (hkEl) hkEl.title = awake ? "I'm probably awake" : "it's night, I'm probably asleep";
     }
     var clockTimer = 0;
