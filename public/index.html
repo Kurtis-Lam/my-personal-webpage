@@ -329,25 +329,12 @@
     .avail li i { color: var(--green); margin-top: 5px; }
     .avail li strong { color: var(--text); font-weight: 500; }
 
-    form { padding: 28px; display: grid; gap: 16px; }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    label { display: grid; gap: 7px; font-size: .9rem; font-weight: 500; }
-    label .req { color: var(--pink); }
-    input, select, textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-strong); background: rgba(5, 8, 16, .9); transition: border-color .2s, box-shadow .2s; }
-    input::placeholder, textarea::placeholder { color: #6d7b96; }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(103, 232, 249, .18); }
-    textarea { min-height: 140px; resize: vertical; }
-    select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #a3b0c7 50%), linear-gradient(135deg, #a3b0c7 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
-    .field-err { color: #fda4af; font-size: .82rem; min-height: 1em; }
-    input[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #fb7185; }
-    .form-foot { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
-    .form-foot small { color: var(--muted); max-width: 34ch; }
-    .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-    .done { padding: 30px; display: grid; gap: 16px; text-align: left; }
-    .done .big { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem; color: #04101c; background: var(--green); }
-    .done h3 { font-size: 1.5rem; letter-spacing: -.01em; }
-    .done p { color: var(--muted); }
-    .done .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .include { padding: 28px; display: grid; gap: 14px; }
+    .include h3 { font-size: 1.3rem; letter-spacing: -.01em; }
+    .include ul { display: grid; gap: 12px; }
+    .include li { display: flex; gap: 12px; align-items: flex-start; color: var(--muted); font-size: .96rem; }
+    .include li i { color: var(--green); margin-top: 5px; }
+    .include li strong { color: var(--text); font-weight: 500; }
 
     /* ---------- Footer ---------- */
     footer { margin-top: 96px; border-top: 1px solid var(--line); background: rgba(7, 9, 14, .92); }
@@ -414,7 +401,7 @@
     @media (max-width: 640px) {
       body { font-size: 1rem; }
       .sec { padding-top: 64px; }
-      .svc-grid, .proj-grid, .play-grid, .row2 { grid-template-columns: 1fr; }
+      .svc-grid, .proj-grid, .play-grid { grid-template-columns: 1fr; }
       .now-grid { grid-template-columns: 1fr; }
       .now-card .tz b { font-size: 1.2rem; }
       .brand-name { display: none; }
@@ -801,95 +788,39 @@
           <div class="sec-head reveal">
             <span class="eyebrow">06 · Hire me</span>
             <h2>Let's build <span class="serif grad">something</span></h2>
-            <p class="lede">Fill in the form and your email app opens with everything pre-written. Or just email me directly.</p>
+            <p class="lede">Message me on Instagram or email me with the details below. I usually reply faster on Instagram than on email.</p>
           </div>
 
           <div class="hire-grid">
             <div class="hire-info">
               <div class="card contact-card reveal">
+                <div class="ico" style="color:#f472b6;background:rgba(244,114,182,.12)"><i class="fa-brands fa-instagram"></i></div>
+                <div class="meta"><small>Instagram DM · fastest</small><a class="val" href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer">@kurtis_1022</a></div>
+              </div>
+              <div class="card contact-card reveal">
                 <div class="ico"><i class="fa-solid fa-envelope"></i></div>
                 <div class="meta"><small>Email</small><a class="val" href="mailto:kurtislam100@gmail.com">kurtislam100@gmail.com</a></div>
                 <button class="icon-btn" type="button" data-copy="kurtislam100@gmail.com" aria-label="Copy email address"><i class="fa-regular fa-copy"></i></button>
               </div>
-              <div class="card contact-card reveal">
-                <div class="ico"><i class="fa-solid fa-at"></i></div>
-                <div class="meta"><small>Backup email</small><a class="val" href="mailto:kurtislam200@gmail.com">kurtislam200@gmail.com</a></div>
-                <button class="icon-btn" type="button" data-copy="kurtislam200@gmail.com" aria-label="Copy backup email address"><i class="fa-regular fa-copy"></i></button>
-              </div>
-              <div class="card contact-card reveal">
-                <div class="ico" style="color:#f472b6;background:rgba(244,114,182,.12)"><i class="fa-brands fa-instagram"></i></div>
-                <div class="meta"><small>Instagram DM</small><a class="val" href="https://www.instagram.com/kurtis_1022/" target="_blank" rel="noopener noreferrer">@kurtis_1022</a></div>
-              </div>
               <ul class="card avail reveal">
                 <li><i class="fa-solid fa-circle-check"></i><span><strong>Open for new projects</strong> — small and large</span></li>
                 <li><i class="fa-solid fa-circle-check"></i><span><strong>Remote-first</strong> — I work with people anywhere, on Hong Kong time</span></li>
-                <li><i class="fa-solid fa-circle-check"></i><span><strong>Usually reply within a day</strong> (Hong Kong time)</span></li>
+                <li><i class="fa-solid fa-circle-check"></i><span><strong>Faster replies on Instagram</strong> than on email</span></li>
                 <li><i class="fa-solid fa-circle-check"></i><span><strong>Fixed quote</strong> after I understand the brief</span></li>
               </ul>
             </div>
 
             <div class="card reveal" id="form-card">
-              <form id="hire-form" novalidate>
-                <div class="row2">
-                  <label><span class="lbl">Your name <span class="req">*</span></span>
-                    <input id="f-name" name="name" type="text" autocomplete="name" placeholder="Jane Doe" required />
-                    <span class="field-err" data-err="name"></span>
-                  </label>
-                  <label><span class="lbl">Your email <span class="req">*</span></span>
-                    <input id="f-email" name="email" type="email" autocomplete="email" placeholder="jane@company.com" required />
-                    <span class="field-err" data-err="email"></span>
-                  </label>
-                </div>
-                <label><span class="lbl">What do you need? <span class="req">*</span></span>
-                  <select id="f-type" name="type">
-                    <option value="Website / web app">Website / web app</option>
-                    <option value="Discord bot">Discord bot</option>
-                    <option value="Chrome extension / script">Chrome extension / script</option>
-                    <option value="Android app / CLI tool">Android app / CLI tool</option>
-                    <option value="Basic security check">Basic security check</option>
-                    <option value="Something else">Something else</option>
-                  </select>
-                </label>
-                <div class="row2">
-                  <label>Budget
-                    <select id="f-budget" name="budget">
-                      <option>Not sure yet</option>
-                      <option>Under US$100</option>
-                      <option>US$100 – 500</option>
-                      <option>US$500 – 1,500</option>
-                      <option>US$1,500+</option>
-                    </select>
-                  </label>
-                  <label>Timeline
-                    <select id="f-time" name="timeline">
-                      <option>Flexible</option>
-                      <option>As soon as possible</option>
-                      <option>Within 2 weeks</option>
-                      <option>Within a month</option>
-                    </select>
-                  </label>
-                </div>
-                <label><span class="lbl">Tell me about it <span class="req">*</span></span>
-                  <textarea id="f-msg" name="message" placeholder="What are you building, who is it for, and is there anything I should look at?" required></textarea>
-                  <span class="field-err" data-err="message"></span>
-                </label>
-                <div class="hp" aria-hidden="true"><label>Leave this empty<input id="f-hp" type="text" tabindex="-1" autocomplete="off" /></label></div>
-                <div class="form-foot">
-                  <small>This opens your email app with the message ready to send. Nothing is stored on this site.</small>
-                  <button class="btn btn-primary" type="submit"><i class="fa-solid fa-paper-plane"></i>Send via email</button>
-                </div>
-              </form>
-
-              <div class="done" id="form-done" hidden>
-                <div class="big"><i class="fa-solid fa-check"></i></div>
-                <h3>Almost there!</h3>
-                <p>Your email app should have opened with your message. Just press <strong>Send</strong>. If nothing opened, use one of these:</p>
-                <div class="actions">
-                  <a class="btn btn-primary btn-sm" id="done-mailto" href="#"><i class="fa-solid fa-envelope"></i>Open email app</a>
-                  <a class="btn btn-ghost btn-sm" id="done-gmail" href="#" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-google"></i>Open in Gmail</a>
-                  <button class="btn btn-ghost btn-sm" id="done-copy" type="button"><i class="fa-regular fa-copy"></i>Copy message</button>
-                  <button class="btn btn-ghost btn-sm" id="done-back" type="button"><i class="fa-solid fa-pen"></i>Edit</button>
-                </div>
+              <div class="include">
+                <h3>What to include in your message</h3>
+                <ul>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>Your name</strong> and how to reach you</span></li>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>What you need</strong> — website / web app, Discord bot, Chrome extension / script, Android app / CLI tool, basic security check, or something else</span></li>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>What you're building</strong> and who it's for</span></li>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>Budget</strong> (a rough range is fine)</span></li>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>Timeline</strong> — any deadline I should know about</span></li>
+                  <li><i class="fa-solid fa-circle-check"></i><span><strong>Links or references</strong> — anything I should look at</span></li>
+                </ul>
               </div>
             </div>
           </div>
@@ -1327,51 +1258,11 @@
       window.__klPlayChord = function () { ['C4', 'E4', 'G4'].forEach(function (n, i) { setTimeout(function () { press(byName[n], 1.6); }, i * 90); }); };
     })();
 
-    /* ---------- Hire form → email ---------- */
-    var form = $('#hire-form'), selType = $('#f-type');
+    /* ---------- Hire buttons ---------- */
     $$('[data-ask]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var map = { web: 'Website / web app', discord: 'Discord bot', extension: 'Chrome extension / script', app: 'Android app / CLI tool', security: 'Basic security check', other: 'Something else' };
-        selType.value = map[b.getAttribute('data-ask')] || selType.value;
-        $('#hire').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
-        setTimeout(function () { $('#f-name').focus({ preventScroll: true }); }, reduceMotion ? 0 : 600);
-      });
+      b.addEventListener('click', function () { $('#hire').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); });
     });
     $$('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'Email copied'); }); });
-
-    function setErr(name, msg) {
-      var el = $('[data-err="' + name + '"]'), inp = form.elements[name];
-      if (el) el.textContent = msg || '';
-      if (inp) inp.setAttribute('aria-invalid', msg ? 'true' : 'false');
-    }
-    function buildMail() {
-      var f = form.elements, msg = f.message.value.trim();
-      if (msg.length > 1400) msg = msg.slice(0, 1400) + '…';
-      var subject = '[Hire] ' + f.type.value + ' — ' + f.name.value.trim();
-      var body = 'Hi Kurtis,\n\n' + msg + '\n\n— Project details —\nType: ' + f.type.value + '\nBudget: ' + f.budget.value + '\nTimeline: ' + f.timeline.value + '\n\n— From —\n' + f.name.value.trim() + '\n' + f.email.value.trim() + '\n';
-      return { subject: subject, body: body };
-    }
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      if ($('#f-hp').value) return; // honeypot
-      var f = form.elements, ok = true;
-      setErr('name', ''); setErr('email', ''); setErr('message', '');
-      if (!f.name.value.trim()) { setErr('name', 'Please tell me your name.'); ok = false; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.value.trim())) { setErr('email', 'Please enter a valid email so I can reply.'); ok = false; }
-      if (f.message.value.trim().length < 10) { setErr('message', 'Add a few more details (10+ characters).'); ok = false; }
-      if (!ok) { var bad = form.querySelector('[aria-invalid="true"]'); if (bad) bad.focus(); return; }
-
-      var m = buildMail(), enc = encodeURIComponent;
-      var mailto = 'mailto:' + EMAIL + '?subject=' + enc(m.subject) + '&body=' + enc(m.body);
-      $('#done-mailto').href = mailto;
-      $('#done-gmail').href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + enc(EMAIL) + '&su=' + enc(m.subject) + '&body=' + enc(m.body);
-      $('#done-copy').onclick = function () { copyText('To: ' + EMAIL + '\nSubject: ' + m.subject + '\n\n' + m.body, 'Message copied'); };
-      form.hidden = true; $('#form-done').hidden = false;
-      $('#form-card').scrollIntoView({ block: 'center', behavior: reduceMotion ? 'auto' : 'smooth' });
-      window.location.href = mailto;
-    });
-    $('#done-back').addEventListener('click', function () { $('#form-done').hidden = true; form.hidden = false; $('#f-msg').focus(); });
-    ['f-name', 'f-email', 'f-msg'].forEach(function (id) { $('#' + id).addEventListener('input', function () { this.setAttribute('aria-invalid', 'false'); var e = $('[data-err="' + this.name + '"]'); if (e) e.textContent = ''; }); });
 
     /* ---------- Command palette (Ctrl/Cmd + K, or "/") ---------- */
     var pal = $('#palette'), palQ = $('#pal-q'), palList = $('#pal-list'), palSel = 0, palItems = [], lastFocus = null;
@@ -1386,7 +1277,7 @@
       { g: 'Go to', i: 'fa-folder-open', t: 'Work', run: go('work') },
       { g: 'Go to', i: 'fa-timeline', t: 'My story', run: go('story') },
       { g: 'Go to', i: 'fa-music', t: 'Extras & piano', run: go('extras') },
-      { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'form', run: function () { go('hire')(); setTimeout(function () { $('#f-name').focus({ preventScroll: true }); }, 500); } },
+      { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'message', run: go('hire') },
       { g: 'Hire me', i: 'fa-copy', t: 'Copy my email address', h: EMAIL, run: function () { copyText(EMAIL, 'Email copied'); } },
       { g: 'Hire me', i: 'fa-envelope', t: 'Email me', run: open('mailto:' + EMAIL, true) },
       { g: 'Projects', i: 'fa-mobile-screen', t: 'fluxbg', h: 'Android app', run: open('/fluxbg', true) },
