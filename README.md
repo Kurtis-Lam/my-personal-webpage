@@ -36,4 +36,4 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 - **GitHub**: [@Kurtis-Lam](https://github.com/Kurtis-Lam)
 - **Instagram**: [@kurtis_1022](https://www.instagram.com/kurtis_1022/)
 - **Monkeytype**: [kurtislam](https://monkeytype.com/profile/kurtislam)
-- **Email**: [kurtislam100@gmail.com](mailto:kurtislam100@gmail.com) | [kurtislam200@gmail.com](mailto:kurtislam200@gmail.com)
+- **Email**: [kurtislam100@gmail.com](mailto:kurtislam100@gmail.com)
