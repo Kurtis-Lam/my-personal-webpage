@@ -383,10 +383,24 @@
        Responsive
        ===================================================================== */
     @media (max-width: 960px) {
-      .nav { position: absolute; left: 0; right: 0; top: 66px; flex-direction: column; margin: 0; padding: 12px 20px 18px; background: rgba(7, 9, 14, .98); border-bottom: 1px solid var(--line); display: none; }
-      .nav.open { display: flex; }
-      .nav a { padding: 12px 10px; font-size: 1rem; }
-      .menu-btn { display: inline-grid; place-items: center; }
+      .bar { height: 60px; gap: 12px; }
+      section { scroll-margin-top: 76px; }
+      .nav {
+        position: absolute; left: 12px; right: 12px; top: calc(100% + 8px); flex-direction: column; gap: 2px; margin: 0; padding: 8px;
+        background: rgba(10, 14, 26, .98); border: 1px solid var(--line-strong); border-radius: 18px; box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+        opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-12px) scale(.97); transform-origin: top right;
+        transition: opacity .22s ease, transform .3s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .3s;
+      }
+      .nav.open { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition: opacity .22s ease, transform .3s cubic-bezier(.2, .8, .2, 1), visibility 0s; }
+      .nav a { padding: 13px 14px; font-size: 1.02rem; border-radius: 12px; opacity: 0; transform: translateY(-8px); transition: opacity .2s ease, transform .2s ease, color .2s, background-color .2s; }
+      .nav.open a { opacity: 1; transform: none; transition: opacity .3s ease calc(var(--i, 0) * 38ms + 70ms), transform .35s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 38ms + 70ms), color .2s, background-color .2s; }
+      .nav a:nth-child(2) { --i: 1; } .nav a:nth-child(3) { --i: 2; } .nav a:nth-child(4) { --i: 3; }
+      .nav a:nth-child(5) { --i: 4; } .nav a:nth-child(6) { --i: 5; } .nav a:nth-child(7) { --i: 6; }
+      .nav a.active { background: rgba(103, 232, 249, .1); color: #fff; }
+      .menu-btn { display: inline-grid; place-items: center; width: 42px; height: 42px; -webkit-tap-highlight-color: transparent; }
+      .menu-btn i { transition: transform .3s cubic-bezier(.2, .8, .2, 1); }
+      .menu-btn[aria-expanded="true"] { border-color: var(--cyan); }
+      .menu-btn[aria-expanded="true"] i { transform: rotate(90deg); }
       .bar-right { margin-left: auto; }
       .kbd-btn, .bar-right .btn { display: none; }
       .about-grid, .hire-grid { grid-template-columns: 1fr; }
@@ -400,18 +414,75 @@
     }
     @media (max-width: 640px) {
       body { font-size: 1rem; }
-      .sec { padding-top: 64px; }
-      .svc-grid, .proj-grid, .play-grid { grid-template-columns: 1fr; }
-      .now-grid { grid-template-columns: 1fr; }
-      .now-card .tz b { font-size: 1.2rem; }
+      .wrap { padding-inline: 16px; }
+      .bar { height: 58px; }
+      .nav { left: 10px; right: 10px; }
       .brand-name { display: none; }
-      form, .widget, .about-text { padding: 22px; }
+      .sec { padding-top: 52px; }
+      .sec-head { margin-bottom: 22px; }
+      .sec-head h2 { font-size: 1.85rem; margin: 8px 0 10px; }
+      .lede { font-size: 1rem; }
+      .card { border-radius: 16px; }
+
+      .hero { padding: 26px 0 8px; }
+      .hero-grid { align-items: center; gap: 20px; text-align: center; }
+      .photo-wrap { order: -1; margin: 0; gap: 14px; }
+      .photos { width: min(250px, 66vw); }
+      .photos img { border-radius: 24px; }
+      .photo-cap { flex-direction: column; align-items: center; gap: 2px; font-size: .7rem; }
+      .hero h1 { font-size: clamp(2.5rem, 12.5vw, 3.4rem); margin: 14px 0 12px; }
+      .role-line { font-size: .96rem; min-height: 1.7em; }
+      .hero p.bio { margin: 12px auto 22px; font-size: 1.02rem; }
+      .cta { justify-content: center; gap: 10px; margin-bottom: 20px; }
+      .cta .btn { flex: 1 1 100%; padding: 14px 20px; }
+      .socials { justify-content: center; }
+      .scroll-cue { margin-top: 18px; }
+
+      .now { padding-top: 0; }
+      .now-grid, .about-grid, .play-grid, .hire-grid { gap: 14px; }
+      .svc-grid, .proj-grid, .play-grid, .now-grid { grid-template-columns: 1fr; }
+      .svc-grid, .proj-grid { gap: 14px; }
+      .now-card, .svc, .proj, .widget, .include, .facts, .tools, .about-text { padding: 20px; }
+      form { padding: 20px; }
+      .now-card .tz b { font-size: 1.2rem; }
+      .tz { gap: 10px; }
+      .tz > div { padding: 12px; }
+      .tools { margin-top: 14px; }
+      .facts li { gap: 12px; font-size: .92rem; }
+      .about-text { font-size: 1rem; gap: 14px; }
+      .notice { padding: 16px; gap: 12px; }
+      .steps { grid-template-columns: 1fr; gap: 10px; margin-top: 28px; }
+      .step { padding: 16px 18px; }
+
+      .filters { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 0 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .filters::-webkit-scrollbar { display: none; }
+      .filter { flex: none; white-space: nowrap; padding: 8px 14px; font-size: .88rem; }
+
+      .timeline { padding-left: 28px; gap: 12px; }
+      .timeline::before { left: 8px; }
+      .tl { padding: 16px 18px; }
+      .tl::before { left: -25px; top: 22px; width: 12px; height: 12px; }
+
+      .contact-card { padding: 16px; gap: 12px; }
+      .contact-card .ico { width: 42px; height: 42px; }
+      .avail { padding: 16px 18px; }
+
       .colorgen { grid-template-columns: 1fr; }
-      .cg-swatch { min-height: 130px; }
+      .cg-swatch { min-height: 120px; }
+      .piano-wrap { justify-content: center; }
       .piano { height: 150px; }
       .pk.w { font-size: .62rem; }
       .pk.b { font-size: 0; }
-      .cta .btn { flex: 1 1 100%; }
+
+      footer { margin-top: 60px; }
+      .foot-grid { gap: 22px 18px; padding: 32px 0 18px; }
+      .foot-bottom { justify-content: center; text-align: center; padding: 16px 0 26px; }
+      .to-top { right: 14px; bottom: 14px; width: 42px; height: 42px; border-radius: 12px; }
+      .toast { bottom: 18px; }
+      .palette { padding-top: 8vh; }
+    }
+    @media (hover: none) {
+      .btn:hover, .social:hover, .card.hoverable:hover, .filter:hover { transform: none; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -459,7 +530,7 @@
         <div class="wrap">
           <div class="hero-grid">
             <div class="hero-text">
-              <div class="chip"><span class="dot live" id="chip-dot"></span><span id="chip-text">Online from HKT 0800 to 2200</span></div>
+              <div class="chip"><span class="dot live" id="chip-dot"></span><span id="chip-text">Online</span></div>
               <div class="hero-name">
                 <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
               </div>
@@ -940,7 +1011,7 @@
       elYou.textContent = youFmt.format(now);
       var h = hkHour(now), awake = h >= 8 && h < 22;
       ['#hk-dot', '#foot-dot', '#chip-dot'].forEach(function (s) { var el = $(s); if (el) el.classList.toggle('off', !awake); });
-      var chipT = $('#chip-text'); if (chipT) chipT.textContent = awake ? 'Online from HKT 0800 to 2200' : 'On Hiatus';
+      var chipT = $('#chip-text'); if (chipT) chipT.textContent = awake ? 'Online' : 'On Hiatus';
       var hkEl = $('#hk-dot'); if (hkEl) hkEl.title = awake ? "I'm probably awake" : "it's night, I'm probably asleep";
     }
     var clockTimer = 0;
@@ -1005,7 +1076,7 @@
     (function () {
       var el = $('#photos'), counter = $('#photo-n');
       if (!el) return;
-      var COUNT = 10, EAGER = 3, imgs = [], cur = 0, n = 0, busyT = 0, lastMove = 0;
+      var EAGER = 3, BATCH = 8, MAX = 200, imgs = [], cur = 0, n = 0, busyT = 0, lastMove = 0, done = false;
       var POS = [
         'translate3d(0, 0, 0) rotate(0deg) scale(1)',
         'translate3d(22px, -8px, 0) rotate(6deg) scale(.95)',
@@ -1030,7 +1101,7 @@
           im.classList.toggle('on', vis);
         });
         el.classList.toggle('single', n < 2);
-        if (counter) counter.textContent = n > 1 ? (cur + 1) + ' / ' + n : '';
+        if (counter) counter.textContent = done && n > 1 ? (cur + 1) + ' / ' + n : '';
         warm();
       }
       function go(dir) {
@@ -1040,28 +1111,55 @@
         layout();
         tellBackground();
       }
-      function add(i) {
+      function make(i, cb) {
         var im = new Image();
         im.alt = ''; im.decoding = 'async'; im.draggable = false;
         if (i === 0) im.fetchPriority = 'high';
+        im.onload = function () { cb(true); };
+        im.onerror = function () { cb(false); };
         im.src = '/assets/me/' + (i + 1) + '.webp';
-        el.appendChild(im); imgs.push(im); n = imgs.length;
-        im.onerror = function () { /* missing file: drop it from the stack */
-          var k = imgs.indexOf(im); if (k < 0) return;
-          imgs.splice(k, 1); im.remove(); n = imgs.length;
-          if (cur >= n) cur = 0;
-          layout();
-        };
+        return im;
       }
-      for (var i = 0; i < EAGER; i++) add(i);
-      layout();
-      function rest() {
-        for (var i = EAGER; i < COUNT; i++) add(i);
+      function attach(im) { el.appendChild(im); imgs.push(im); n = imgs.length; }
+      function trim(len) {
+        while (imgs.length > len) imgs.pop().remove();
+        n = imgs.length;
+        if (cur >= n) cur = 0;
+      }
+      function finish() {
+        done = true;
         layout();
         imgs.forEach(decode);
       }
-      if (document.readyState === 'complete') setTimeout(rest, 0);
-      else addEventListener('load', function () { (window.requestIdleCallback || setTimeout)(rest, { timeout: 1500 }); }, { once: true });
+      /* Photos are numbered 1.webp, 2.webp, 3.webp ... and the list ends at the first number that is missing,
+         so a gap (10 missing, 11 present) stops the count at 9. They are tested in batches: a full batch means keep going.
+         The first batch is shown right away (early); anything it turns out to be missing after is dropped again. */
+      function probe(from, size, early, onFull) {
+        var batch = [], ok = [], left = size, k;
+        function settled(j, good) {
+          ok[j] = good;
+          if (--left) return;
+          var stop = size, q;
+          for (q = 0; q < size; q++) if (!ok[q]) { stop = q; break; }
+          if (early) trim(from + stop);
+          else for (q = 0; q < stop; q++) attach(batch[q]);
+          if (stop < size || imgs.length >= MAX) finish();
+          else { layout(); onFull(); }
+        }
+        for (k = 0; k < size; k++) {
+          (function (j) {
+            batch[j] = make(from + j, function (good) { settled(j, good); });
+            if (early) attach(batch[j]);
+          })(k);
+        }
+      }
+      function more() { probe(imgs.length, BATCH, false, more); }
+      function whenIdle() {
+        if (document.readyState === 'complete') setTimeout(more, 0);
+        else addEventListener('load', function () { (window.requestIdleCallback || setTimeout)(more, { timeout: 1500 }); }, { once: true });
+      }
+      probe(0, EAGER, true, whenIdle);
+      layout();
 
       /* click = next (ignored right after a swipe) */
       var swiped = false;
@@ -1133,6 +1231,9 @@
       menuBtn.firstElementChild.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
     });
     nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(); });
+    document.addEventListener('click', function (e) { if (nav.classList.contains('open') && !e.target.closest('#nav, #menu-btn')) closeMenu(); });
+    addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('open')) { closeMenu(); menuBtn.focus(); } });
+    addEventListener('resize', function () { if (innerWidth > 960 && nav.classList.contains('open')) closeMenu(); });
 
     /* ---------- Scroll: progress bar, back-to-top, active link (one rAF-throttled handler) ---------- */
     var prog = $('#progress'), topBtn = $('#to-top'), ticking = false;
