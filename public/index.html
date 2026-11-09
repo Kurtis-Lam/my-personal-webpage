@@ -174,12 +174,11 @@
     .photo-wrap { flex: none; margin: 0 18px 0 0; display: flex; flex-direction: column; align-items: center; gap: 22px; }
     .photos { position: relative; flex: none; width: clamp(240px, 30vw, 380px); aspect-ratio: 4 / 5; padding: 0; margin: 0; border: 0; background: none; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
     .photos.single { cursor: default; }
-    .photos:focus-visible { outline: 2px solid var(--cyan); outline-offset: 10px; border-radius: 30px; }
+    .photos:focus, .photos:focus-visible { outline: none; }
     /* Only the three visible cards are painted and promoted to a layer; the rest are visibility:hidden (no layer, no raster). */
     .photos img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 28px; border: 2px solid var(--line-strong); background: #0b1122; box-shadow: 0 14px 36px rgba(0, 0, 0, .5); transform-origin: 50% 100%; visibility: hidden; transition: transform .45s cubic-bezier(.3, .8, .3, 1), opacity .35s ease, visibility 0s linear .45s; user-select: none; -webkit-user-drag: none; pointer-events: none; }
     .photos img.on { visibility: visible; will-change: transform, opacity; transition: transform .45s cubic-bezier(.3, .8, .3, 1), opacity .35s ease, visibility 0s; }
     .photos.drag img { transition: none; }
-    .photos:not(.single):not(.drag):hover img[data-pos="0"] { transform: translateY(-3px) scale(1.02) !important; }
     .photo-cap { display: flex; align-items: baseline; justify-content: center; gap: 10px; width: 100%; margin: 0; font-family: var(--mono); font-size: .72rem; line-height: 1.4; color: var(--muted); text-align: center; }
     .photo-cap .n { opacity: .6; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .hero h1 { font-size: clamp(2.9rem, 8vw, 5.6rem); line-height: .98; letter-spacing: -.04em; font-weight: 700; margin: 20px 0 18px; }
@@ -233,9 +232,7 @@
     .svc .ico { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 1.3rem; background: color-mix(in srgb, var(--a) 16%, transparent); color: var(--a); border: 1px solid color-mix(in srgb, var(--a) 40%, transparent); }
     .svc h3 { font-size: 1.28rem; letter-spacing: -.01em; }
     .svc p { color: var(--muted); font-size: .98rem; flex: 1; }
-    .svc .ask { align-self: flex-start; background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--a); font-weight: 600; font-size: .95rem; display: inline-flex; gap: 8px; align-items: center; }
-    .svc .ask:hover i { transform: translateX(4px); }
-    .svc .ask i { transition: transform .2s; }
+    .svc-cta { display: flex; justify-content: center; margin-top: 28px; }
     .notice { margin-top: 18px; padding: 18px 22px; display: flex; gap: 16px; align-items: flex-start; border-style: dashed; border-color: var(--line-strong); }
     .notice i { color: var(--amber); font-size: 1.2rem; margin-top: 3px; }
     .notice p { color: var(--muted); }
@@ -252,6 +249,11 @@
     .filter { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-size: .92rem; transition: border-color .2s, background-color .2s, color .2s; }
     .filter:hover { border-color: var(--line-strong); }
     .filter[aria-pressed="true"] { background: linear-gradient(135deg, #22d3ee, #818cf8); color: #04101c; border-color: transparent; font-weight: 600; }
+    .sorts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -6px 0 22px; }
+    .sort-label { color: var(--muted); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; margin-right: 2px; }
+    .sort-btn { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: .86rem; color: var(--muted); transition: border-color .2s, background-color .2s, color .2s; }
+    .sort-btn:hover { border-color: var(--line-strong); color: var(--text); }
+    .sort-btn[aria-pressed="true"] { border-color: var(--cyan); color: var(--cyan); background: rgba(103, 232, 249, .1); }
     .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .proj { padding: 22px; display: flex; flex-direction: column; gap: 12px; }
     .proj-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
@@ -308,10 +310,10 @@
     .cg-hist button { width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line-strong); cursor: pointer; padding: 0; transition: transform .15s; }
     .cg-hist button:hover { transform: translateY(-2px) scale(1.08); }
     .piano-wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-    .piano { position: relative; height: 190px; max-width: 640px; margin-inline: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+    .piano { position: relative; height: 190px; max-width: 900px; margin-inline: auto; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
     .pk { position: absolute; border: 0; cursor: pointer; padding: 0; display: flex; align-items: flex-end; justify-content: center; transition: background-color .08s, transform .08s; }
-    .pk.w { top: 0; height: 100%; width: calc(12.5% - 3px); background: linear-gradient(#f4f7ff, #cfd8ee); border-radius: 0 0 10px 10px; color: #334; z-index: 1; padding-bottom: 10px; font-family: var(--mono); font-size: .75rem; }
-    .pk.b { top: 0; height: 62%; width: 7%; background: linear-gradient(#262e45, #0b0f1c); border-radius: 0 0 7px 7px; z-index: 2; color: #9aa8c8; padding-bottom: 8px; font-family: var(--mono); font-size: .65rem; border: 1px solid #000; }
+    .pk.w { top: 0; height: 100%; width: calc(100% / 15 - 3px); background: linear-gradient(#f4f7ff, #cfd8ee); border-radius: 0 0 10px 10px; color: #334; z-index: 1; padding-bottom: 10px; font-family: var(--mono); font-size: .75rem; }
+    .pk.b { top: 0; height: 62%; width: 3.8%; background: linear-gradient(#262e45, #0b0f1c); border-radius: 0 0 7px 7px; z-index: 2; color: #9aa8c8; padding-bottom: 8px; font-family: var(--mono); font-size: .65rem; border: 1px solid #000; }
     .pk.w.on { background: linear-gradient(#a5f3fc, #67e8f9); transform: translateY(2px); }
     .pk.b.on { background: linear-gradient(#6d5bd0, #3b2f9a); transform: translateY(2px); }
     .song-pick { width: auto; padding: 8px 34px 8px 12px; border-radius: 10px; font-size: .92rem; }
@@ -460,6 +462,9 @@
       .filters { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 0 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
       .filters::-webkit-scrollbar { display: none; }
       .filter { flex: none; white-space: nowrap; padding: 8px 14px; font-size: .88rem; }
+      .sorts { flex-wrap: nowrap; overflow-x: auto; margin: -2px -16px 18px; padding: 0 16px 6px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+      .sorts::-webkit-scrollbar { display: none; }
+      .sort-label, .sort-btn { flex: none; white-space: nowrap; }
 
       .timeline { padding-left: 28px; gap: 12px; }
       .timeline::before { left: 8px; }
@@ -474,7 +479,7 @@
       .cg-swatch { min-height: 120px; }
       .piano-wrap { justify-content: center; }
       .piano { height: 150px; }
-      .pk.w { font-size: .62rem; }
+      .pk.w { font-size: .5rem; padding-bottom: 6px; }
       .pk.b { font-size: 0; }
 
       footer { margin-top: 60px; }
@@ -535,7 +540,7 @@
             <div class="hero-text">
               <div class="chip"><span class="dot live" id="chip-dot"></span><span id="chip-text">Online</span></div>
               <div class="hero-name">
-                <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam.</span></h1>
+                <h1><span id="greet">Hi, I'm</span><br /><span class="grad serif">Kurtis Lam</span></h1>
               </div>
               <div class="role-line" aria-live="off"><span class="prompt">&gt;&nbsp;</span>I build <span id="typed"></span><span class="caret">|</span></div>
               <p class="bio">I'm a <strong>student (and developer) in Hong Kong</strong> who turns ideas into small, fast things people actually use: web apps, study tools, bots, browser extensions, Android apps, you name it.</p>
@@ -641,43 +646,41 @@
               <div class="ico"><i class="fa-solid fa-code"></i></div>
               <h3>Websites &amp; web apps</h3>
               <p>Portfolios, event pages, landing pages, dashboards and small web apps. Fast, mobile-friendly and easy to update.</p>
-              <button class="ask" type="button" data-ask="web">Start a web project <i class="fa-solid fa-arrow-right"></i></button>
             </article>
             <article class="card svc hoverable reveal" style="--a:#a78bfa">
               <div class="ico"><i class="fa-brands fa-discord"></i></div>
               <h3>Discord bots</h3>
               <p>Moderation, utilities, games, leaderboards and custom commands to keep your community running smoothly.</p>
-              <button class="ask" type="button" data-ask="discord">Start a bot project <i class="fa-solid fa-arrow-right"></i></button>
             </article>
             <article class="card svc hoverable reveal" style="--a:#fbbf24">
               <div class="ico"><i class="fa-solid fa-puzzle-piece"></i></div>
               <h3>Extensions &amp; scripts</h3>
               <p>Chrome extensions, userscripts and Python automation that save you from repeating the same clicks all day.</p>
-              <button class="ask" type="button" data-ask="extension">Start an automation <i class="fa-solid fa-arrow-right"></i></button>
             </article>
             <article class="card svc hoverable reveal" style="--a:#4ade80">
               <div class="ico"><i class="fa-solid fa-mobile-screen"></i></div>
               <h3>Android apps &amp; CLI tools</h3>
               <p>Small, focused apps and terminal tools: do one thing and do it well.</p>
-              <button class="ask" type="button" data-ask="app">Start an app project <i class="fa-solid fa-arrow-right"></i></button>
             </article>
             <article class="card svc hoverable reveal" style="--a:#f472b6">
               <div class="ico"><i class="fa-solid fa-shield-halved"></i></div>
               <h3>Basic security checks</h3>
               <p>A friendly look at your site or app for common weak spots, with a plain-English summary of what to fix.</p>
-              <button class="ask" type="button" data-ask="security">Ask about a check <i class="fa-solid fa-arrow-right"></i></button>
             </article>
             <article class="card svc hoverable reveal" style="--a:#60a5fa">
               <div class="ico"><i class="fa-solid fa-lightbulb"></i></div>
               <h3>Something else</h3>
               <p>Bug fixes, quick tweaks, turning a design into code, a one-off tool. If it's code, send it over.</p>
-              <button class="ask" type="button" data-ask="other">Tell me your idea <i class="fa-solid fa-arrow-right"></i></button>
             </article>
           </div>
 
           <div class="card notice reveal">
             <i class="fa-solid fa-circle-info"></i>
             <p><strong>What I'm not taking on:</strong> projects that may require huge computational resources, e.g. LLM fine-tuning, pretraining, etc. (I'm broke please fund me 🥹🙏)</p>
+          </div>
+
+          <div class="svc-cta reveal">
+            <a class="btn btn-primary" href="#hire"><i class="fa-solid fa-paper-plane"></i>Start a project</a>
           </div>
         </div>
       </section>
@@ -698,67 +701,74 @@
             <button class="filter" type="button" data-filter="apps" aria-pressed="false">Apps &amp; CLI</button>
           </div>
 
-          <div class="proj-grid" id="proj-grid">
+          <div class="sorts reveal" role="group" aria-label="Sort projects">
+            <span class="sort-label mono">Sort</span>
+            <button class="sort-btn" type="button" data-sort="new" aria-pressed="true">Newest first</button>
+            <button class="sort-btn" type="button" data-sort="old" aria-pressed="false">Oldest first</button>
+            <button class="sort-btn" type="button" data-sort="az" aria-pressed="false">A → Z</button>
+            <button class="sort-btn" type="button" data-sort="za" aria-pressed="false">Z → A</button>
+          </div>
 
-            <article class="card proj hoverable reveal" data-cat="apps" style="--a:#7dd3fc">
+          <div class="proj-grid" id="proj-grid">
+            <article class="card proj hoverable reveal" data-dev="2026-10-20" data-cat="apps" style="--a:#7dd3fc">
               <div class="proj-top"><span class="pill new">New · Android</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/fluxbg.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/fluxbg">fluxbg</a></h3></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/fluxbg.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/fluxbg" target="_blank" rel="noopener noreferrer">fluxbg</a></h3></div>
               <p>Wallpaper app for Huawei phones: crop images, trim videos on a timeline, and set them as your home or lock screen.</p>
               <div class="proj-foot"><span class="url">kurtis-lam.web.app/fluxbg</span><a class="gh" href="https://github.com/Kurtis-Lam/fluxbg" target="_blank" rel="noopener noreferrer" aria-label="fluxbg on GitHub"><i class="fa-brands fa-github"></i></a></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="apps" style="--a:#4ade80">
+            <article class="card proj hoverable reveal" data-dev="2026-10-10" data-cat="apps" style="--a:#4ade80">
               <div class="proj-top"><span class="pill new">New · CLI</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/kurt.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kurt">kurt</a></h3></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/kurt.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kurt" target="_blank" rel="noopener noreferrer">kurt</a></h3></div>
               <p>A terminal coding assistant that runs free open-source models locally through Ollama. You approve every edit.</p>
               <div class="proj-foot"><span class="url">kurtis-lam.web.app/kurt</span><a class="gh" href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer" aria-label="kurt on GitHub"><i class="fa-brands fa-github"></i></a></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="web" style="--a:#c084fc">
+            <article class="card proj hoverable reveal" data-dev="2026-09-20" data-cat="web" style="--a:#c084fc">
               <div class="proj-top"><span class="pill">Productivity</span></div>
               <div class="proj-title"><img src="/assets/app-logos-webp/ktown.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer">kTown</a></h3></div>
               <p>The study app for IB students: notes, a citation maker, and more on the way.</p>
               <div class="proj-foot"><span class="url">ktown-45.web.app</span><i class="fa-solid fa-book-open"></i></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="web" style="--a:#f7cac9">
-              <div class="proj-top"><span class="pill">First game</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/svt-match.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer">SVT Match</a></h3></div>
-              <p>A SVT-themed matching game with friends, leaderboards, a shop and more.</p>
-              <div class="proj-foot"><span class="url">svt-match.web.app</span><i class="fa-solid fa-gamepad"></i></div>
-            </article>
-
-            <article class="card proj hoverable reveal" data-cat="web" style="--a:#95f4ee">
+            <article class="card proj hoverable reveal" data-dev="2026-09-10" data-cat="web" style="--a:#95f4ee">
               <div class="proj-top"><span class="pill">SU webpage</span></div>
               <div class="proj-title"><img src="/assets/app-logos-webp/gtcsu-aurora.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://gtcsu-aurora.web.app" target="_blank" rel="noopener noreferrer">GTEYC 2627 SU</a></h3></div>
               <p>The official webpage I built for the GTEYC 2627 student union: Aurora.</p>
               <div class="proj-foot"><span class="url">gtcsu-aurora.web.app</span><i class="fa-solid fa-graduation-cap"></i></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="web tools" style="--a:#92b8f6">
+            <article class="card proj hoverable reveal" data-dev="2026-04-15" data-cat="web tools" style="--a:#92b8f6">
               <div class="proj-top"><span class="pill">Utility</span></div>
               <div class="proj-title"><img src="/assets/app-logos-webp/dropspot.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://dropspot-0.web.app" target="_blank" rel="noopener noreferrer">DropSpot</a></h3></div>
               <p>Fast, lightweight, peer-to-peer data and file transfer in the browser.</p>
               <div class="proj-foot"><span class="url">dropspot-0.web.app</span><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#fef08a">
+            <article class="card proj hoverable reveal" data-dev="2025-12-10" data-cat="web" style="--a:#f7cac9">
+              <div class="proj-top"><span class="pill">First game</span></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/svt-match.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="https://svt-match.web.app" target="_blank" rel="noopener noreferrer">SVT Match</a></h3></div>
+              <p>A SVT-themed matching game with friends, leaderboards, a shop and more.</p>
+              <div class="proj-foot"><span class="url">svt-match.web.app</span><i class="fa-solid fa-gamepad"></i></div>
+            </article>
+
+            <article class="card proj hoverable reveal" data-dev="2025-11-15" data-cat="tools" style="--a:#fef08a">
               <div class="proj-top"><span class="pill">Solver</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/colordle-solver.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/colordle-solver">Colordle Solver</a></h3></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/colordle-solver.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/colordle-solver" target="_blank" rel="noopener noreferrer">Colordle Solver</a></h3></div>
               <p>Solves colordle.ryantanen.com using CIEDE2000 colour maths in CIE Lab space.</p>
               <div class="proj-foot"><span class="url">kurtis-lam.web.app/colordle-solver</span><i class="fa-solid fa-palette"></i></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#b57bff">
+            <article class="card proj hoverable reveal" data-dev="2025-10-15" data-cat="tools" style="--a:#b57bff">
               <div class="proj-top"><span class="pill">Extension</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/kahoot-hack.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kahoot-hack">Kahoot Hack</a></h3></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/kahoot-hack.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/kahoot-hack" target="_blank" rel="noopener noreferrer">Kahoot Hack</a></h3></div>
               <p>A Chrome extension that reads Kahoot! questions, asks an AI, and highlights or auto-clicks the answer. Educational project.</p>
               <div class="proj-foot"><span class="url">kurtis-lam.web.app/kahoot-hack</span><i class="fa-solid fa-bolt"></i></div>
             </article>
 
-            <article class="card proj hoverable reveal" data-cat="tools" style="--a:#e2b714">
+            <article class="card proj hoverable reveal" data-dev="2025-09-15" data-cat="tools" style="--a:#e2b714">
               <div class="proj-top"><span class="pill">Automation</span></div>
-              <div class="proj-title"><img src="/assets/app-logos-webp/monkeytype.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/monkeytyper">Monkeytyper</a></h3></div>
+              <div class="proj-title"><img src="/assets/app-logos-webp/monkeytype.webp" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()" /><h3><a href="/monkeytyper" target="_blank" rel="noopener noreferrer">Monkeytyper</a></h3></div>
               <p>Two Python scripts that type Monkeytype tests: one reads the page DOM, one uses OCR. Educational project.</p>
               <div class="proj-foot"><span class="url">kurtis-lam.web.app/monkeytyper</span><i class="fa-solid fa-keyboard"></i></div>
             </article>
@@ -784,11 +794,6 @@
               <p>I'm taking on websites, bots, extensions, apps and tools for people and teams around the world.</p>
             </article>
             <article class="card tl reveal">
-              <time datetime="2026-10">Oct 2026</time>
-              <h3>Built kurt</h3>
-              <p>Built <a href="https://kurtis-lam.web.app/kurt" target="_blank" rel="noopener noreferrer">kurt</a> (<a href="https://github.com/Kurtis-Lam/kurt" target="_blank" rel="noopener noreferrer">GitHub</a>), a tool that aggregates models so they run locally.</p>
-            </article>
-            <article class="card tl reveal">
               <time datetime="2026-09">Sep 2026</time>
               <h3>Built kTown</h3>
               <p>Built <a href="https://ktown-45.web.app" target="_blank" rel="noopener noreferrer">kTown</a> (<a href="https://github.com/Kurtis-Lam/kTown" target="_blank" rel="noopener noreferrer">GitHub</a>), an IB revision app.</p>
@@ -805,18 +810,13 @@
             </article>
             <article class="card tl reveal">
               <time datetime="2026-01">Jan 2026</time>
-              <h3>Sharper wind predictor</h3>
-              <p>Modified the <a href="https://github.com/Kurtis-Lam/wind-predictor" target="_blank" rel="noopener noreferrer">wind predictor model</a> to improve its accuracy by about 10%, and let the location be selected (it was fixed to Hong Kong before), for the <a href="https://www.kvis.ac.th/news_detail?id=2198" target="_blank" rel="noopener noreferrer">9th KVIS-ISF</a> in February.</p>
+              <h3>Wind predictor</h3>
+              <p>Created a <a href="https://github.com/Kurtis-Lam/wind-predictor" target="_blank" rel="noopener noreferrer">wind predictor model</a> where the location can be selected, for the <a href="https://www.kvis.ac.th/news_detail?id=2198" target="_blank" rel="noopener noreferrer">9th KVIS-ISF</a> in February.</p>
             </article>
             <article class="card tl reveal">
               <time datetime="2025-12">Dec 2025</time>
               <h3>Started my first game</h3>
-              <p>Began developing my first game, <a href="https://svt-match.web.app/" target="_blank" rel="noopener noreferrer">SVT MATCH</a> (<a href="https://github.com/Kurtis-Lam/svt-match" target="_blank" rel="noopener noreferrer">GitHub</a>).</p>
-            </article>
-            <article class="card tl reveal">
-              <time datetime="2025-07">Jul 2025</time>
-              <h3>Wind predictor (LSTM)</h3>
-              <p>Built a <a href="https://github.com/Kurtis-Lam/wind-predictor" target="_blank" rel="noopener noreferrer">wind predictor model (LSTM)</a> for the ISPC hosted by GT College.</p>
+              <p>Began developing my first game, (started out as a birthday gift):<a href="https://svt-match.web.app/" target="_blank" rel="noopener noreferrer">SVT MATCH</a> (<a href="https://github.com/Kurtis-Lam/svt-match" target="_blank" rel="noopener noreferrer">GitHub</a>).</p>
             </article>
             <article class="card tl reveal">
               <time datetime="2025-05">May 2025</time>
@@ -831,7 +831,7 @@
             <article class="card tl reveal">
               <time datetime="2024-07">Jul 2024</time>
               <h3>My first Discord bot</h3>
-              <p>Made my first Discord bot for my private server, a <a href="https://github.com/Kurtis-Lam/kingdom-bot" target="_blank" rel="noopener noreferrer">text bot</a>.</p>
+              <p>Made my first <a href="https://github.com/Kurtis-Lam/kingdom-bot" target="_blank" rel="noopener noreferrer">Discord Bot</a> for my private server.</p>
             </article>
             <article class="card tl reveal">
               <time datetime="2023-03">Mar 2023</time>
@@ -842,11 +842,6 @@
               <time datetime="2022-08">Aug 2022</time>
               <h3>Grade 6 → Grade 7: started coding</h3>
               <p>Started coding and learnt Python from the book <em>Python for Kids: A Playful Introduction to Programming</em> by Jason R. Briggs. Coded my first bounce game.</p>
-            </article>
-            <article class="card tl reveal">
-              <time datetime="2010-10-22">22 Oct 2010</time>
-              <h3>Hello, world</h3>
-              <p>Born in Hong Kong, and apparently destined to spend a lot of time at a keyboard.</p>
             </article>
           </div>
         </div>
@@ -866,7 +861,7 @@
               <div class="piano-wrap">
                 <div>
                   <h3><i class="fa-solid fa-music"></i>Play me a tune</h3>
-                  <p class="sub" style="margin:0">One octave. Click or tap the keys, or use your keyboard.</p>
+                  <p class="sub" style="margin:0">Two octaves. Click or tap the keys, or use your keyboard.</p>
                 </div>
                 <div style="display:flex;gap:10px;flex-wrap:wrap">
                   <select class="song-pick" id="song-pick" aria-label="Choose a song"></select>
@@ -874,7 +869,7 @@
                 </div>
               </div>
               <div class="piano" id="piano" role="group" aria-label="Piano keyboard"></div>
-              <p class="piano-hint">keys: A S D F G H J K · sharps: W E T Y U</p>
+              <p class="piano-hint">low: Z X C V B N M (sharps S D G H J) · high: Q W E R T Y U I (sharps 2 3 5 6 7)</p>
             </div>
             <div class="card widget wide reveal">
               <h3><i class="fa-solid fa-palette"></i>Random color generator</h3>
@@ -987,7 +982,7 @@
     <div class="palette-box" role="dialog" aria-modal="true" aria-label="Command palette">
       <div class="palette-input">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input id="pal-q" type="text" placeholder="Jump to a section, open a project, copy my email…" autocomplete="off" spellcheck="false" aria-controls="pal-list" />
+        <input id="pal-q" type="text" placeholder="Search sections, projects, keywords like “huawei”…" autocomplete="off" spellcheck="false" aria-controls="pal-list" />
         <kbd>esc</kbd>
       </div>
       <ul id="pal-list" role="listbox" aria-label="Commands"></ul>
@@ -1327,19 +1322,52 @@
       });
     });
 
+    /* ---------- Project sorting ---------- */
+    (function () {
+      var grid = $('#proj-grid');
+      function sortCards(mode) {
+        var arr = $$('#proj-grid .proj');
+        arr.sort(function (a, b) {
+          if (mode === 'az' || mode === 'za') {
+            var r = a.querySelector('h3').textContent.trim().localeCompare(b.querySelector('h3').textContent.trim(), undefined, { sensitivity: 'base' });
+            return mode === 'az' ? r : -r;
+          }
+          var da = a.getAttribute('data-dev'), db = b.getAttribute('data-dev'), d = da < db ? -1 : da > db ? 1 : 0;
+          return mode === 'old' ? d : -d;
+        });
+        arr.forEach(function (c) { grid.appendChild(c); });
+      }
+      $$('.sort-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          $$('.sort-btn').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+          sortCards(btn.getAttribute('data-sort'));
+        });
+      });
+    })();
+
     /* ---------- Piano (Web Audio, created on first key press) ---------- */
     (function () {
-      var KEYS = [
-        { n: 'C4', f: 261.63, k: 'a', w: 0 }, { n: 'D4', f: 293.66, k: 's', w: 1 }, { n: 'E4', f: 329.63, k: 'd', w: 2 }, { n: 'F4', f: 349.23, k: 'f', w: 3 },
-        { n: 'G4', f: 392.0, k: 'g', w: 4 }, { n: 'A4', f: 440.0, k: 'h', w: 5 }, { n: 'B4', f: 493.88, k: 'j', w: 6 }, { n: 'C5', f: 523.25, k: 'k', w: 7 },
-        { n: 'C#4', f: 277.18, k: 'w', b: 1 }, { n: 'D#4', f: 311.13, k: 'e', b: 2 }, { n: 'F#4', f: 369.99, k: 't', b: 4 }, { n: 'G#4', f: 415.3, k: 'y', b: 5 }, { n: 'A#4', f: 466.16, k: 'u', b: 6 }
-      ];
+      var NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+      var WHITE_KEYS = ['zxcvbnm', 'qwertyu'];
+      var BLACK_KEYS = [{ 'C#': 's', 'D#': 'd', 'F#': 'g', 'G#': 'h', 'A#': 'j' }, { 'C#': '2', 'D#': '3', 'F#': '5', 'G#': '6', 'A#': '7' }];
+      var TOTAL_WHITE = 15, WW = 100 / TOTAL_WHITE, BW = 3.8;
+      function hz(midi) { return 440 * Math.pow(2, (midi - 69) / 12); }
+      var KEYS = [], wi = 0, oct, i, nm, nat;
+      for (oct = 0; oct < 2; oct++) {
+        nat = 0;
+        for (i = 0; i < 12; i++) {
+          nm = NAMES[i];
+          if (nm.length === 1) { KEYS.push({ n: nm + (4 + oct), f: hz(60 + oct * 12 + i), k: WHITE_KEYS[oct].charAt(nat++), w: wi++ }); }
+          else { KEYS.push({ n: nm + (4 + oct), f: hz(60 + oct * 12 + i), k: BLACK_KEYS[oct][nm], b: wi }); }
+        }
+      }
+      KEYS.push({ n: 'C6', f: hz(84), k: 'i', w: wi++ });
       var byName = {}, byKey = {}, piano = $('#piano'), ctx = null;
       KEYS.forEach(function (k) {
         var b = document.createElement('button');
         b.type = 'button'; b.className = 'pk ' + (k.b ? 'b' : 'w'); b.setAttribute('aria-label', k.n);
         b.innerHTML = '<span>' + k.k.toUpperCase() + '</span>';
-        if (k.b) { b.style.left = 'calc(' + (k.b * 12.5) + '% - 3.5%)'; } else { b.style.left = 'calc(' + (k.w * 12.5) + '% + 1.5px)'; }
+        if (k.b) { b.style.left = 'calc(' + (k.b * WW) + '% - ' + (BW / 2) + '%)'; } else { b.style.left = 'calc(' + (k.w * WW) + '% + 1.5px)'; }
         k.el = b; byName[k.n] = k; byKey[k.k] = k; piano.appendChild(b);
         b.addEventListener('pointerdown', function (e) { e.preventDefault(); press(k); });
       });
@@ -1403,9 +1431,6 @@
     })();
 
     /* ---------- Hire buttons ---------- */
-    $$('[data-ask]').forEach(function (b) {
-      b.addEventListener('click', function () { $('#hire').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); });
-    });
     $$('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(b.getAttribute('data-copy'), 'Email copied'); }); });
 
     /* ---------- Command palette (Ctrl/Cmd + K, or "/") ---------- */
@@ -1414,38 +1439,73 @@
     $('#kbd-hint').textContent = isMac ? '⌘ K' : 'Ctrl K';
     function go(id) { return function () { var el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' }); }; }
     function open(url, same) { return function () { if (same) location.href = url; else window.open(url, '_blank', 'noopener'); }; }
+    var projText = {};
+    $$('#proj-grid .proj').forEach(function (c) { projText[c.querySelector('h3').textContent.trim().toLowerCase()] = c.querySelector('p').textContent + ' ' + c.querySelector('.pill').textContent; });
+    function P(name, extra) { return (extra || '') + ' ' + (projText[name.toLowerCase()] || ''); }
     var COMMANDS = [
-      { g: 'Go to', i: 'fa-house', t: 'Home', h: 'top', run: go('home') },
-      { g: 'Go to', i: 'fa-user', t: 'About me', run: go('about') },
-      { g: 'Go to', i: 'fa-briefcase', t: 'Services', run: go('services') },
-      { g: 'Go to', i: 'fa-folder-open', t: 'Work', run: go('work') },
-      { g: 'Go to', i: 'fa-timeline', t: 'My story', run: go('story') },
-      { g: 'Go to', i: 'fa-music', t: 'Extras & piano', run: go('extras') },
-      { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'message', run: go('hire') },
-      { g: 'Hire me', i: 'fa-copy', t: 'Copy my email address', h: EMAIL, run: function () { copyText(EMAIL, 'Email copied'); } },
-      { g: 'Hire me', i: 'fa-envelope', t: 'Email me', run: open('mailto:' + EMAIL, true) },
-      { g: 'Projects', i: 'fa-mobile-screen', t: 'fluxbg', h: 'Android app', run: open('/fluxbg', true) },
-      { g: 'Projects', i: 'fa-terminal', t: 'kurt', h: 'CLI tool', run: open('/kurt', true) },
-      { g: 'Projects', i: 'fa-book-open', t: 'kTown', h: 'IB study app', run: open('https://ktown-45.web.app') },
-      { g: 'Projects', i: 'fa-gamepad', t: 'SVT Match', h: 'game', run: open('https://svt-match.web.app') },
-      { g: 'Projects', i: 'fa-graduation-cap', t: 'GTEYC 2627 SU', h: 'website', run: open('https://gtcsu-aurora.web.app') },
-      { g: 'Projects', i: 'fa-arrow-right-arrow-left', t: 'DropSpot', h: 'file transfer', run: open('https://dropspot-0.web.app') },
-      { g: 'Projects', i: 'fa-palette', t: 'Colordle Solver', run: open('/colordle-solver', true) },
-      { g: 'Projects', i: 'fa-bolt', t: 'Kahoot Hack', run: open('/kahoot-hack', true) },
-      { g: 'Projects', i: 'fa-keyboard', t: 'Monkeytyper', run: open('/monkeytyper', true) },
-      { g: 'Links', i: 'fa-brands fa-github', t: 'GitHub', h: '@Kurtis-Lam', run: open('https://github.com/Kurtis-Lam') },
-      { g: 'Links', i: 'fa-brands fa-instagram', t: 'Instagram', h: '@kurtis_1022', run: open('https://www.instagram.com/kurtis_1022/') },
-      { g: 'Links', i: 'fa-keyboard', t: 'Monkeytype profile', h: 'kurtislam', run: open('https://monkeytype.com/profile/kurtislam') },
-      { g: 'Fun', i: 'fa-music', t: 'Play a chord', run: function () { go('extras')(); setTimeout(function () { if (window.__klPlayChord) window.__klPlayChord(); }, 400); } },
-      { g: 'Fun', i: 'fa-star', t: 'Shower me with stars', run: function () { sparkle(); } },
-      { g: 'Fun', i: 'fa-arrow-up', t: 'Back to top', run: function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); } }
+      { g: 'Go to', i: 'fa-house', t: 'Home', h: 'top', k: 'start landing hero intro', run: go('home') },
+      { g: 'Go to', i: 'fa-user', t: 'About me', k: 'bio age born facts skills stack tools hobbies languages hong kong student', run: go('about') },
+      { g: 'Go to', i: 'fa-briefcase', t: 'Services', k: 'freelance offer web discord bot extension android cli security check pricing', run: go('services') },
+      { g: 'Go to', i: 'fa-folder-open', t: 'Work', k: 'projects portfolio apps tools made built', run: go('work') },
+      { g: 'Go to', i: 'fa-timeline', t: 'My story', k: 'timeline history journey experience', run: go('story') },
+      { g: 'Go to', i: 'fa-music', t: 'Extras & piano', k: 'fun play keyboard color generator random', run: go('extras') },
+      { g: 'Hire me', i: 'fa-paper-plane', t: 'Hire me', h: 'message', k: 'contact freelance order quote budget commission work with', run: go('hire') },
+      { g: 'Hire me', i: 'fa-copy', t: 'Copy my email address', h: EMAIL, k: 'gmail contact clipboard', run: function () { copyText(EMAIL, 'Email copied'); } },
+      { g: 'Hire me', i: 'fa-envelope', t: 'Email me', k: 'gmail contact mail', run: open('mailto:' + EMAIL, true) },
+      { g: 'Projects', i: 'fa-mobile-screen', t: 'fluxbg', h: 'Android app', k: P('fluxbg', 'huawei wallpaper live wallpaper android phone video image crop trim lock screen home screen apk kotlin'), run: open('/fluxbg') },
+      { g: 'Projects', i: 'fa-terminal', t: 'kurt', h: 'CLI tool', k: P('kurt', 'terminal cli coding assistant ollama llm ai local open-source models python'), run: open('/kurt') },
+      { g: 'Projects', i: 'fa-book-open', t: 'kTown', h: 'IB study app', k: P('kTown', 'ib study revision notes citation maker productivity school'), run: open('https://ktown-45.web.app') },
+      { g: 'Projects', i: 'fa-gamepad', t: 'SVT Match', h: 'game', k: P('SVT Match', 'svt matching game leaderboard shop friends birthday'), run: open('https://svt-match.web.app') },
+      { g: 'Projects', i: 'fa-graduation-cap', t: 'GTEYC 2627 SU', h: 'website', k: P('GTEYC 2627 SU', 'student union su aurora gt college school gteyc website'), run: open('https://gtcsu-aurora.web.app') },
+      { g: 'Projects', i: 'fa-arrow-right-arrow-left', t: 'DropSpot', h: 'file transfer', k: P('DropSpot', 'p2p peer-to-peer file transfer share send data browser utility'), run: open('https://dropspot-0.web.app') },
+      { g: 'Projects', i: 'fa-palette', t: 'Colordle Solver', k: P('Colordle Solver', 'colordle colour color solver ciede2000 lab wordle game math'), run: open('/colordle-solver') },
+      { g: 'Projects', i: 'fa-bolt', t: 'Kahoot Hack', k: P('Kahoot Hack', 'kahoot chrome extension quiz ai openrouter answer auto click educational'), run: open('/kahoot-hack') },
+      { g: 'Projects', i: 'fa-keyboard', t: 'Monkeytyper', k: P('Monkeytyper', 'monkeytype typing bot python selenium ocr script automation educational'), run: open('/monkeytyper') },
+      { g: 'Links', i: 'fa-brands fa-github', t: 'GitHub', h: '@Kurtis-Lam', k: 'code repos repositories source open source', run: open('https://github.com/Kurtis-Lam') },
+      { g: 'Links', i: 'fa-brands fa-instagram', t: 'Instagram', h: '@kurtis_1022', k: 'dm social message contact', run: open('https://www.instagram.com/kurtis_1022/') },
+      { g: 'Links', i: 'fa-keyboard', t: 'Monkeytype profile', h: 'kurtislam', k: 'typing wpm speed typer', run: open('https://monkeytype.com/profile/kurtislam') },
+      { g: 'Fun', i: 'fa-music', t: 'Play a chord', k: 'piano sound music', run: function () { go('extras')(); setTimeout(function () { if (window.__klPlayChord) window.__klPlayChord(); }, 400); } },
+      { g: 'Fun', i: 'fa-star', t: 'Shower me with stars', k: 'easter egg confetti sparkle secret', run: function () { sparkle(); } },
+      { g: 'Fun', i: 'fa-arrow-up', t: 'Back to top', k: 'scroll up', run: function () { scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); } }
     ];
+    $$('.timeline .tl').forEach(function (c) {
+      COMMANDS.push({
+        g: 'Story', i: 'fa-timeline', t: c.querySelector('h3').textContent.trim(), h: c.querySelector('time').textContent.trim(),
+        k: c.querySelector('p').textContent, s: 1,
+        run: function () { c.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }); }
+      });
+    });
     function iconClass(i) { return i.indexOf('fa-brands') === 0 ? i : 'fa-solid ' + i; }
+    function wordHit(hay, tok) {
+      var i = hay.indexOf(tok);
+      while (i > -1) {
+        if (i === 0 || /[^a-z0-9]/.test(hay.charAt(i - 1))) return 2;
+        i = hay.indexOf(tok, i + 1);
+      }
+      return hay.indexOf(tok) > -1 && tok.length > 2 ? 1 : 0;
+    }
+    function tokScore(c, tok) {
+      var a = wordHit(c.t.toLowerCase(), tok); if (a) return 6 + a;
+      var b = wordHit((c.h || '').toLowerCase(), tok); if (b) return 4 + b;
+      var d = wordHit((c.g + ' ' + (c.k || '')).toLowerCase(), tok); if (d) return 2 + d;
+      return 0;
+    }
+    function findCommands(q) {
+      if (!q) return COMMANDS.filter(function (c) { return !c.s; });
+      var toks = q.split(/\s+/).filter(Boolean), out = [];
+      COMMANDS.forEach(function (c, idx) {
+        var total = 0, ok = true;
+        toks.forEach(function (t) { var sc = tokScore(c, t); if (!sc) ok = false; total += sc; });
+        if (ok) out.push({ c: c, s: total, idx: idx });
+      });
+      out.sort(function (a, b) { return b.s - a.s || a.idx - b.idx; });
+      return out.map(function (o) { return o.c; });
+    }
     function renderPal() {
       var q = palQ.value.trim().toLowerCase(), last = '';
-      palItems = COMMANDS.filter(function (c) { return !q || (c.t + ' ' + c.g + ' ' + (c.h || '')).toLowerCase().indexOf(q) > -1; });
+      palItems = findCommands(q);
       palList.innerHTML = '';
-      if (!palItems.length) { palList.innerHTML = '<li class="pal-empty" role="presentation">No match. Try “work”, “hire” or “piano”.</li>'; return; }
+      if (!palItems.length) { palList.innerHTML = '<li class="pal-empty" role="presentation">No match. Try “huawei”, “piano” or “hire”.</li>'; return; }
       palItems.forEach(function (c, idx) {
         if (!q && c.g !== last) { var gh = document.createElement('li'); gh.className = 'pal-group'; gh.setAttribute('role', 'presentation'); gh.textContent = c.g; palList.appendChild(gh); last = c.g; }
         var li = document.createElement('li'); li.setAttribute('role', 'option'); li.dataset.idx = idx;
