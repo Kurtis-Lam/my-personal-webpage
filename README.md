@@ -19,6 +19,7 @@ Welcome to the repository for **Kurtis Lam's Personal Portfolio Website**. This 
 | `/monkeytyper` | `public/monkeytyper.html` | Monkeytyper: what it is, how it works, step-by-step setup |
 | `/fluxbg` | `public/fluxbg.html` | fluxbg: Huawei wallpaper app, features, APK, build and usage |
 | `/kurt` | `public/kurt.html` | Kurt: local terminal coding assistant, setup, commands, troubleshooting |
+| `/fund-me` | `public/fund-me.html` | MacBook Pro fund: live progress bar, Stripe Checkout payments in HKD, masked supporter list (Vercel serverless API in `fund-api/`) |
 
 All pages share the lightweight night-sky background in `public/background.html`: stars are painted once and animated with GPU-only CSS, so it costs almost no CPU. Visitors can switch effects off from the footer or the Ctrl+K palette.
 
