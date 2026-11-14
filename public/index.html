@@ -241,6 +241,17 @@
     .notice p { color: var(--muted); }
     .notice strong { color: var(--text); font-weight: 500; }
 
+    .fund-card { display: block; margin-top: 4px; padding: 24px 26px; }
+    .fund-top, .fund-bot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .fund-title { font-weight: 600; font-size: 1.15rem; display: inline-flex; align-items: center; gap: 10px; }
+    .fund-title i { color: var(--amber); }
+    .fund-nums, .fund-bot .mono { font-size: .88rem; color: var(--muted); }
+    .fund-bar { height: 16px; border-radius: 999px; background: rgba(148, 163, 184, .16); overflow: hidden; margin: 16px 0 14px; }
+    .fund-bar > span { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #22d3ee, #818cf8, #f472b6); transition: width .8s ease; }
+    .fund-go { font-weight: 600; color: var(--amber); display: inline-flex; align-items: center; gap: 8px; }
+    .fund-card:hover .fund-go i { transform: translateX(4px); }
+    .fund-go i { transition: transform .2s; }
+
     .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px; counter-reset: step; }
     .step { padding: 20px 22px; }
     .step::before { counter-increment: step; content: "0" counter(step); font-family: var(--mono); color: var(--cyan); font-size: .85rem; }
@@ -741,6 +752,29 @@
           <div class="svc-cta reveal">
             <a class="btn btn-primary" href="#hire"><i class="fa-solid fa-paper-plane"></i>Start a project</a>
           </div>
+        </div>
+      </section>
+
+      <!-- ===================== Fund ===================== -->
+      <section class="sec" id="fund">
+        <div class="wrap">
+          <div class="sec-head reveal">
+            <span class="eyebrow">Support me</span>
+            <h2>Help me <span class="serif grad">upgrade</span></h2>
+            <p class="lede">I'm saving for a MacBook Pro so I can build bigger projects. Chip in by link, and every supporter is listed with their name starred out.</p>
+          </div>
+
+          <a class="card fund-card hoverable reveal" href="/fund-me" style="--a:#fbbf24" aria-label="MacBook Pro fund status. Open the fund page to contribute.">
+            <div class="fund-top">
+              <span class="fund-title"><i class="fa-solid fa-laptop"></i>MacBook Pro fund</span>
+              <span class="fund-nums mono" id="fund-nums">Loading…</span>
+            </div>
+            <div class="fund-bar" id="fund-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Fund progress"><span id="fund-fill"></span></div>
+            <div class="fund-bot">
+              <span class="mono" id="fund-meta">Checking fund status…</span>
+              <span class="fund-go">Fund me <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </a>
         </div>
       </section>
 
@@ -1853,6 +1887,26 @@
 
     applyMotion();
   })();
+
+    (function () {
+      var API = 'https://kurtis-fund-api.vercel.app';
+      var nums = document.getElementById('fund-nums');
+      if (!nums) return;
+      var hkd = function (n) { return 'HK$' + Number(n).toLocaleString('en-US', { maximumFractionDigits: 0 }); };
+      fetch(API + '/api/fund', { headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) throw new Error('bad status'); return r.json(); })
+        .then(function (d) {
+          var pct = d.goal > 0 ? Math.min(100, (d.raised / d.goal) * 100) : 0;
+          nums.textContent = hkd(d.raised) + ' / ' + hkd(d.goal);
+          document.getElementById('fund-fill').style.width = pct + '%';
+          document.getElementById('fund-bar').setAttribute('aria-valuenow', String(Math.round(pct)));
+          document.getElementById('fund-meta').textContent = Math.round(pct) + '% funded · ' + d.count + (d.count === 1 ? ' supporter' : ' supporters');
+        })
+        .catch(function () {
+          nums.textContent = 'MacBook Pro fund';
+          document.getElementById('fund-meta').textContent = 'Tap to see the fund page';
+        });
+    })();
   </script>
 </body>
 </html>
